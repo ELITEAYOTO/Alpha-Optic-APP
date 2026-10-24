@@ -7,3 +7,7 @@
 .console-empty { background: #141618; padding: 28px 22px; min-height: 310px; font-family: "Cascadia Code", Consolas, monospace; }
 .console-empty p { margin-top: 25px; font-size: 12px; color: #969b9e; }
 .console-prompt { color: #db9a85; }
+
+@media (max-height: 830px) {
+  .eyebrow { margin-bottom: 10px; }
+}

@@ -16,10 +16,12 @@
 .check-list button { background: none; border: 0; color: var(--accent); font-weight: 600; }
 .empty-activity { color: var(--muted); padding-top: 23px; font-size: 12px; }
 @media (max-height: 830px) {
-  .workarea { padding-top: 19px; padding-bottom: 20px; }
   .feature-strip { margin: 20px 0 15px; padding: 15px 18px; }
   .section-heading { padding: 12px 0 10px; margin-top: 9px; }
   .context-grid { padding: 15px 0; }
   .check-list > div { padding: 10px 4px; }
-  .eyebrow { margin-bottom: 10px; }
+}
+
+@media (max-width: 1100px) {
+  .feature-strip { align-items: flex-start; flex-direction: column; }
 }

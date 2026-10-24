@@ -35,5 +35,8 @@
 @media (max-width: 1100px) {
   .workspace { grid-template-columns: 60px 210px minmax(0,1fr); }
   .breadcrumb { display: none; }
-  .feature-strip { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-height: 830px) {
+  .workarea { padding-top: 19px; padding-bottom: 20px; }
 }
