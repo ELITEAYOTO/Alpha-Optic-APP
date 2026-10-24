@@ -27,9 +27,11 @@
 .explorer-links button.selected { background: var(--selected); color: var(--accent); font-weight: 600; }
 .explorer-footer { border-top: 1px solid var(--border); padding: 17px 8px 0; color: var(--muted); margin-top: 35px; }
 .explorer-footer small { display: block; color: var(--faint); margin-top: 7px; padding-left: 15px; }
+.overview, .module-screen, .placeholder { max-width: 1150px; margin: auto; }
 .workarea { overflow-y: auto; min-width: 0; padding: 33px clamp(25px, 4vw, 52px); }
 .statusbar { background: var(--rail); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 13px; color: #b2adb1; font-size: 10px; white-space: nowrap; overflow: hidden; }
 .statusbar span { overflow: hidden; text-overflow: ellipsis; }
+.placeholder .notice { margin-top: 42px; }
 @media (max-width: 1100px) {
   .workspace { grid-template-columns: 60px 210px minmax(0,1fr); }
   .breadcrumb { display: none; }
