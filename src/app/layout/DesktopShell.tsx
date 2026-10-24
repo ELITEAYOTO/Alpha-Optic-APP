@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { destinations, type Destination } from "../navigation";
 import { NavigationIcon } from "./NavigationIcon";
 import { OFFLINE_CONTROL_STATUS, summarizeControlStatus } from "../../contracts/control-status";
@@ -12,6 +12,8 @@ interface Props {
 }
 
 export function DesktopShell({ active, onNavigate, children }: Props) {
+  const [explorerHidden, setExplorerHidden] = useState(false);
+
   return (
     <div className="desktop-shell">
       <header className="titlebar">
@@ -26,8 +28,24 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
           <button type="button" disabled title="Contrat Bridge non connecté">Démarrer</button>
         </div>
       </header>
-      <div className="workspace">
+      <div className={`workspace${explorerHidden ? " explorer-collapsed" : ""}`}>
         <nav className="icon-rail" aria-label="Navigation principale">
+          <button
+            type="button"
+            className="explorer-toggle"
+            title={explorerHidden ? "Afficher l’explorateur" : "Masquer l’explorateur"}
+            aria-label={explorerHidden ? "Afficher l’explorateur" : "Masquer l’explorateur"}
+            aria-controls="optic-explorer"
+            aria-expanded={!explorerHidden}
+            onClick={() => setExplorerHidden(hidden => !hidden)}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M9 4v16" />
+              <path d={explorerHidden ? "m13 10 3 2-3 2" : "m16 10-3 2 3 2"} />
+            </svg>
+          </button>
+          <span className="rail-divider" aria-hidden="true" />
           {destinations.map(({ id, label }) => (
             <button
               type="button"
@@ -41,7 +59,7 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
             </button>
           ))}
         </nav>
-        <aside className="explorer" aria-label="Explorateur Optic">
+        <aside id="optic-explorer" className="explorer" aria-label="Explorateur Optic" hidden={explorerHidden}>
           <div className="explorer-kicker">EXPLORATEUR</div>
           <div className="project-selector">
             <span className="project-glyph"><NavigationIcon name="projects" /></span>

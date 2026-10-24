@@ -25,3 +25,25 @@ L'utilisateur a fourni une **image de proposition du parcours installation/confi
 **Référence d'installation et configuration :** les cadres [`407:1659`](https://www.figma.com/design/OGItF1Qa9wLGoSp2ieGJk4?node-id=407-1659) et [`407:1676`](https://www.figma.com/design/OGItF1Qa9wLGoSp2ieGJk4?node-id=407-1676) ont été vérifiés et seront préservés. Voir `docs/design/INSTALLATION_SETUP.md` ; conception native de distribution #12 et wizard UI #13 séparés. Aucun installateur n'est encore présent.
 
 **État du code (24 octobre 2026) :** la source originale React V1.6.2 a été retrouvée et auditée statiquement (voir `docs/engineering/V162_SOURCE_AUDIT.md`). L'accueil UI D dispose d'un premier lot de mise en page responsive 1440 × 900 / 1280 × 800 et du logo multicolore d'origine, rééchantillonné en 48 × 48 PNG transparent pour l'en-tête (`public/assets/optic-logo-48.png`, SHA-256 `4df69967a73d21299a6e1497e003d531efdd29790ea09f8987ca27629965bc8f`). L'archive V1.6.2 complète n'a **pas** été migrée ; la fidélité visuelle et l'absence de défilement doivent encore être confirmées en rendu réel, notamment sur Windows/WebView2.
+
+## Ajustements issus du premier test Windows utilisateur (24 octobre 2026)
+
+Le premier `npm run tauri dev` compilé sur Windows a confirmé la fenêtre et
+la fidélité générale du bureau, et a révélé quatre priorités :
+**barre de titre native blanche**, **icônes natives encore provisoires**
+(alors que l'en-tête React utilise le bon logo), **explorateur non rétractable**
+et **survol/focus trop discret**.
+
+- L'explorateur peut désormais être replié via le bouton accessible de la
+  barre d'outils ; les raccourcis restent disponibles et la zone de travail
+  récupère exactement sa largeur. Le contrôle annonce correctement son état
+  `aria-expanded` et respecte les préférences de réduction des animations.
+- Les hovers doivent rester légers, à contrastes contrôlés, sans saut de layout
+  excessif, et rester compatibles clavier/souris.
+- Correction des icônes natives Windows et de la couleur de barre de titre :
+  **lot distinct**, sans remplacer arbitrairement la fenêtre système tant que
+  le déplacement, la maximisation, le snap et l'accessibilité ne sont pas testés.
+- **Animation d'ouverture professionnelle à prévoir** : durée courte,
+  aucun blocage de chargement, pas de faux statut de connexion,
+  désactivée sous `prefers-reduced-motion`; implémentation et validation
+  dans un lot séparé après design UI D approuvé.
