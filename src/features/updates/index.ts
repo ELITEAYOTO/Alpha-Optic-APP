@@ -1,1 +1,1 @@
-export { UpdatesPanel } from "./ui/UpdatesPanel";\n
+export { UpdatesPanel } from "./ui/UpdatesPanel";
