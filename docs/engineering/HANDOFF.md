@@ -25,3 +25,6 @@ Both `package-lock.json` and `src-tauri/Cargo.lock` were resolved in a temporary
 
 ## Current follow-up
 A scoped `refactor/feature-owned-styles` branch isolates layout, feature and shared CSS from the initial `base.css`. No runtime/security change or logo migration is intended.
+
+## Next independent implementation: community theme manifests
+The next feature branch validates only declarative community theme JSON, exposes a pure fixed CSS token mapping, and runs offline unit tests. No automatic download or activation of third-party code, and no Bridge repository writes.
