@@ -1,0 +1,19 @@
+:root {
+  font-family: "Segoe UI Variable", "Segoe UI", Inter, system-ui, sans-serif;
+  color-scheme: dark;
+  --bg: #17191b;
+  --surface: #1e2124;
+  --subtle: #24282b;
+  --rail: #111316;
+  --explorer: #202327;
+  --raised: #292d31;
+  --border: #373b40;
+  --text: #f0eeec;
+  --muted: #aeaba9;
+  --faint: #929296;
+  --accent: #db9a85;
+  --on-accent: #281c1a;
+  --selected: #3c3030;
+  --warning: #d9b17d;
+  --radius: 7px;
+}

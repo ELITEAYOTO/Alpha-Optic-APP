@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Optic",
+  "version": "0.0.1",
+  "identifier": "dev.optic.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Optic — démonstration",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 980,
+        "minHeight": 660,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "capabilities": ["main-minimal"],
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:5173 ws://127.0.0.1:5173"
+    }
+  },
+  "bundle": {
+    "active": false,
+    "icon": ["icons/icon.png", "icons/icon.ico"]
+  }
+}

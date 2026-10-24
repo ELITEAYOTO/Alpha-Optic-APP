@@ -1,0 +1,16 @@
+[package]
+name = "optic-desktop"
+version = "0.0.1"
+description = "Optic Windows desktop — UI-only bootstrap"
+edition = "2021"
+publish = false
+
+[lib]
+name = "optic_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = "2.7.4"
+
+[dependencies]
+tauri = "2.12.5"

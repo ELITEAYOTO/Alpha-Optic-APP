@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-minimal",
+  "description": "No frontend access to OS commands, filesystem, shell or native plugins during demo bootstrap",
+  "windows": ["main"],
+  "permissions": []
+}
