@@ -53,6 +53,10 @@ Mises à jour : artefacts signés, vérification cryptographique Tauri updater o
 8. Test visuel UI D et first-run à 1440×900 et 1280×800, focus/clavier/zoom. Documenter l'écart entre **CI source**, **exécutable créé** et **installation Windows réellement testée**.
 9. Ne jamais exécuter installation ou script sensible sur le PC de l'utilisateur sans consentement spécifique.
 
+## Mises à jour d'Optic
+
+Suivre l'**issue #15** et [ADR-0007](../decisions/ADR-0007-SIGNED-UPDATES.md) : notifications et vérifications bornées, **installation uniquement avec consentement**, mises à jour Tauri signées sur canal stable/preview, clé de signature privée hors Git, identité de publication, tests NSIS Windows et chemin manuel vérifié pour le portable. Le premier `UpdatesPanel` UI D **ne contacte aucun serveur** : ce n'est pas un updater déployé. Ne jamais mettre à jour Bridge ou MCP tiers à sa place. Aucun redémarrage si un processus/système reste en terminaison incertaine.
+
 ### Lots recommandés
 
 #12.A paramètres/installateur NSIS + artefact de test non publié ; #12.B tests Windows/WebView2/identité ; #12.C portable réel ; #12.D signatures et updates. En parallèle, #13 traite l'interface **après ouverture** sans couplage à NSIS ; #4 reste dépendance pour tout Bridge réel.

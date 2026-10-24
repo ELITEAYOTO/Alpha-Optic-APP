@@ -4,6 +4,9 @@ import { DesktopShell } from "./layout/DesktopShell";
 import { OverviewScreen } from "../features/overview";
 import { SupervisionScreen } from "../features/supervision";
 import { DeveloperTerminalScreen } from "../features/terminal";
+import { SettingsScreen } from "../features/settings";
+import { UpdatesPanel } from "../features/updates";
+import packageInfo from "../../package.json";
 
 const descriptions: Record<Destination, string> = {
   home: "Le point de départ de votre espace de travail.",
@@ -25,7 +28,9 @@ export function App() {
       ? <SupervisionScreen />
       : section === "terminal"
         ? <DeveloperTerminalScreen />
-        : (
+        : section === "settings"
+          ? <SettingsScreen updatesSection={<UpdatesPanel prototypeVersion={packageInfo.version} />} />
+          : (
           <section className="placeholder" aria-labelledby="placeholder-title">
             <div className="eyebrow">MODULE EN PRÉPARATION</div>
             <h1 id="placeholder-title">{item?.label}</h1>
