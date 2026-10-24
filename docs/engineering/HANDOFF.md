@@ -85,6 +85,8 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 
 - **Test visuel utilisateur Windows :** app source compilée et ouverte ; barre de titre blanche, icônes natives provisoires, explorer à replier, hovers à revoir. Lot explorer/hover sans droits natifs, lot titre/logo séparé ; animation de démarrage planifiée mais pas activée. Voir `docs/design/UI_D.md`.
 
+- **Icône Optic 512 px (préparation) :** source officielle vérifiée SHA-256 `d353f8a0…` et pack ICO multi-tailles créé hors Git. `scripts/check-native-icon-candidate.mjs` valide en lecture seule l'empreinte source et les tailles ICO ; pas de nouvel asset natif fusionné, l'icône 48 px reste en place jusqu'au test Windows. Voir `docs/engineering/ICON_ASSETS.md` et issue #23.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.

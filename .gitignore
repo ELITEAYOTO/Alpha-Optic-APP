@@ -13,3 +13,5 @@ src-tauri/target/
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+# Local high-DPI icon candidates; inspect before promoting to native icons
+src-tauri/icons-candidate/
