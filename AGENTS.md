@@ -27,3 +27,9 @@ Before implementation read README.md, docs/architecture/OVERVIEW.md, docs/archit
 - Add tests for each new public boundary, malformed input, offline state, cancellation, replay and cleanup.
 - Use `docs/decisions/ADR-*.md` for lasting architectural decisions; update handoff only with verified results.
 - Do not add dependencies by default; document size, license, platform and security rationale first.
+
+## Strict repository ownership
+- **Only write to** `ELITEAYOTO/Alpha-Optic-APP` during Desktop tasks. Resolve and confirm `repository_full_name` before every GitHub write.
+- `ELITEAYOTO/Optic-AI-Bridge-` is being developed concurrently by another AI; treat it as a read-only external dependency unless the operator explicitly authorizes a separate Bridge task.
+- Never create a PR, issue, branch, commit, or update an existing file in the Bridge repo as part of Desktop development.
+- Resolve cross-repository compatibility by local Desktop contracts and a future proposal, not unreviewed edits to Bridge code.

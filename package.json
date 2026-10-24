@@ -3,12 +3,15 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "check": "node scripts/check-repo.mjs && node scripts/check-boundaries.mjs && npm run build",
-    "tauri": "tauri"
+    "check": "node scripts/check-repo.mjs && node scripts/check-boundaries.mjs && npm run test:unit && npm run build",
+    "tauri": "tauri",
+    "test:unit": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
