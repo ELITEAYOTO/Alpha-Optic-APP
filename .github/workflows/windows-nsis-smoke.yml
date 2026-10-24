@@ -9,6 +9,7 @@ on:
       - 'package-lock.json'
       - 'scripts/check-nsis-smoke.mjs'
       - 'scripts/windows/test-nsis-lifecycle.ps1'
+      - 'scripts/windows/test-webview2-launch.ps1'
       - 'tests/nsis-smoke.test.mjs'
   workflow_dispatch:
 
@@ -17,7 +18,7 @@ permissions:
 
 jobs:
   nsis-smoke:
-    name: Unsigned NSIS packaging + install/uninstall lifecycle smoke
+    name: Unsigned NSIS install/uninstall + WebView2 GUI startup smoke
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: windows-latest
     timeout-minutes: 60
@@ -55,7 +56,7 @@ jobs:
           $signature = (Get-AuthenticodeSignature -LiteralPath $file.FullName).Status
           @(
             'OPTIC NSIS TEST ARTIFACT — NOT A RELEASE'
-            'UNSIGNED / LIFECYCLE TEST REQUIRED; NOT GUI/RELEASE-TESTED'
+            'UNSIGNED / GUI STARTUP TEST REQUIRED; NOT CONTENT/RELEASE-TESTED'
             "Source commit: ${{ github.sha }}"
             "Filename: $($file.Name)"
             "Bytes: $($file.Length)"
@@ -65,7 +66,7 @@ jobs:
             'No Bridge, updater endpoint, or user-PC operation performed'
           ) | Set-Content -Path 'smoke-dist/PROVENANCE.txt' -Encoding utf8
           Get-Content 'smoke-dist/PROVENANCE.txt'
-      - name: Exercise silent install/uninstall on ephemeral GitHub-hosted Windows ONLY
+      - name: Exercise install, WebView2 GUI startup and uninstall on hosted Windows ONLY
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'

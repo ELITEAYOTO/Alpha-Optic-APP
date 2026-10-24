@@ -75,6 +75,7 @@ if ((Test-Path -LiteralPath $installDir) -or
 $errors = [System.Collections.Generic.List[string]]::new()
 $installed = $false
 $uninstalled = $false
+$guiLaunch = $false
 $shaBefore = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash
 
 try {
@@ -105,6 +106,9 @@ try {
   }
   $installed = $true
   Write-Output "NSIS smoke: installed to current-user location; version 0.0.1; app binary and uninstaller present."
+  & './scripts/windows/test-webview2-launch.ps1' -AppPath $executables[0].FullName -InstallRoot $installDir -ReportPath 'smoke-dist/GUI_LAUNCH.txt'
+  $guiLaunch = $true
+  Write-Output 'NSIS smoke: native window and owned WebView2 startup evidence verified.'
 } catch {
   $errors.Add("Install/check: $($_.Exception.Message)")
 } finally {
@@ -140,16 +144,17 @@ try {
     'Executor: GitHub-hosted Windows runner'
     "Install checks passed: $installed"
     "Uninstall checks passed: $uninstalled"
-    'Runtime GUI launch: NOT TESTED'
+    "Native GUI/WebView2 startup passed: $guiLaunch"
+    'GUI startup checked; React pixels/content NOT TESTED'
     'WebView2 absent/offline scenario: NOT TESTED'
     'Windows update/downgrade: NOT TESTED'
     'Bridge installation/control: NOT ATTEMPTED'
-    "Result: $(if ($errors.Count -eq 0 -and $installed -and $uninstalled) { 'PASS' } else { 'FAIL' })"
+    "Result: $(if ($errors.Count -eq 0 -and $installed -and $uninstalled -and $guiLaunch) { 'PASS' } else { 'FAIL' })"
   )
   $reportLines | Set-Content -LiteralPath $report -Encoding utf8
   Get-Content -LiteralPath $report
 }
 
-if ($errors.Count -gt 0 -or -not $installed -or -not $uninstalled) {
+if ($errors.Count -gt 0 -or -not $installed -or -not $uninstalled -or -not $guiLaunch) {
   throw ("NSIS install/uninstall smoke failed: " + ($errors -join '; '))
 }

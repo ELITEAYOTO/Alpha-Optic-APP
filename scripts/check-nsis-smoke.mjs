@@ -68,8 +68,11 @@ export function auditNsisSmoke(base, smoke, workflow) {
   }
   if (!workflow.includes("./scripts/windows/test-nsis-lifecycle.ps1") ||
       !workflow.includes("LIFECYCLE.txt") ||
-      !workflow.includes("Exercise silent install/uninstall on ephemeral GitHub-hosted Windows ONLY")) {
+      !workflow.includes("Exercise install, WebView2 GUI startup and uninstall on hosted Windows ONLY")) {
     error("NSIS lifecycle test must run and produce a report on an ephemeral runner");
+  }
+  if (!workflow.includes("'scripts/windows/test-webview2-launch.ps1'")) {
+    error("WebView2 helper must appear in the smoke workflow paths");
   }
   if (!workflow.includes("Get-FileHash") || !workflow.includes("Get-AuthenticodeSignature")) {
     error("Artifact provenance must record checksum and signature state");
