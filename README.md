@@ -30,6 +30,12 @@ npm run tauri dev
 
 Le build source réussi en CI **n'est pas** un test d'installateur, une validation du PC utilisateur ou une connexion réelle au Bridge. Le packaging est désactivé et l'icône du bootstrap n'est pas le logo officiel.
 
+## Distribution et premier démarrage (planifiés)
+
+Le projet suit explicitement le [packaging Windows / versions / WebView2 (#12)](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/12) et l'[assistant de configuration UI D (#13)](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/13). Plans : [distribution](docs/engineering/WINDOWS_DISTRIBUTION.md), [écrans Figma](docs/design/INSTALLATION_SETUP.md), [ADR-0006](docs/decisions/ADR-0006-INSTALLATION-BOUNDARIES.md).
+
+**Aucun installateur prêt à distribuer.** Node/npm/Rust ne devront pas être installés manuellement par l'utilisateur final d'une future release. WebView2 et Bridge ont des responsabilités de version distinctes.
+
 ## Lire avant toute modification
 
 1. [AGENTS.md](AGENTS.md) : règles non négociables, interdiction d'écriture dans le Bridge.

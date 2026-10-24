@@ -62,6 +62,13 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 5. Ne pas toucher au PC local de l'utilisateur ni déclencher des tests/installeurs physiques sans accord spécifique.
 6. Garder `HANDOFF.md` court, fidèle à GitHub et à jour lors de chaque fin de chantier ; ne pas accumuler des fichiers « HANDOFF_NEXT_CHAT » redondants.
 
+## 6 bis. Installation et configuration — chantier identifié, pas encore développé
+
+- **Issue #12 :** NSIS professionnel, portable distinct, WebView2, dépendances utilisateur vs développement, versions/compatibilité, signature, updates et validations Windows.
+- **Issue #13 :** assistant de première utilisation UI D fondé sur les cadres Figma `407:1659`, `407:1676`, puis `391:1138` ; ne pas les redessiner arbitrairement.
+- Voir `docs/engineering/WINDOWS_DISTRIBUTION.md`, `docs/design/INSTALLATION_SETUP.md` et ADR-0006 (native installation ≠ app first-run).
+- **Aucune release installable, aucun mode portable vérifié, aucune installation automatique de Bridge.** `bundle.active=false`. Node/Rust sont les outils de build, pas des prérequis à demander à l'utilisateur final.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.
