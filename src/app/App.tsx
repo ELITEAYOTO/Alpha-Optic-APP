@@ -25,7 +25,7 @@ export function App() {
   const content = section === "home"
     ? <OverviewScreen onNavigate={setSection} />
     : section === "supervision"
-      ? <SupervisionScreen />
+      ? <SupervisionScreen onReturnHome={() => setSection("home")} />
       : section === "terminal"
         ? <DeveloperTerminalScreen />
         : section === "settings"
