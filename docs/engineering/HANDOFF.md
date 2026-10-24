@@ -1,13 +1,19 @@
-# Handoff — modular foundation
+# Handoff — desktop scaffold
 
 Date: 2026-10-24
-Scope: `Alpha-Optic-APP` initial documentation and static architectural gate only.
 
-- Repo is separate from `ELITEAYOTO/Optic-AI-Bridge-`; this phase does not modify Bridge.
-- UI D chosen in Figma; desktop stack planned Tauri 2, Rust, React, TypeScript.
-- Approved boundaries: React views -> feature adapters -> versioned contracts -> Tauri host -> authenticated Bridge control contract (to be designed). Bridge holds sole security authority.
-- Future features: supervision journal, separate interactive terminal (ConPTY design candidate, NOT authorized shell), file diffs, sessions, permissions, project registry, themes, MCP federation.
-- Production Windows Bridge still not declared ready. Verify current blockers directly from its canonical status before each integration.
-- No source from the standalone React V1.6.2 ZIP is present in this repo. Obtain exact archive before migration. No compiled app, runtime, terminal or live MCP connector is implied.
-- Next: review the foundation PR, decide frontend project scaffolding versions in a separate PR, add tests and CI, then stage original React migration.
-- Update this file with actual merged SHAs and verified workflows; do not invent evidence.
+## Foundation
+PR #1 was squash-merged into main at 9a4e78e0f1f0d0c4e610907734e411794921a35d after green exact-head CI.
+
+## In-flight bootstrap
+Branch `feat/desktop-bootstrap` introduces initial React + TypeScript modular UI and minimum Tauri 2 Rust host. New UI is demonstration only and must not be described as connected to Optic AI Bridge. Supervision and terminal surfaces are distinct and disabled pending contracts and native safety work.
+
+UI D Figma remains source of design intent, but original React V1.6.2 source has **not** been audited/migrated. Temporary icon is not the official asset. Native titlebar remains decorated until a separate UX/security step.
+
+## Release gates
+- Desktop: frontend builds and hosted Windows Rust check must be proven on exact code SHA; pin transitive dependencies in both lockfiles.
+- Bridge: independently remains Windows V1 NO-GO at last review; current state must be re-read.
+- No release or Windows physical test claims until actual evidence.
+
+## Next
+Complete scoped PR, verify exact-head CI, generate verified lockfiles, tighten CI for reproducible builds, then make UI/IPC changes as separate PRs.

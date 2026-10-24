@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { destinations, type Destination } from "../../app/navigation";
+import { destinations, type Destination } from "../navigation";
 import { NavigationIcon } from "./NavigationIcon";
 
 interface Props {

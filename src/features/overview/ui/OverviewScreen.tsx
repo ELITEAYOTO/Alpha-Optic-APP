@@ -1,7 +1,6 @@
-import type { Destination } from "../../../app/navigation";
 import { overviewDisplay } from "../model/demo";
 
-export function OverviewScreen({ onNavigate }: { onNavigate: (section: Destination) => void }) {
+export function OverviewScreen({ onNavigate }: { onNavigate: (section: "projects" | "connections" | "permissions" | "supervision") => void }) {
   return (
     <section className="overview" aria-labelledby="overview-title">
       <div className="eyebrow">BUREAU / PREMIÈRE UTILISATION</div>

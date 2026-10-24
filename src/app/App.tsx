@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { destinations, type Destination } from "./navigation";
-import { DesktopShell } from "../shared/ui/DesktopShell";
+import { DesktopShell } from "./layout/DesktopShell";
 import { OverviewScreen } from "../features/overview";
 import { SupervisionScreen } from "../features/supervision";
 import { DeveloperTerminalScreen } from "../features/terminal";

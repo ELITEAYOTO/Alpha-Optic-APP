@@ -1,22 +1,30 @@
 # Optic — application Windows
 
-Application desktop Windows d’**Optic AI Bridge**.
+Application desktop d'**Optic AI Bridge**. Le nom de l'interface est **Optic**.
 
-Ce dépôt contient l’interface, l’expérience utilisateur et le contrôleur desktop prévus pour **Tauri 2 + Rust + React/TypeScript**. Le moteur de permissions, les services et les transports MCP restent dans le dépôt distinct [Optic AI Bridge](https://github.com/ELITEAYOTO/Optic-AI-Bridge-).
+**Statut : bootstrap expérimental, interface de démonstration uniquement.** L'application ne contrôle pas encore un Bridge réel, n'exécute aucune commande native et n'accorde aucune autorisation.
 
-## État
+## Architecture
+- React / TypeScript / Vite : présentation modulaire, issue de la direction UI D de Figma.
+- Tauri 2 / Rust : hôte Windows minimal, sans commande privilégiée.
+- Optic AI Bridge : moteur Rust développé dans son [dépôt distinct](https://github.com/ELITEAYOTO/Optic-AI-Bridge-), seul détenteur des permissions.
+- Une interface de supervision en lecture seule et un terminal développeur distinct seront connectés uniquement après revue des contrats et garanties d'exécution.
 
-**Initialisation de l’architecture uniquement.** Aucun exécutable Windows, runtime Tauri, terminal ConPTY, console reliée au Bridge ou intégration MCP externe n’est livré dans ce dépôt à ce stade. La baseline React V1.6.2 existe séparément ; elle devra être inspectée et intégrée sans réécriture.
+## Démarrage développeur (prérequis installés)
+```bash
+npm install
+npm run check
+npm run tauri dev
+```
+Ces instructions n'impliquent pas que le projet a été compilé ou exécuté sur le PC de l'opérateur.
 
-## Principes
+## État et documentation
+- `AGENTS.md` : règles des agents et développeurs.
+- `docs/architecture/OVERVIEW.md` et `MODULE_BOUNDARIES.md` : limites des couches.
+- `docs/security/SECURITY_MODEL.md` : invariants de sécurité.
+- `docs/design/UI_D.md` : référence UI validée.
+- `docs/engineering/DESKTOP_BOOTSTRAP.md` : limitations exactes et validations attendues.
 
-- Modularité explicite par fonctionnalités, interfaces publiques et adaptateurs.
-- L’autorité de sécurité appartient exclusivement au Bridge Rust.
-- Figma UI D est la direction visuelle validée ; « Optic » est le nom de l’application. Pas de « Lab » dans les noms produits.
-- Les thèmes sont des données validées ; les extensions de commandes nécessiteront un modèle d’autorisation distinct.
-- Un mode démonstration est possible, mais aucune donnée fictive ne doit être présentée comme un état réel du Bridge.
-- L’application et le Bridge évoluent dans des dépôts séparés, avec des contrats versionnés.
+**À faire avant distribution :** lockfiles vérifiés, validation Windows, logo officiel, migration contrôlée de la V1.6.2 et audit de sécurité. Le Bridge principal reste pré-alpha.
 
-## Reprise
-
-Après le socle initial, lire `AGENTS.md`, `docs/architecture/OVERVIEW.md`, `docs/architecture/MODULE_BOUNDARIES.md`, `docs/security/SECURITY_MODEL.md` et `docs/engineering/HANDOFF.md` avant de commencer une fonctionnalité.
+L'ancienne V1.6.2 React n'a pas été copiée ou réécrite ici. Elle devra être inspectée et reprise selon un plan de migration.
