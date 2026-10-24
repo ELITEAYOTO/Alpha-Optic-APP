@@ -51,6 +51,15 @@ test("rejects live/authenticated sources, foreign fields and versions", () => {
   assert.equal(parseOfflineControlStatus({ ...demo(), revocation_state: "finished" }), null);
   assert.equal(parseOfflineControlStatus({ ...demo(), bridge_state: "healthy" }), null);
   assert.equal(parseOfflineControlStatus({ ...demo(), source: undefined }), null);
+  const withSymbol = demo();
+  withSymbol[Symbol("hidden")] = "non-displayed metadata";
+  assert.equal(parseOfflineControlStatus(withSymbol), null);
+  const withHidden = demo();
+  Object.defineProperty(withHidden, "hidden", { value: "metadata" });
+  assert.equal(parseOfflineControlStatus(withHidden), null);
+  const withGetter = demo();
+  Object.defineProperty(withGetter, "bridge_state", { enumerable: true, get() { throw Error("untrusted getter executed"); } });
+  assert.equal(parseOfflineControlStatus(withGetter), null);
   assert.equal(parseOfflineControlStatus({}), null);
   assert.equal(parseOfflineControlStatus(Object.create({ source: "demo" })), null);
   assert.equal(parseOfflineControlStatus(null), null);

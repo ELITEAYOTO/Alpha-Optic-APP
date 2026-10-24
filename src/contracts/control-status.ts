@@ -54,7 +54,15 @@ function isPlainRecord(input: unknown): input is Record<string, unknown> {
  */
 export function parseOfflineControlStatus(input: unknown): OfflineControlStatus | null {
   if (!isPlainRecord(input)) return null;
-  if (Object.keys(input).length !== KEYS.length || !KEYS.every(key => Object.hasOwn(input, key))) return null;
+  // Reject symbols, non-enumerable extras and accessor properties as well as
+  // ordinary extra keys. No getter should execute during shape validation.
+  const ownKeys = Reflect.ownKeys(input);
+  if (ownKeys.length !== KEYS.length || !ownKeys.every(key =>
+    typeof key === "string" && (KEYS as readonly string[]).includes(key)
+  )) return null;
+  if (!KEYS.every(key => Object.hasOwn(input, key) &&
+    Object.hasOwn(Object.getOwnPropertyDescriptor(input, key) ?? {}, "value")
+  )) return null;
   if (input.schema_version !== CONTROL_STATUS_SCHEMA_VERSION) return null;
   if (input.source !== "offline" && input.source !== "demo") return null;
   for (const [key, allowed] of Object.entries(STATE_KEYS)) {
