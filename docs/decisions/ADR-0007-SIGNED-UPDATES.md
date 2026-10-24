@@ -16,3 +16,7 @@
 Issue #15 dédiée ; dépend de #12 (installateur) et de #4 (autorité de cycle de vie Bridge). Les contrôles actuels testent uniquement le **modèle UI**, pas le mécanisme de mise à jour réelle.
 
 Docs : https://v2.tauri.app/plugin/updater/ ; https://v2.tauri.app/distribute/windows-installer/
+
+## Garde-fou CI offline
+
+`npm run check:release-config` passe sur le bootstrap, mais échoue si les trois versions divergent ou si l'updater est partiellement activé. `npm run check:release-candidate` exige une configuration NSIS signée plus complète et doit échouer avant préparation des releases. Voir `tests/release-gates.test.mjs`. Cela ne garantit **pas** l'authenticité des clés/endpoints ou la réussite du package Windows.

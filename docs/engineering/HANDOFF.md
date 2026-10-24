@@ -75,6 +75,8 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 - `src/features/updates/` apporte un modèle UI borné et une section des Paramètres clairement **non activée**, avec tests et ADR-0007. Pas de plugin updater branché, pas d'endpoint ou de clé publique, pas de téléchargement ni installation, `bundle.active=false` inchangé.
 - Ne pas appeler cela « mises à jour disponibles » tant qu'il n'y a pas de release/signature/pubkey/CI Windows et d'adaptateur natif.
 
+- **Garde-fou release :** `scripts/check-release-gates.mjs` contrôle automatiquement cohérence version/identité et interdit une configuration updater active ou incomplète ; `npm run check:release-candidate` reste volontairement rouge tant que le package Windows n'est pas prêt (issue #12 et #15). Ces validations sont statiques, **pas une preuve de signature ou de packaging**.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.

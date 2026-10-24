@@ -60,3 +60,26 @@ Suivre l'**issue #15** et [ADR-0007](../decisions/ADR-0007-SIGNED-UPDATES.md) : 
 ### Lots recommandés
 
 #12.A paramètres/installateur NSIS + artefact de test non publié ; #12.B tests Windows/WebView2/identité ; #12.C portable réel ; #12.D signatures et updates. En parallèle, #13 traite l'interface **après ouverture** sans couplage à NSIS ; #4 reste dépendance pour tout Bridge réel.
+
+## Préparation de release vérifiée statiquement (PR de garde-fous)
+
+Le script `scripts/check-release-gates.mjs` vérifie automatiquement les trois versions
+(`package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`),
+le nom produit et l'absence d'updater activé dans le prototype.
+Il est exécuté dans `npm run check` sur Windows et Ubuntu.
+
+```bash
+npm run check:release-config     # contrôles statiques du bootstrap, doit réussir
+npm run check:release-candidate  # exige un profil NSIS signé/configuré ; DOIT échouer actuellement
+```
+
+Le mode distribution **nécessite** une identité non provisoire, une version cohérente,
+`bundle.active=true`, `targets=nsis`, `currentUser`, `createUpdaterArtifacts=true`,
+une clé publique définie, un endpoint HTTPS et un mode d'installation visible.
+La clé privée reste hors Git. Aucune URL, clé de production, téléchargement ni package
+signé n'a été ajouté.
+
+**Attention :** un contrôle de structure de clé/endpoint ne prouve ni la propriété du
+serveur ni une signature cryptographique. Tauri Updater vérifiera celle-ci lors d'une
+future installation. La publication restera bloquée jusqu'aux tests Windows indépendants,
+signature Authenticode, migration/rollback et confirmation de fin des opérations Bridge.

@@ -9,9 +9,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "check": "node scripts/check-repo.mjs && node scripts/check-boundaries.mjs && npm run test:unit && npm run build",
+    "check": "node scripts/check-repo.mjs && node scripts/check-boundaries.mjs && npm run check:release-config && npm run test:unit && npm run build",
     "tauri": "tauri",
-    "test:unit": "node --experimental-strip-types --test tests/*.test.mjs"
+    "test:unit": "node --experimental-strip-types --test tests/*.test.mjs",
+    "check:release-config": "node scripts/check-release-gates.mjs",
+    "check:release-candidate": "node scripts/check-release-gates.mjs --release"
   },
   "dependencies": {
     "react": "19.3.1",
