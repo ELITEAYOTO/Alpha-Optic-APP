@@ -7,7 +7,7 @@ The first source iteration provides a **React/TypeScript UI D inspired shell** a
 - Demo-only welcome screen, with true unknown/unavailable statuses, and two distinct non-interactive console surfaces.
 - No Bridge connection, native commands, terminal spawn, ConPTY, MCP federation or filesystem access.
 - Native Tauri decorations retained intentionally at this stage; custom titlebar/windows chrome must be reviewed separately. Current icon is explicitly a **temporary build-only placeholder**, not the official Optic logo.
-- Package versions are direct-dependency pinned. A verified npm/Cargo lockfile is required before release; bootstrap CI currently resolves dependencies and is **not a reproducible release build**.
+- Both npm and Cargo lockfiles are committed from isolated hosted GitHub resolution. CI uses \`npm ci\` and Cargo \`--locked\`; this does not itself prove a production-ready Windows build.
 - Bundle generation is intentionally disabled.
 - Cross-feature imports are forbidden: the shell is in `src/app/layout` because it knows app navigation. Feature pages only receive callbacks from composition.
 

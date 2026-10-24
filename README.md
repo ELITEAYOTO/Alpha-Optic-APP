@@ -12,7 +12,7 @@ Application desktop d'**Optic AI Bridge**. Le nom de l'interface est **Optic**.
 
 ## Démarrage développeur (prérequis installés)
 ```bash
-npm install
+npm ci
 npm run check
 npm run tauri dev
 ```
@@ -25,6 +25,6 @@ Ces instructions n'impliquent pas que le projet a été compilé ou exécuté su
 - `docs/design/UI_D.md` : référence UI validée.
 - `docs/engineering/DESKTOP_BOOTSTRAP.md` : limitations exactes et validations attendues.
 
-**À faire avant distribution :** lockfiles vérifiés, validation Windows, logo officiel, migration contrôlée de la V1.6.2 et audit de sécurité. Le Bridge principal reste pré-alpha.
+**À faire avant distribution :** audit et validation des dépendances verrouillées, validation Windows, logo officiel, migration contrôlée de la V1.6.2 et audit de sécurité. Le Bridge principal reste pré-alpha.
 
 L'ancienne V1.6.2 React n'a pas été copiée ou réécrite ici. Elle devra être inspectée et reprise selon un plan de migration.

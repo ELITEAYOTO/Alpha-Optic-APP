@@ -17,3 +17,6 @@ UI D Figma remains source of design intent, but original React V1.6.2 source has
 
 ## Next
 Complete scoped PR, verify exact-head CI, generate verified lockfiles, tighten CI for reproducible builds, then make UI/IPC changes as separate PRs.
+
+## Dependency reproducibility
+Both \`package-lock.json\` and \`src-tauri/Cargo.lock\` were resolved in a temporary isolated hosted workflow and committed to the feature branch. The temporary contents-write workflow must be deleted before merging; subsequent CI uses read-only permissions, \`npm ci\` and \`cargo check --locked\`. Exact-head checks after this change are required.

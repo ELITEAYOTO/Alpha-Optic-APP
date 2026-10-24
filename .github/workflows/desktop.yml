@@ -17,8 +17,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install frontend dependencies (bootstrap, lockfile pending)
-        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install locked frontend dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Typecheck, build and architecture
         run: npm run check
   windows-rust:
@@ -30,4 +30,4 @@ jobs:
         with:
           workspaces: src-tauri -> target
       - name: Check native host (not a packaging or release test)
-        run: cargo check --manifest-path src-tauri/Cargo.toml
+        run: cargo check --locked --manifest-path src-tauri/Cargo.toml
