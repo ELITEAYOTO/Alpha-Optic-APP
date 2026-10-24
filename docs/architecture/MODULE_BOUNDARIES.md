@@ -37,3 +37,9 @@ Feature catalogue, names are provisional: bridge, supervision, terminal, project
 
 ## Architecture checks
 The dependency contract is checked by `scripts/check-boundaries.mjs` (baseline static checks). Once the implementation is bootstrapped, expand to a resolver-aware checker with TypeScript/ESLint and tests on real modules. This is not a proof of every possible dynamic import.
+
+## CSS ownership
+- `src/styles/base.css` contains resets only; `src/styles/tokens.css` contains semantic tokens.
+- Layout styles live under `src/app/layout`, feature styles alongside the feature UI, reusable primitives in `src/shared/styles`.
+- Do not grow an application-wide `base.css` or import private feature styles from another feature.
+- New themes may override named tokens, not inject arbitrary CSS or commands.
