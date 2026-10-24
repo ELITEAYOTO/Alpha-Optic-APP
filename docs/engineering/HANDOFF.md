@@ -30,7 +30,7 @@ Au contrôle précédant ce document, aucune PR n'était ouverte ; les issues **
 - **Thèmes offline implémentés :** `src/features/themes/model/theme-manifest.ts` valide le manifeste déclaratif, 14 couleurs, contraste principal >= 4.5:1, rayon, projection de variables CSS ; `tests/theme-manifest.test.mjs`. Ce code n'active pas encore les thèmes dans l'UI ; aucune galerie, téléchargement ni exécution tierce.
 - **NON implémentés :** liaison réelle au Bridge, IPC authentifié, moteur d'autorisation dans Desktop, abonnement aux événements Bridge, journal d'audit persistant, ConPTY, shell interactif, xterm.js, Monaco diff, watchers FS, passerelle MCP externe, mise à jour, packaging MSI/portable, marketplace de thèmes/extensions.
 - Le logo/icon actuel est **temporaire**. La fenêtre Tauri utilise encore les décorations natives Windows. `bundle.active=false`. Aucun exécutable final / installation Windows utilisateur n'a été validé.
-- **IMPORTANT :** le ZIP/source d'origine **React V1.6.2** n'a pas été migré ni audité dans ce dépôt ; le shell actuel est un nouveau bootstrap expérimental, pas une réécriture fidèle et prouvée.
+- **IMPORTANT :** la **source originale React V1.6.2 a été retrouvée et auditée statiquement** le 24 octobre (archive SHA-256 `0d305e732d21be4771b09dbb6ca70ad795d47139877a431d0a977801af130cef`) ; voir `docs/engineering/V162_SOURCE_AUDIT.md`. Elle n'a **pas** été migrée dans ce dépôt ni testée sur Windows ; le shell actuel reste un bootstrap expérimental.
 
 ## 4. Objectif produit & décisions validées
 
@@ -62,7 +62,7 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 
 ## 7. Prochaines priorités recommandées
 
-1. **Issue #3 :** obtenir la véritable archive V1.6.2 de l'utilisateur ou de ses fichiers, l'inventorier, comparer avec UI D et migrer en petits modules, assets officiels compris ; vérifier la fidélité à 1440×900 et 1280×800, keyboard/focus, pas de scroll d'accueil de référence.
+1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.
 2. **Issue #4 :** détailler côté Desktop les interfaces `BridgeState / SessionState / AuthorizationState`, protocole proposé avec version, identité d'instance, authentification, event cursor, reconnexion, expurgation ; **pas d'implémentation live** sans accord/revue du Bridge.
 3. Faire apparaître dans l'UI des **états purement offline** et les composants de thèmes prévisualisables (sans import réseau) avec tests ; ne pas connecter des appels Rust encore hypothétiques.
 4. Préparer le design du terminal/supervision/connexion MCP externe via ADR, sans lancer de shell ni ajouter un proxy MCP privilégié.
