@@ -28,7 +28,8 @@ const workflow = () => [
   "Get-FileHash",
   "Get-AuthenticodeSignature",
   "if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository",
-  "Exercise silent install/uninstall on ephemeral GitHub-hosted Windows ONLY",
+  "Exercise install, WebView2 GUI startup and uninstall on hosted Windows ONLY",
+  "'scripts/windows/test-webview2-launch.ps1'",
   "./scripts/windows/test-nsis-lifecycle.ps1",
   "LIFECYCLE.txt",
 ].join("\n");
@@ -75,4 +76,5 @@ test("native lifecycle is gated to same-repository PRs and temporary hosted Wind
   const yaml = workflow();
   assert.equal(auditNsisSmoke(base(), smoke(), yaml.replace("github.event.pull_request.head.repo.full_name == github.repository", "always()")).ready, false);
   assert.equal(auditNsisSmoke(base(), smoke(), yaml.replace("./scripts/windows/test-nsis-lifecycle.ps1", "echo skipped")).ready, false);
+  assert.equal(auditNsisSmoke(base(), smoke(), yaml.replace("'scripts/windows/test-webview2-launch.ps1'", "'scripts/other.ps1'")).ready, false);
 });

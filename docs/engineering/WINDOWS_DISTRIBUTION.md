@@ -145,3 +145,21 @@ publique. Pas de release, pas d'exécution sur le PC utilisateur.
 Références : https://nsis.sourceforge.io/Docs/Chapter3.html ;
 https://v2.tauri.app/distribute/windows-installer/ ;
 https://github.com/tauri-apps/tauri/issues/16221 .
+
+### #12.B — lancement WebView2 sur un Windows GitHub éphémère
+
+Le script `scripts/windows/test-webview2-launch.ps1` vérifie, après la
+pose du NSIS de test, qu'un processus Optic installé ouvre **une fenêtre
+native Win32** et possède un processus enfant `msedgewebview2.exe`.
+Les vérifications sont liées au PID, jamais à un navigateur présent
+indépendamment. Le processus de test est stoppé avant désinstallation
+(délai d'observation 35 s, arrêt borné). Le rapport `GUI_LAUNCH.txt` est
+conservé avec l'artefact temporaire, sans logs utilisateur ni captures.
+
+**Attention :** ce test ne lit pas le contenu du WebView2 ni les pixels
+affichés, ne certifie pas l'absence d'écran blanc et ne remplace pas une
+inspection humaine du design UI D sur Windows 10/11. WebView2 absent,
+installation hors ligne, mise à jour signée, qualité de la navigation,
+zoom et accessibilité doivent faire l'objet de contrôles séparés. Un
+runner sans session interactive peut échouer ; ne pas affaiblir les
+assertions pour cacher ce résultat.
