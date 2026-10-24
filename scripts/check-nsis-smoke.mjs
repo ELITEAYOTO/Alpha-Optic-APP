@@ -51,7 +51,8 @@ export function auditNsisSmoke(base, smoke, workflow) {
     error("Smoke WebView2 mode must remain explicitly downloadBootstrapper");
   }
 
-  if (!/^\s*permissions:\s*\n\s+contents:\s*read\s*$/m.test(workflow)) error("Workflow must have read-only GitHub permission");
+  const contentPermissions = [...workflow.matchAll(/^\s*contents:\s*(\w+)\s*$/gm)].map(match => match[1]);
+  if (contentPermissions.length !== 1 || contentPermissions[0] !== "read") error("Workflow must have exactly one read-only contents permission");
   if (!/runs-on:\s*windows-latest/.test(workflow)) error("Smoke must build on Windows");
   if (!workflow.includes("npm run tauri -- build --ci --bundles nsis --config src-tauri/tauri.nsis-smoke.conf.json")) {
     error("Expected explicit isolated NSIS build command");
