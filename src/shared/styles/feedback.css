@@ -1,0 +1,13 @@
+.eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .075em; color: var(--accent); margin-bottom: 22px; }
+.intro { font-size: 14px; color: var(--muted); margin-top: 13px; }
+.notice { margin-top: 31px; border: 1px solid var(--border); background: var(--subtle); padding: 18px 22px; border-radius: 8px; color: var(--muted); line-height: 1.7; }
+.tool-panel { margin-top: 39px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.tool-panel-header { padding: 17px 21px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--surface); }
+.state-pill { font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--warning); }
+.console-empty { background: #141618; padding: 28px 22px; min-height: 310px; font-family: "Cascadia Code", Consolas, monospace; }
+.console-empty p { margin-top: 25px; font-size: 12px; color: #969b9e; }
+.console-prompt { color: #db9a85; }
+
+@media (max-height: 830px) {
+  .eyebrow { margin-bottom: 10px; }
+}
