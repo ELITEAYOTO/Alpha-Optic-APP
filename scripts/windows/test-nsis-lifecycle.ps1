@@ -45,7 +45,8 @@ function Find-Registration([string]$root) {
   $items = @(Get-ChildItem -LiteralPath $root -ErrorAction SilentlyContinue)
   return @($items | ForEach-Object {
     $record = Get-ItemProperty -LiteralPath $_.PSPath -ErrorAction Stop
-    if ($record.DisplayName -eq 'Optic Smoke Test') { $record }
+    $display = $record.PSObject.Properties['DisplayName']
+    if ($null -ne $display -and $display.Value -eq 'Optic Smoke Test') { $record }
   })
 }
 
