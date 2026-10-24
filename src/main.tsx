@@ -6,6 +6,8 @@ import "./styles/base.css";
 import "./app/layout/DesktopShell.css";
 import "./features/overview/ui/OverviewScreen.css";
 import "./shared/styles/feedback.css";
+import "./features/settings/ui/SettingsScreen.css";
+import "./features/updates/ui/UpdatesPanel.css";
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Optic root element missing");

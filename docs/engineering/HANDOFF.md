@@ -69,6 +69,12 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 - Voir `docs/engineering/WINDOWS_DISTRIBUTION.md`, `docs/design/INSTALLATION_SETUP.md` et ADR-0006 (native installation ≠ app first-run).
 - **Aucune release installable, aucun mode portable vérifié, aucune installation automatique de Bridge.** `bundle.active=false`. Node/Rust sont les outils de build, pas des prérequis à demander à l'utilisateur final.
 
+## 6 ter. Mises à jour — socle d'affichage, non activé
+
+- **Issue #15** : updater signé Tauri 2, canaux, métadonnées, consentement et vérifications Windows ; dépend de #12 (artefact réellement installable) et #4 (quiescence Bridge).
+- `src/features/updates/` apporte un modèle UI borné et une section des Paramètres clairement **non activée**, avec tests et ADR-0007. Pas de plugin updater branché, pas d'endpoint ou de clé publique, pas de téléchargement ni installation, `bundle.active=false` inchangé.
+- Ne pas appeler cela « mises à jour disponibles » tant qu'il n'y a pas de release/signature/pubkey/CI Windows et d'adaptateur natif.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.

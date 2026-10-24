@@ -1,0 +1,2 @@
+.optic-settings .settings-section-heading { border-bottom: 1px solid var(--border); font-weight: 700; color: var(--muted); letter-spacing: .065em; font-size: 10px; padding-bottom: 13px; margin: 32px 0 16px; }
+.optic-settings .settings-hint { margin-top: 22px; font-size: 12px; line-height: 1.6; color: var(--muted); }

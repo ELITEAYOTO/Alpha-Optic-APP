@@ -36,6 +36,10 @@ Le projet suit explicitement le [packaging Windows / versions / WebView2 (#12)](
 
 **Aucun installateur prêt à distribuer.** Node/npm/Rust ne devront pas être installés manuellement par l'utilisateur final d'une future release. WebView2 et Bridge ont des responsabilités de version distinctes.
 
+## Mises à jour d'Optic (préparation technique)
+
+La section **Paramètres → Mises à jour** apparaît maintenant en mode **non configuré**, avec version du prototype et explication. Le modèle d'états et ses tests sont présents, sans réseau ou privilège. **Aucune mise à jour réelle n'est disponible** : le workflow signé Tauri 2, les clés, le serveur de publication et les tests Windows sont suivis dans [#15](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/15) ; voir [ADR-0007](docs/decisions/ADR-0007-SIGNED-UPDATES.md). La première release devra utiliser des artefacts signés, pas simplement des liens de téléchargement.
+
 ## Lire avant toute modification
 
 1. [AGENTS.md](AGENTS.md) : règles non négociables, interdiction d'écriture dans le Bridge.
