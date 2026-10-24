@@ -113,7 +113,12 @@ test("candidate rejects incomplete signing, URLs, Windows prompts and installer 
   mutate(c => { c.bundle.createUpdaterArtifacts = false; });
   mutate(c => { c.bundle.windows.nsis.installMode = "perMachine"; });
   mutate(c => { c.bundle.windows.webviewInstallMode.type = "skip"; });
+  // Minisign public keys can legitimately contain base64 "/" characters.
+  const withSlash = candidate();
+  withSlash.tauriConfig.plugins.updater.pubkey += "AA/BB";
+  assert.equal(auditReleaseConfig(withSlash).ready, true);
   mutate(c => { c.plugins.updater.pubkey = "CONTENT FROM PUBLICKEY.PEM"; });
+  mutate(c => { c.plugins.updater.pubkey = "./secrets/updater.pub"; });
   mutate(c => { c.plugins.updater.endpoints = ["https://updates.optic.app", "https://fallback.optic.app"]; });
   mutate(c => { c.plugins.updater.endpoints = ["http://updates.optic.app"]; });
   mutate(c => { c.plugins.updater.windows.installMode = "quiet"; });

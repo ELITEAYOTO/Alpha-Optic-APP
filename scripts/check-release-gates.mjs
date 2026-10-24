@@ -97,7 +97,7 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
     const pubkey = updater.pubkey;
     if (typeof pubkey !== "string" || pubkey.trim().length < 80 ||
         /PLACEHOLDER|YOUR_|CONTENT FROM|BEGIN PRIVATE KEY/i.test(pubkey) ||
-        pubkey.includes("/") || pubkey.includes("\\")) {
+        /^(?:[A-Za-z]:[\\/]|[\\/]|~[\\/]|file:|\.{1,2}[\\/])/i.test(pubkey.trim())) {
       problems.push("Clé PUBLIQUE updater réelle requise dans la config (jamais une clé privée ni un chemin)");
     }
     if (!Array.isArray(updater.endpoints) || updater.endpoints.length !== 1 ||
