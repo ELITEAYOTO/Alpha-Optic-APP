@@ -42,3 +42,12 @@ contenu, durée courte et sans blocage technique. Aucun faux statut
 `Bridge connecté`, pas de splash distinct inutile, rien d'exécutable
 avant consentement. Respecter `prefers-reduced-motion` ; animation à
 dessiner/valider d'abord puis à implémenter dans une PR dédiée.
+
+## Source 512 px et pack de préparation
+
+Le logo RGBA 512×512 exact a été examiné dans cette conversation et les
+fichiers haute résolution préparés séparément. La vérification et le processus
+reproductible de génération via Tauri sont décrits dans
+[ICON_ASSETS.md](../engineering/ICON_ASSETS.md). **Les assets binaires en haute
+définition ne sont pas encore fusionnés** : l'icône 48 px de PR #22 reste active
+sur `main` jusqu'à une validation visuelle Windows.

@@ -14,7 +14,8 @@
     "test:unit": "node --experimental-strip-types --test tests/*.test.mjs",
     "check:release-config": "node scripts/check-release-gates.mjs",
     "check:release-candidate": "node scripts/check-release-gates.mjs --release",
-    "check:nsis-smoke": "node scripts/check-nsis-smoke.mjs"
+    "check:nsis-smoke": "node scripts/check-nsis-smoke.mjs",
+    "check:icon-candidate": "node scripts/check-native-icon-candidate.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
