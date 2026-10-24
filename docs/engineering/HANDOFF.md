@@ -1,30 +1,71 @@
-# Handoff — desktop scaffold
+# Optic Desktop — handoff canonique (24 octobre 2026)
 
-Date: 2026-10-24
+**Ce fichier est la source de reprise.** Il remplace les anciens statuts narratifs. Lire aussi `AGENTS.md`, `docs/engineering/WORKFLOW.md`, `docs/architecture/MODULE_BOUNDARIES.md`, `docs/security/SECURITY_MODEL.md`, `docs/design/UI_D.md`, `docs/architecture/OBSERVABILITY_UI_CONTRACT.md` et `docs/architecture/THEMES.md`.
 
-## Foundation
-PR #1 was squash-merged into main at 9a4e78e0f1f0d0c4e610907734e411794921a35d after green exact-head CI.
+## 1. Repositories — STRICT
 
-## Merged bootstrap
-PR #2 was squash-merged as `479b545d6b0ab5c3984e68f8a30ab2c1ec57067c` after exact-head push CI at `097c82563f1ff0559f459200f708db1bb3edb12e` passed frontend Windows/Linux and Windows Rust `cargo check --locked`. The independent push/main CI on merge commit `479b545d6b0ab5c3984e68f8a30ab2c1ec57067c` passed Foundation and Desktop source checks (React Windows/Ubuntu and Windows Rust).
+- **Écrire UNIQUEMENT dans** `ELITEAYOTO/Alpha-Optic-APP` : https://github.com/ELITEAYOTO/Alpha-Optic-APP
+- **Bridge externe, lecture seule** : `ELITEAYOTO/Optic-AI-Bridge-` : https://github.com/ELITEAYOTO/Optic-AI-Bridge-
+- Une AUTRE IA développe activement le Bridge. Aucun commit, branche, issue, PR, modification, fusion ou action de workflow dans le dépôt Bridge sans mandat nouveau et explicite. Éviter également de supposer qu'un ancien SHA/contrat du Bridge est encore actuel.
+- Si une évolution de Bridge est nécessaire, la documenter dans le dépôt Desktop et préparer une proposition de contrat à soumettre à l'utilisateur/à l'autre IA, **sans action GitHub côté Bridge**.
 
-This source introduces initial React + TypeScript modular UI and minimum Tauri 2 Rust host. New UI is demonstration only and must not be described as connected to Optic AI Bridge. Supervision and terminal surfaces are distinct and disabled pending contracts and native safety work.
+## 2. GitHub vérifié à cette passation
 
-UI D Figma remains source of design intent, but original React V1.6.2 source has **not** been audited/migrated. Temporary icon is not the official asset. Native titlebar remains decorated until a separate UX/security step.
+La branche `main` du Desktop **avant la PR de cette mise à jour documentaire** : `6e67fb7cea325bca08bbae3d681329889d60a654`.
 
-## Release gates
-- Desktop: `package-lock.json` and `src-tauri/Cargo.lock` are committed; frontend and hosted Windows Rust checks use locked dependencies. Keep verifying exact commit CI.
-- Bridge: independently remains Windows V1 NO-GO at last review; current state must be re-read.
-- No release or Windows physical test claims until actual evidence.
+| PR | Résultat vérifié |
+| --- | --- |
+| #1 Fondation modulaire | Fusionnée, `9a4e78e` |
+| #2 Bootstrap React/Tauri | Fusionnée, `479b545` |
+| #5 Responsabilité CSS | Fusionnée, `52530ac` |
+| #6 Journal d'événements offline | Fusionnée, `dffffa4` |
+| #7 Thèmes déclaratifs | Fusionnée, `6e67fb7` ; tests exact-head `534b4c8` verts avant fusion |
 
-## Next
-Complete the scoped style-ownership PR and verify exact-head CI; next implement typed offline state/contract tests in the Desktop repository only. Coordinate Bridge integration via a separate contract review, without modifying the Bridge repository.
+Au contrôle précédant ce document, aucune PR n'était ouverte ; les issues **#3** (migration de la V1.6.2 réelle) et **#4** (contrat authentifié Desktop ↔ Bridge) restaient ouvertes. Le contrôle Foundation sur `6e67fb7` était vert, la CI Desktop du *merge commit* était encore en cours. **Revérifier état/SHAs/CI en début de nouveau chat : ceci est un instantané, pas une vérité permanente.**
 
-## Dependency reproducibility
-Both `package-lock.json` and `src-tauri/Cargo.lock` were resolved in a temporary isolated hosted workflow and committed to the feature branch. The temporary contents-write workflow must be deleted before merging; subsequent CI uses read-only permissions, `npm ci` and `cargo check --locked`. Exact-head checks after this change are required.
+## 3. Stack, implémentation réelle et limites
 
-## Current follow-up
-A scoped `refactor/feature-owned-styles` branch isolates layout, feature and shared CSS from the initial `base.css`. No runtime/security change or logo migration is intended.
+- **Implémenté dans le dépôt :** Tauri 2 / Rust hôte minimal ; React 19 + TypeScript + Vite ; shell de démonstration inspiré de l'UI D ; navigation Bureau/Projets/Sessions/Autorisations/Supervision/Terminal/Connexions/Paramètres ; écran d'accueil ; vues séparées de supervision et de terminal **inactives** ; tokens CSS ; CSS réparti par propriétaire ; `package-lock.json` et `src-tauri/Cargo.lock` ; CI Node Windows+Ubuntu et `cargo check --locked` Windows.
+- **Contrats offline implémentés :** `src/contracts/telemetry.ts` filtre/rejette les événements inconnus/malformés ; `src/features/supervision/model/journal.ts` gère un buffer UI borné, ordre, doublons, lacunes et changement de source ; `tests/supervision-contract.test.mjs`.
+- **Thèmes offline implémentés :** `src/features/themes/model/theme-manifest.ts` valide le manifeste déclaratif, 14 couleurs, contraste principal >= 4.5:1, rayon, projection de variables CSS ; `tests/theme-manifest.test.mjs`. Ce code n'active pas encore les thèmes dans l'UI ; aucune galerie, téléchargement ni exécution tierce.
+- **NON implémentés :** liaison réelle au Bridge, IPC authentifié, moteur d'autorisation dans Desktop, abonnement aux événements Bridge, journal d'audit persistant, ConPTY, shell interactif, xterm.js, Monaco diff, watchers FS, passerelle MCP externe, mise à jour, packaging MSI/portable, marketplace de thèmes/extensions.
+- Le logo/icon actuel est **temporaire**. La fenêtre Tauri utilise encore les décorations natives Windows. `bundle.active=false`. Aucun exécutable final / installation Windows utilisateur n'a été validé.
+- **IMPORTANT :** le ZIP/source d'origine **React V1.6.2** n'a pas été migré ni audité dans ce dépôt ; le shell actuel est un nouveau bootstrap expérimental, pas une réécriture fidèle et prouvée.
 
-## Next independent implementation: community theme manifests
-The next feature branch validates only declarative community theme JSON, exposes a pure fixed CSS token mapping, and runs offline unit tests. No automatic download or activation of third-party code, and no Bridge repository writes.
+## 4. Objectif produit & décisions validées
+
+Nom affiché : **Optic** ; moteur : **Optic AI Bridge** ; ne jamais renommer le produit « Lab ». Windows-first. UI **D Carbone et corail** validée, variante claire Lin et grenat. Figma https://www.figma.com/design/OGItF1Qa9wLGoSp2ieGJk4?node-id=320-130 ; références détaillées dans `docs/design/UI_D.md`. L'utilisateur a ajouté dans son espace de design une image de configuration/installation : inspiration distincte pour le parcours initial, **pas un asset déjà importé** ni autorisation de génération d'autres images.
+
+Deux consoles réellement distinctes à terme :
+1. **Supervision**, lecture seule, démarrage automatique avec Bridge lancé par Optic ; logs réels structurés, horodatés, filtrables, bornés et récupérables sous contrat.
+2. **Terminal développeur**, interactif seulement après validation Rust ; xterm.js + ConPTY candidats, profiles autorisés, isolement Windows réel nécessaire ; jamais d'exécution PowerShell/CMD libre par défaut.
+
+Afficher modifications de code par fichier et lignes ajoutées/supprimées (Monaco Diff candidat), corrélées aux opérations et permissions effectives. Thèmes communautaires : données déclaratives, sans scripts/CSS arbitraire. Extensions/boutons ajoutés par utilisateurs : future catégorie **séparée**, à permissions explicites. Préparer prise en charge de MCP tiers (Figma et autres) côté Bridge **après revue des contrats, compatibilités et authentification** ; ne pas prétendre une connexion Figma fonctionnelle.
+
+## 5. Invariants sécurité / architecture
+
+- **Bridge Rust est l'unique autorité sur droits, sessions et effets sensibles.** Tauri n'est pas un second PolicyEngine ; React n'accorde aucun droit. Demande ≠ accord ≠ droit effectif ; révocation ≠ processus terminé ; état inconnu ≠ « arrêté ».
+- Respecter DAG `app -> features -> shared` et `features -> contracts/shared` ; jamais import direct d'une feature sœur ou dans `app` depuis une feature. Composition dans `src/app`; composants/styles dans modules propriétaires. Le garde-fou `scripts/check-boundaries.mjs` est une base statique **non exhaustive**.
+- Pas de `App.tsx` géant, `utils.ts` transversal, contexte mondial de permissions ou fichier Rust unique combinant tous les services.
+- Isoler les adaptateurs `demo/offline/live`. Ne jamais convertir une simulation en statut réel ni lire le stdout JSON-RPC de MCP comme un flux de logs.
+- Les sorties du terminal et des serveurs MCP sont non fiables ; pas de secrets dans logs/exports. Les thèmes ne donnent aucun accès au système.
+- Bridge Windows V1 était **NO-GO au dernier audit historique** ; le prochain chat doit vérifier le statut actuel avec le propriétaire Bridge, sans déclarer une résolution sur la base du code Desktop.
+
+## 6. Méthode de travail
+
+1. À chaque reprise, vérifier dépôt, `main` exact, PR ouvertes, éventuelles contributions externes, issues et résultats des CI récentes **dans le seul repo Desktop**.
+2. Lire `AGENTS.md`, règles/ADR et fichiers concernés. Prendre une seule responsabilité à la fois ; ouvrir **petite branche et PR**, pas d'écriture directement sur `main` sauf exception motivée.
+3. Ajouter tests unitaires/contrats sur erreurs, bornes, annulation, reconnexion et invariants. Utiliser `npm ci`, `npm run check`, `cargo check --locked --manifest-path src-tauri/Cargo.toml` et GitHub Actions. Pas de dépendance ajoutée sans raison documentée.
+4. Examiner toutes les CI sur **le SHA exact** avant squash-merge, puis vérifier l'exécution post-fusion ; si CI en cours, laisser la PR ouverte.
+5. Ne pas toucher au PC local de l'utilisateur ni déclencher des tests/installeurs physiques sans accord spécifique.
+6. Garder `HANDOFF.md` court, fidèle à GitHub et à jour lors de chaque fin de chantier ; ne pas accumuler des fichiers « HANDOFF_NEXT_CHAT » redondants.
+
+## 7. Prochaines priorités recommandées
+
+1. **Issue #3 :** obtenir la véritable archive V1.6.2 de l'utilisateur ou de ses fichiers, l'inventorier, comparer avec UI D et migrer en petits modules, assets officiels compris ; vérifier la fidélité à 1440×900 et 1280×800, keyboard/focus, pas de scroll d'accueil de référence.
+2. **Issue #4 :** détailler côté Desktop les interfaces `BridgeState / SessionState / AuthorizationState`, protocole proposé avec version, identité d'instance, authentification, event cursor, reconnexion, expurgation ; **pas d'implémentation live** sans accord/revue du Bridge.
+3. Faire apparaître dans l'UI des **états purement offline** et les composants de thèmes prévisualisables (sans import réseau) avec tests ; ne pas connecter des appels Rust encore hypothétiques.
+4. Préparer le design du terminal/supervision/connexion MCP externe via ADR, sans lancer de shell ni ajouter un proxy MCP privilégié.
+5. Améliorer progressivement les checks de modules (imports dynamiques, TS resolver), tests d'interface, accessibilité, réduction des écarts Figma, audit du processus Windows.
+
+**Aucun développement GitHub côté Bridge n'est une tâche du successeur.**

@@ -1,30 +1,40 @@
 # Optic — application Windows
 
-Application desktop d'**Optic AI Bridge**. Le nom de l'interface est **Optic**.
+**Optic** est l'application Desktop de **Optic AI Bridge**. Produit Windows-first, direction visuelle UI D (Figma). Ne pas appeler le produit « Lab ».
 
-**Statut : bootstrap expérimental, interface de démonstration uniquement.** L'application ne contrôle pas encore un Bridge réel, n'exécute aucune commande native et n'accorde aucune autorisation.
+> **Statut : bootstrap expérimental / démonstration uniquement.** Aucune connexion de contrôle réelle au Bridge, aucune permission effective, aucun shell interactif et aucun installateur prêt à distribuer.
 
-## Architecture
-- React / TypeScript / Vite : présentation modulaire, issue de la direction UI D de Figma.
-- Tauri 2 / Rust : hôte Windows minimal, sans commande privilégiée.
-- Optic AI Bridge : moteur Rust développé dans son [dépôt distinct](https://github.com/ELITEAYOTO/Optic-AI-Bridge-), seul détenteur des permissions.
-- Une interface de supervision en lecture seule et un terminal développeur distinct seront connectés uniquement après revue des contrats et garanties d'exécution.
+## Déjà présent
 
-## Démarrage développeur (prérequis installés)
+- Tauri 2 / Rust hôte minimal et React / TypeScript / Vite.
+- Navigation modulaire, accueil, supervision en lecture seule et terminal développeur séparés mais **inactifs**.
+- Projection d'événements offline validée, historique visuel borné avec tests.
+- Manifeste de thème communautaire **déclaratif offline** validé et testé (pas de marketplace ni d'activation UI).
+- CI GitHub Actions : Node/React Windows et Ubuntu, contrôle Rust sur runner Windows ; dépendances npm/Cargo verrouillées.
+
+## Répartition des responsabilités
+
+- **Ce dépôt Desktop :** UI, thèmes, navigation, contrôleur Tauri minimal, contrats de projection sans autorité.
+- **<https://github.com/ELITEAYOTO/Optic-AI-Bridge-> :** moteur Rust et *seule* autorité sur les sessions, permissions et opérations. Il est développé simultanément par une **autre IA**. Ne pas y écrire depuis ce chantier.
+- Contrat de liaison Desktop ↔ Bridge encore à négocier ; interfaces fake/offline clairement signalées.
+
+## Développement
+
+Avec Node >=22.12, npm, Rust stable et prérequis Tauri Windows :
+
 ```bash
 npm ci
 npm run check
 npm run tauri dev
 ```
-Ces instructions n'impliquent pas que le projet a été compilé ou exécuté sur le PC de l'opérateur.
 
-## État et documentation
-- `AGENTS.md` : règles des agents et développeurs.
-- `docs/architecture/OVERVIEW.md` et `MODULE_BOUNDARIES.md` : limites des couches.
-- `docs/security/SECURITY_MODEL.md` : invariants de sécurité.
-- `docs/design/UI_D.md` : référence UI validée.
-- `docs/engineering/DESKTOP_BOOTSTRAP.md` : limitations exactes et validations attendues.
+Le build source réussi en CI **n'est pas** un test d'installateur, une validation du PC utilisateur ou une connexion réelle au Bridge. Le packaging est désactivé et l'icône du bootstrap n'est pas le logo officiel.
 
-**À faire avant distribution :** audit et validation des dépendances verrouillées, validation Windows, logo officiel, migration contrôlée de la V1.6.2 et audit de sécurité. Le Bridge principal reste pré-alpha.
+## Lire avant toute modification
 
-L'ancienne V1.6.2 React n'a pas été copiée ou réécrite ici. Elle devra être inspectée et reprise selon un plan de migration.
+1. [AGENTS.md](AGENTS.md) : règles non négociables, interdiction d'écriture dans le Bridge.
+2. [Handoff canonique](docs/engineering/HANDOFF.md) : branche/PR/CI exacts, avancement et prochains travaux.
+3. [Méthode](docs/engineering/WORKFLOW.md), [frontières des modules](docs/architecture/MODULE_BOUNDARIES.md) et [sécurité](docs/security/SECURITY_MODEL.md).
+4. [Design UI D](docs/design/UI_D.md), [observabilité](docs/architecture/OBSERVABILITY_UI_CONTRACT.md), [thèmes](docs/architecture/THEMES.md).
+
+**Priorités :** vérifier la source V1.6.2 et migrer fidèlement Figma UI D ; concevoir le contrat IPC authentifié sans toucher au Bridge ; poursuivre les modules dans de petites PR vérifiées sur le SHA exact.

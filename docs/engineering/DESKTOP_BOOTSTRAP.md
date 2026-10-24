@@ -1,25 +1,41 @@
-# Desktop bootstrap — 24 October 2026
+# Optic Desktop — état du bootstrap (24 octobre 2026)
 
-The first source iteration provides a **React/TypeScript UI D inspired shell** and a minimal **Tauri 2 Rust host**. This is not a migration of the historical V1.6.2 archive; it is a separately testable scaffold.
+Le dépôt contient un **hôte minimal Tauri 2/Rust** et une **UI React/TypeScript/Vite de démonstration** inspirée de Figma UI D. Ce n'est ni une migration de React V1.6.2 ni un client MCP fonctionnel.
 
-## Current scope
-- Navigation: Bureau, Projets, Sessions, Autorisations, Supervision, Terminal, Connexions, Paramètres.
-- Demo-only welcome screen, with true unknown/unavailable statuses, and two distinct non-interactive console surfaces.
-- No Bridge connection, native commands, terminal spawn, ConPTY, MCP federation or filesystem access.
-- Native Tauri decorations retained intentionally at this stage; custom titlebar/windows chrome must be reviewed separately. Current icon is explicitly a **temporary build-only placeholder**, not the official Optic logo.
-- Both npm and Cargo lockfiles are committed from isolated hosted GitHub resolution. CI uses \`npm ci\` and Cargo \`--locked\`; this does not itself prove a production-ready Windows build.
-- Bundle generation is intentionally disabled.
-- Cross-feature imports are forbidden: the shell is in `src/app/layout` because it knows app navigation. Feature pages only receive callbacks from composition.
+## Présent
 
-## Development
-- Node >=22.12, npm, Rust stable and Windows Tauri build prerequisites.
-- `npm install` ; `npm run check` ; `npm run tauri dev`.
-- This file documents expected commands, not proof that a build ran on the owner's PC.
-- GitHub Actions runs Node checks on Windows/Linux plus cargo check on hosted Windows.
+- Navigation modulaire Bureau, Projets, Sessions, Autorisations, Supervision, Terminal, Connexions, Paramètres.
+- Accueil en mode démonstration. Console de supervision et terminal développeur **séparés visuellement, non connectés et non exécutables**.
+- Module de projection d'événements offline : validation typée et journal visuel borné, avec tests.
+- Module de thèmes déclaratifs offline : manifeste de couleurs contrôlé, tests de contraste et génération de variables CSS autorisées ; pas d'installation ni preview activée dans l'UI.
+- Styles répartis entre `src/app/layout`, `src/features/overview/ui`, `src/shared/styles`; `src/styles/base.css` pour les resets.
+- `package-lock.json` et `src-tauri/Cargo.lock` **créés et commités** ; CI avec `npm ci` et `cargo check --locked`.
+- Hôte Tauri sans commandes custom et permissions frontend minimales ; icône de compilation **temporaire** ; décorations de fenêtre natives ; `bundle.active=false`.
 
-## Next safeguards
-1. Produce, commit and freeze both `package-lock.json` and `src-tauri/Cargo.lock`, then switch CI to `npm ci` and Cargo `--locked`.
-2. Use real official logo assets after source provenance is verified.
-3. Add screenshots/visual acceptance for 1280×800 and 1440×900.
-4. Evaluate V1.6.2 original source and migrate UI D component by component without overwriting it.
-5. Version an authenticated local Bridge contract in a subsequent PR; keep non-connected states truthful.
+## Absent / interdit de présumer
+
+Pas de connexion réelle au Bridge, serveur IPC privilégié, processus ConPTY, shell autorisé, journal d'audit durable, outil MCP externe, vrai diff, synchronisation du ZIP React V1.6.2 ni installateur Windows utilisateur.
+
+## Vérification développeur
+
+Prérequis : Node >=22.12, npm, Rust stable et prérequis Tauri Windows.
+
+```bash
+npm ci
+npm run check
+npm run tauri dev
+```
+
+`npm run check` inclut vérifications de documents et frontières de modules, tests Node (`npm run test:unit`) et build TypeScript/Vite. Le CI exécute frontend sur Windows + Ubuntu et `cargo check --locked --manifest-path src-tauri/Cargo.toml` sur Windows hébergé.
+
+**Pas de preuve de packaging installable, d'essai en conditions réelles sur le PC du propriétaire ni de conformité sécurité complète.** Toutes les assertions sur la CI doivent porter sur le SHA exact contrôlé.
+
+## Ensuite
+
+- Source V1.6.2 et logo officiel : obtenir les originaux puis comparer sans repartir de zéro.
+- Tests visuels UI D à 1440×900 / 1280×800 ; clavier, densité, pas de scroll accueil.
+- ADR et contrat d'IPC local authentifié en coordination avec l'IA responsable du Bridge, **sans écrire dans ce dépôt tiers**.
+- UI thèmes : preview, rollback, stockage local validé, puis import futur avec contrôle de provenance et taille.
+- Développement incrémental derrière des adaptateurs explicites `demo/offline/live` ; les permissions restent du ressort du Bridge Rust.
+
+Voir `docs/engineering/HANDOFF.md` pour l'état GitHub et les priorités.
