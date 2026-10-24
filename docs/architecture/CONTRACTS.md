@@ -13,3 +13,20 @@ Read-only supervision console subscribes to events, never submits execution. Dev
 Diff inspection must bind original action, before/after identities, file path and read authority. Unknown external modifications must remain unattributed.
 
 No client-supplied tool/terminal input is an executable authority. No arbitrary remote MCP passthrough or OAuth token relay by default. Protocol evolution is explicit, fail-closed on unknown versions.
+
+## Offline display-state prototype (not authenticated IPC)
+
+`src/contracts/control-status.ts` provides the version-1 **Desktop presentation**
+projection. It rejects unrecognised fields, versions and sources and deliberately
+cannot accept `live` or `authenticated`; those require a future Rust-authenticated
+adapter and a separately negotiated Bridge protocol. When `source=offline`, all
+five axes must be `unknown`: `bridge_state`, `session_state`,
+`authorization_state`, `revocation_state`, `native_termination_state`.
+
+In `demo`, statuses may be illustrated but must always be marked simulated.
+An acknowledged revocation does not confirm process termination; an authorization
+marked effective in demonstration confers **no real access**. The status summary
+returns text labels only, no `allowed` or `canRun` decision. See
+`docs/decisions/ADR-0005-OFFLINE-CONTROL-STATE.md` and
+`tests/control-status.test.mjs`. This is not an authority, handshake, transport,
+capability token, or persistent audit log.
