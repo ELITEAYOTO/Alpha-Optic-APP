@@ -83,3 +83,32 @@ signé n'a été ajouté.
 serveur ni une signature cryptographique. Tauri Updater vérifiera celle-ci lors d'une
 future installation. La publication restera bloquée jusqu'aux tests Windows indépendants,
 signature Authenticode, migration/rollback et confirmation de fin des opérations Bridge.
+
+### #12.A — vérification de packaging NSIS sans publication
+
+Un profil **séparé** `src-tauri/tauri.nsis-smoke.conf.json` est réservé au runner
+Windows. Il fabrique uniquement un installeur **Optic Smoke Test** sous une identité
+`dev.optic.desktop.smoke`, en mode `currentUser`, avec WebView2
+`downloadBootstrapper` et l'updater explicitement désactivé. La configuration
+normale `tauri.conf.json` conserve `bundle.active=false`.
+
+Le workflow `.github/workflows/windows-nsis-smoke.yml` peut se déclencher sur une PR
+touchant aux fichiers concernés ou manuellement (une fois présent sur la branche par
+défaut). Il exécute les tests, construit le NSIS sur le runner Windows, vérifie
+qu'exactement un `*-setup.exe` a été produit, relève sa taille, son SHA-256 et
+le statut Authenticode, puis stocke un artefact Actions nommé **UNSIGNED-DO-NOT-INSTALL**
+pendant **2 jours**. L'artefact est potentiellement téléchargeable par les personnes
+autorisées à consulter les Actions du dépôt : il **ne doit pas être redistribué**.
+
+**Aucune installation ou exécution du setup**, aucune release GitHub, aucune
+signature, aucune mise à jour, aucun accès au PC utilisateur et aucune opération
+sur le moteur Bridge ne sont déclenchés par ce workflow.
+
+`node scripts/check-nsis-smoke.mjs` est exécuté depuis `npm run check`. Il
+refuse les ajouts dangereux au profil smoke : élévation implicite, MSI, WebView2
+ignoré, plugins/updater activés, publication de release ou secrets CI de signature.
+
+**Gates encore manquants :** identité éditeur définitive, icônes natives
+professionnelles, Authenticode, signature Tauri Updater, installation / désinstallation
+/ mise à jour **réelles** sur Windows et support offline de WebView2. Même si le
+workflow NSIS devient vert, la distribution reste expérimentale et non approuvée.
