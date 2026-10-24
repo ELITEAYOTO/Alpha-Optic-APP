@@ -47,3 +47,17 @@ et **survol/focus trop discret**.
   aucun blocage de chargement, pas de faux statut de connexion,
   désactivée sous `prefers-reduced-motion`; implémentation et validation
   dans un lot séparé après design UI D approuvé.
+
+## Supervision sans Bridge : revue Windows du 24 octobre 2026
+
+La capture utilisateur confirme une barre native sombre, le vrai logo
+Optic et le rail seul après réduction de l'explorateur. Les premières
+corrections Windows sont **visuellement constatées**.
+
+La page Supervision, en revanche, montrait un bloc « terminal » vide
+sur toute la hauteur, avec le faux exemple `$ optic events --follow`.
+Elle doit rester une page d'observation, **pas** un terminal développeur.
+L'état déconnecté emploie dorénavant un panneau compact, trois statuts
+précis, et un retour au Bureau. Garder la densité calme, sans fausses
+statistiques ni faux événements. La connexion et l'historique réels
+restent non implémentés jusqu'au contrat Bridge.

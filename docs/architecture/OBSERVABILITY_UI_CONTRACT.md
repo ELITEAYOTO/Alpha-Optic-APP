@@ -32,3 +32,22 @@ The Bridge is maintained concurrently by another developer/AI. Before real integ
 
 ### Test evidence
 `npm run test:unit` (Node 22+ with type stripping) covers projection filtering, malformed data, unknown versions, duplicate/out-of-order events, gaps, bounded history, source changes and invalid capacity. CI must pass on the exact PR head.
+
+## Offline empty state (issue utilisateur, 24 octobre 2026)
+
+Dans la capture Windows 1280/1536 px fournie, la console affichait
+`$ optic events --follow` comme faux prompt et un grand panneau vide. Cette
+commande n'était pas exécutable : la vue ne possède aucun abonnement réel.
+
+Le nouveau composant `features/supervision/ui/SupervisionScreen` ne fait
+aucune inférence à partir du journal en mémoire : il signale clairement
+**source non connectée**, **flux authentifié non disponible** et
+**historique non accessible**. Il n'affiche ni compteur zéro trompeur ni
+fausse CLI, ni événement de démonstration. Son unique action utilisateur
+retourne à l'accueil via un callback fourni par `src/app`, sans
+dépendance à l'implémentation du routeur.
+
+Le contrat `telemetry.ts` et le buffer borné `journal.ts` restent inchangés.
+Le jour d'une connexion réelle, un adaptateur Rust authentifié devra
+fournir explicitement ses états ; supprimer l'écran offline sans preuve
+d'authentification serait incorrect. Aucun accès au moteur Bridge ajouté.

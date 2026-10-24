@@ -87,6 +87,8 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 
 - **Icône Optic 512 px (préparation) :** source officielle vérifiée SHA-256 `d353f8a0…` et pack ICO multi-tailles créé hors Git. `scripts/check-native-icon-candidate.mjs` valide en lecture seule l'empreinte source et les tailles ICO ; pas de nouvel asset natif fusionné, l'icône 48 px reste en place jusqu'au test Windows. Voir `docs/engineering/ICON_ASSETS.md` et issue #23.
 
+- **Revue Windows réelle (24/10) :** captures utilisateur confirment barre de titre sombre, icône native Optic et explorateur replié. La supervision offline apparaît excessivement vide, avec une fausse ligne CLI. Lot ciblé : écran offline compact et états vérifiables sans connexion, journal Rust et contrôle Bridge inchangés. Voir `docs/architecture/OBSERVABILITY_UI_CONTRACT.md`.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.
