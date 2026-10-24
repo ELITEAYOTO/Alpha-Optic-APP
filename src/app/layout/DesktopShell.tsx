@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import { destinations, type Destination } from "../navigation";
 import { NavigationIcon } from "./NavigationIcon";
+import { OFFLINE_CONTROL_STATUS, summarizeControlStatus } from "../../contracts/control-status";
+
+const offlinePresentation = summarizeControlStatus(OFFLINE_CONTROL_STATUS);
 
 interface Props {
   active: Destination;
@@ -18,8 +21,8 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
         </div>
         <div className="breadcrumb">/ Espace de travail / {destinations.find(({ id }) => id === active)?.label}</div>
         <div className="title-actions">
-          <span className="simulation-mark" aria-label="Mode démonstration">DÉMO</span>
-          <span className="bridge-state"><span className="state-dot" />Bridge non connecté</span>
+          <span className="simulation-mark" aria-label="Mode hors ligne">{offlinePresentation.source}</span>
+          <span className="bridge-state"><span className="state-dot" />{offlinePresentation.bridge}</span>
           <button type="button" disabled title="Contrat Bridge non connecté">Démarrer</button>
         </div>
       </header>
@@ -60,8 +63,8 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
         <main id="main-content" className="workarea">{children}</main>
       </div>
       <footer className="statusbar">
-        <span>● MODE DÉMONSTRATION</span>
-        <span>Bridge : non connecté · Sessions : non vérifiées · Permissions : non vérifiées</span>
+        <span>● {offlinePresentation.source}</span>
+        <span>{offlinePresentation.session} · {offlinePresentation.authorization} · {offlinePresentation.nativeTermination}</span>
         <span>Optic 0.0.1</span>
       </footer>
     </div>
