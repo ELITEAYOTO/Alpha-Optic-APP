@@ -112,3 +112,36 @@ ignoré, plugins/updater activés, publication de release ou secrets CI de signa
 professionnelles, Authenticode, signature Tauri Updater, installation / désinstallation
 / mise à jour **réelles** sur Windows et support offline de WebView2. Même si le
 workflow NSIS devient vert, la distribution reste expérimentale et non approuvée.
+
+
+### #12.B (première tranche) — cycle installation/désinstallation dans une CI isolée
+
+`scripts/windows/test-nsis-lifecycle.ps1` n'accepte de s'exécuter **que sur un runner
+Windows hébergé par GitHub Actions**, dans le dépôt Desktop exact. Le workflow
+`windows-nsis-smoke.yml` est restreint aux PR provenant du même dépôt ou au
+déclenchement manuel. Aucun fork non approuvé ne peut y installer un binaire en
+exécutant simplement sa PR.
+
+Après compilation NSIS, sur un Windows temporaire, le script vérifie le nom de
+l'exécutable, son répertoire de build et l'absence de signature, puis tente
+`setup.exe /S`. Il vérifie une inscription de désinstallation uniquement dans
+`HKCU`, la version 0.0.1, la présence de l'application et de `uninstall.exe`,
+puis exécute **cet uninstaller** avec `/S` et exige la disparition des fichiers
+et de la registration. Une installation déjà présente déclenche un refus,
+sans l'écraser. Chaque processus est borné à 120 secondes. Aucun dossier
+extérieur à `Optic Smoke Test` n'est supprimé.
+
+Le rapport `smoke-dist/LIFECYCLE.txt` est adjoint à l'artefact de **2 jours**
+en cas de succès. Les résultats effectifs doivent être vérifiés sur le SHA de CI
+avant de marquer cette étape comme réussie.
+
+**Cela ne prouve toujours pas** : lancement WebView2 en session graphique,
+Windows 10/11 propre, non-admin réel, antivirus/SmartScreen, version WebView2
+absente, installer offline, upgrade/downgrade, signature Windows ou updater.
+En particulier, une anomalie Tauri récemment signalée concerne les downgrades
+silencieux ; il faudra une vérification explicite avant toute mise à jour
+publique. Pas de release, pas d'exécution sur le PC utilisateur.
+
+Références : https://nsis.sourceforge.io/Docs/Chapter3.html ;
+https://v2.tauri.app/distribute/windows-installer/ ;
+https://github.com/tauri-apps/tauri/issues/16221 .

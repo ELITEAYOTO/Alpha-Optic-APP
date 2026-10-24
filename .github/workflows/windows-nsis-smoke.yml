@@ -8,6 +8,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/check-nsis-smoke.mjs'
+      - 'scripts/windows/test-nsis-lifecycle.ps1'
       - 'tests/nsis-smoke.test.mjs'
   workflow_dispatch:
 
@@ -16,7 +17,8 @@ permissions:
 
 jobs:
   nsis-smoke:
-    name: Unsigned NSIS packaging proof (not an install test)
+    name: Unsigned NSIS packaging + install/uninstall lifecycle smoke
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -53,16 +55,23 @@ jobs:
           $signature = (Get-AuthenticodeSignature -LiteralPath $file.FullName).Status
           @(
             'OPTIC NSIS TEST ARTIFACT — NOT A RELEASE'
-            'UNSIGNED / NOT INSTALLATION-TESTED'
+            'UNSIGNED / LIFECYCLE TEST REQUIRED; NOT GUI/RELEASE-TESTED'
             "Source commit: ${{ github.sha }}"
             "Filename: $($file.Name)"
             "Bytes: $($file.Length)"
             "SHA256: $($hash.Hash)"
             "Authenticode status: $signature"
             'Not published to GitHub Releases'
-            'No Bridge, updater endpoint, or installer execution performed'
+            'No Bridge, updater endpoint, or user-PC operation performed'
           ) | Set-Content -Path 'smoke-dist/PROVENANCE.txt' -Encoding utf8
           Get-Content 'smoke-dist/PROVENANCE.txt'
+      - name: Exercise silent install/uninstall on ephemeral GitHub-hosted Windows ONLY
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(Get-ChildItem -LiteralPath 'src-tauri/target/release/bundle/nsis' -File -Filter '*-setup.exe')
+          if ($files.Count -ne 1) { throw "Expected one test setup; found $($files.Count)" }
+          & './scripts/windows/test-nsis-lifecycle.ps1' -InstallerPath $files[0].FullName -ReportPath 'smoke-dist/LIFECYCLE.txt'
       - name: Retain short-lived test artifact only
         uses: actions/upload-artifact@v4
         with:
