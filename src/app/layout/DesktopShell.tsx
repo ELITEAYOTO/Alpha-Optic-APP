@@ -16,7 +16,7 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
     <div className="desktop-shell">
       <header className="titlebar">
         <div className="identity" aria-label="Optic">
-          <span className="logo-placeholder" aria-hidden="true">O</span>
+          <img className="optic-logo" src="/assets/optic-logo-48.png" alt="" width="30" height="30" />
           <strong>optic</strong><span className="identity-caption">DESKTOP</span>
         </div>
         <div className="breadcrumb">/ Espace de travail / {destinations.find(({ id }) => id === active)?.label}</div>
@@ -44,13 +44,13 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
         <aside className="explorer" aria-label="Explorateur Optic">
           <div className="explorer-kicker">EXPLORATEUR</div>
           <div className="project-selector">
-            <span className="project-glyph">◇</span>
+            <span className="project-glyph"><NavigationIcon name="projects" /></span>
             <span><strong>Aucun projet</strong><small>Mode démonstration</small></span>
           </div>
           <div className="explorer-kicker">ACCÈS RAPIDE</div>
           <div className="explorer-links">
             {destinations.map(({ id, label }) => (
-              <button key={id} type="button" className={id === active ? "selected" : ""} onClick={() => onNavigate(id)}>
+              <button key={id} type="button" className={id === active ? "selected" : ""} aria-current={id === active ? "page" : undefined} onClick={() => onNavigate(id)}>
                 {label}
               </button>
             ))}
