@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+target/
+src-tauri/target/
+.env
+.env.*
+!.env.example
+*.log
+*.tmp
+*.local
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
