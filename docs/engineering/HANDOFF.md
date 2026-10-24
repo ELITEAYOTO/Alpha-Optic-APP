@@ -79,6 +79,8 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 
 - **NSIS CI smoke (#12.A) :** profil `src-tauri/tauri.nsis-smoke.conf.json` et workflow Windows isolé, sans signature ni installation et sans release publique. Tester la construction et recueillir checksum / provenance uniquement ; voir `docs/engineering/WINDOWS_DISTRIBUTION.md`. Une CI packaging verte ne certifie **pas** un installeur prêt pour les utilisateurs.
 
+- **NSIS cycle de vie CI (#12.B première tranche) :** script `scripts/windows/test-nsis-lifecycle.ps1` et workflow isolé : installation silencieuse uniquement sur runner GitHub hébergé, vérification registre/fichiers, désinstallation/cleanup et rapport temporaire. **Ne déclarer testé qu'après CI NSIS verte sur le SHA exact.** Pas de UI/WebView2 absent/upgrade, pas de signature ni de publication.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.

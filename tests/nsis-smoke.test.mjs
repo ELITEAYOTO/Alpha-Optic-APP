@@ -27,6 +27,10 @@ const workflow = () => [
   "retention-days: 2",
   "Get-FileHash",
   "Get-AuthenticodeSignature",
+  "if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository",
+  "Exercise silent install/uninstall on ephemeral GitHub-hosted Windows ONLY",
+  "./scripts/windows/test-nsis-lifecycle.ps1",
+  "LIFECYCLE.txt",
 ].join("\n");
 
 test("repository smoke overlay is explicitly unsigned and isolated from default config", () => {
@@ -65,4 +69,10 @@ test("smoke guard refuses release actions, signing keys and broad GitHub tokens"
   const enabled = base();
   enabled.bundle.active = true;
   assert.equal(auditNsisSmoke(enabled, smoke(), workflow()).ready, false);
+});
+
+test("native lifecycle is gated to same-repository PRs and temporary hosted Windows runner", () => {
+  const yaml = workflow();
+  assert.equal(auditNsisSmoke(base(), smoke(), yaml.replace("github.event.pull_request.head.repo.full_name == github.repository", "always()")).ready, false);
+  assert.equal(auditNsisSmoke(base(), smoke(), yaml.replace("./scripts/windows/test-nsis-lifecycle.ps1", "echo skipped")).ready, false);
 });

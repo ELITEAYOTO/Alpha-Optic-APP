@@ -42,7 +42,7 @@ La section **Paramètres → Mises à jour** apparaît maintenant en mode **non 
 
 ## Test CI d'installateur Windows (sans distribution publique)
 
-Le workflow `windows-nsis-smoke.yml` prépare un installateur **NSIS non signé** sur GitHub Actions Windows, avec empreinte SHA-256 et rétention de 2 jours. `npm run check:nsis-smoke` vérifie l'isolation de son profil de test. **Ce binaire n'est ni testé par installation, ni approuvé pour diffusion** ; le packaging normal d'Optic reste désactivé. Voir [le plan Windows](docs/engineering/WINDOWS_DISTRIBUTION.md) et [issue #12](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/12).
+Le workflow `windows-nsis-smoke.yml` prépare un installateur **NSIS non signé** sur GitHub Actions Windows, avec empreinte SHA-256 et rétention de 2 jours. `npm run check:nsis-smoke` vérifie l'isolation de son profil de test. **Le workflow teste maintenant une installation et une désinstallation silencieuses sur un runner Windows hébergé temporaire**, en contrôlant le registre HKCU, les fichiers et le nettoyage. Il ne teste **pas** le lancement graphique, WebView2 absent, l’upgrade, la signature ou le PC de l’utilisateur ; **le binaire demeure non approuvé pour diffusion**. Le packaging normal d’Optic reste désactivé. Voir [le plan Windows](docs/engineering/WINDOWS_DISTRIBUTION.md) et [issue #12](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/12).
 
 ## Lire avant toute modification
 

@@ -63,6 +63,14 @@ export function auditNsisSmoke(base, smoke, workflow) {
   if (/\b(upload-release-asset|create-release|softprops\/action-gh-release|tauri-apps\/tauri-action|gh release|TAURI_SIGNING_PRIVATE_KEY|secrets\.)\b/i.test(workflow)) {
     error("No release publication or signing secrets are allowed in the smoke workflow");
   }
+  if (!workflow.includes("if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository")) {
+    error("Native install/uninstall smoke must be restricted to trusted same-repository PRs or manual runs");
+  }
+  if (!workflow.includes("./scripts/windows/test-nsis-lifecycle.ps1") ||
+      !workflow.includes("LIFECYCLE.txt") ||
+      !workflow.includes("Exercise silent install/uninstall on ephemeral GitHub-hosted Windows ONLY")) {
+    error("NSIS lifecycle test must run and produce a report on an ephemeral runner");
+  }
   if (!workflow.includes("Get-FileHash") || !workflow.includes("Get-AuthenticodeSignature")) {
     error("Artifact provenance must record checksum and signature state");
   }
