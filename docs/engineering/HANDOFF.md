@@ -83,6 +83,8 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 
 - **WebView2 GUI CI (#12.B) :** test de fenêtre Win32 et processus `msedgewebview2.exe` enfant de l'application installée, avant désinstallation NSIS. Runner GitHub hébergé uniquement ; aucune validation de pixels/React réel. Résultat à confirmer sur SHA CI avant fusion.
 
+- **Test visuel utilisateur Windows :** app source compilée et ouverte ; barre de titre blanche, icônes natives provisoires, explorer à replier, hovers à revoir. Lot explorer/hover sans droits natifs, lot titre/logo séparé ; animation de démarrage planifiée mais pas activée. Voir `docs/design/UI_D.md`.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.

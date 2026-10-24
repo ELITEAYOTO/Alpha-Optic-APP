@@ -12,9 +12,20 @@
 .bridge-state { color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
 .state-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--warning); margin-right: 8px; }
 .workspace { min-width: 0; min-height: 0; display: grid; grid-template-columns: 70px 250px minmax(0,1fr); }
+.workspace.explorer-collapsed { grid-template-columns: 70px minmax(0, 1fr); }
 .icon-rail { background: var(--rail); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 34px; gap: 9px; overflow-y: auto; }
 .icon-rail button { position: relative; width: 44px; height: 44px; flex: none; border: 0; border-radius: 6px; background: transparent; color: #bfbcc0; display: grid; place-items: center; }
-.icon-rail button:hover, .explorer-links button:hover { background: var(--raised); }
+.icon-rail button:hover, .explorer-links button:hover { background: var(--raised); color: var(--text); }
+.icon-rail .explorer-toggle { margin-top: -22px; color: var(--muted); }
+.icon-rail .explorer-toggle[aria-expanded="false"] { color: var(--accent); }
+.rail-divider { height: 1px; width: 30px; margin: 0 0 5px; flex: none; background: var(--border); }
+.explorer[hidden] { display: none; }
+.icon-rail button, .explorer-links button, .title-actions button { transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease; }
+.explorer-links button:not(.selected):hover { padding-left: 15px; }
+.explorer-links button.selected:hover { background: var(--raised); }
+.title-actions button:enabled:hover { background: #ebb09d; }
+.project-selector { transition: border-color 120ms ease; }
+.project-selector:hover { border-color: #686363; }
 .icon-rail button[aria-current="page"] { color: var(--text); }
 .icon-rail button[aria-current="page"]::before { content: ""; position: absolute; left: -13px; top: 9px; bottom: 9px; width: 3px; border-radius: 1px; background: var(--accent); }
 .explorer { min-height: 0; display: flex; flex-direction: column; background: var(--explorer); border-right: 1px solid var(--border); padding: 23px 13px 16px; overflow-y: auto; }
@@ -43,6 +54,7 @@
   .identity { flex-basis: 226px; }
   .identity-caption { margin-left: 6px; }
   .workspace { grid-template-columns: 60px 215px minmax(0,1fr); }
+  .workspace.explorer-collapsed { grid-template-columns: 60px minmax(0, 1fr); }
   .icon-rail { padding-top: 36px; gap: 9px; }
   .icon-rail button[aria-current="page"]::before { left: -8px; }
   .explorer { padding: 20px 12px 14px; }
@@ -59,4 +71,8 @@
 @media (max-height: 740px) {
   .icon-rail { padding-top: 10px; }
   .explorer-footer { margin-top: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-rail button, .explorer-links button, .title-actions button, .project-selector { transition: none; }
 }
