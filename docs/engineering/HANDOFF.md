@@ -77,6 +77,8 @@ Afficher modifications de code par fichier et lignes ajoutées/supprimées (Mona
 
 - **Garde-fou release :** `scripts/check-release-gates.mjs` contrôle automatiquement cohérence version/identité et interdit une configuration updater active ou incomplète ; `npm run check:release-candidate` reste volontairement rouge tant que le package Windows n'est pas prêt (issue #12 et #15). Ces validations sont statiques, **pas une preuve de signature ou de packaging**.
 
+- **NSIS CI smoke (#12.A) :** profil `src-tauri/tauri.nsis-smoke.conf.json` et workflow Windows isolé, sans signature ni installation et sans release publique. Tester la construction et recueillir checksum / provenance uniquement ; voir `docs/engineering/WINDOWS_DISTRIBUTION.md`. Une CI packaging verte ne certifie **pas** un installeur prêt pour les utilisateurs.
+
 ## 7. Prochaines priorités recommandées
 
 1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.

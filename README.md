@@ -40,6 +40,10 @@ Le projet suit explicitement le [packaging Windows / versions / WebView2 (#12)](
 
 La section **Paramètres → Mises à jour** apparaît maintenant en mode **non configuré**, avec version du prototype et explication. Le modèle d'états et ses tests sont présents, sans réseau ou privilège. **Aucune mise à jour réelle n'est disponible** : le workflow signé Tauri 2, les clés, le serveur de publication et les tests Windows sont suivis dans [#15](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/15) ; voir [ADR-0007](docs/decisions/ADR-0007-SIGNED-UPDATES.md). La première release devra utiliser des artefacts signés, pas simplement des liens de téléchargement.
 
+## Test CI d'installateur Windows (sans distribution publique)
+
+Le workflow `windows-nsis-smoke.yml` prépare un installateur **NSIS non signé** sur GitHub Actions Windows, avec empreinte SHA-256 et rétention de 2 jours. `npm run check:nsis-smoke` vérifie l'isolation de son profil de test. **Ce binaire n'est ni testé par installation, ni approuvé pour diffusion** ; le packaging normal d'Optic reste désactivé. Voir [le plan Windows](docs/engineering/WINDOWS_DISTRIBUTION.md) et [issue #12](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/12).
+
 ## Lire avant toute modification
 
 1. [AGENTS.md](AGENTS.md) : règles non négociables, interdiction d'écriture dans le Bridge.

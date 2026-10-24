@@ -1,0 +1,73 @@
+name: Windows NSIS smoke (unsigned)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-nsis-smoke.yml'
+      - 'src-tauri/**'
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/check-nsis-smoke.mjs'
+      - 'tests/nsis-smoke.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nsis-smoke:
+    name: Unsigned NSIS packaging proof (not an install test)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - name: Install locked frontend dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify source, contracts, release and smoke gates
+        run: npm run check
+      - name: Build test-only NSIS bundle without a publisher signature
+        run: npm run tauri -- build --ci --bundles nsis --config src-tauri/tauri.nsis-smoke.conf.json
+      - name: Verify exactly one installer and capture SHA-256
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $bundleDir = 'src-tauri/target/release/bundle/nsis'
+          $files = @(Get-ChildItem -LiteralPath $bundleDir -Filter '*-setup.exe' -File -ErrorAction Stop)
+          if ($files.Count -ne 1) {
+            throw "Expected exactly one NSIS test installer, found $($files.Count)"
+          }
+          $file = $files[0]
+          if ($file.Length -lt 1024) {
+            throw 'NSIS installer is unexpectedly small'
+          }
+          New-Item -ItemType Directory -Path 'smoke-dist' -Force | Out-Null
+          Copy-Item -LiteralPath $file.FullName -Destination 'smoke-dist/'
+          $hash = Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256
+          $signature = (Get-AuthenticodeSignature -LiteralPath $file.FullName).Status
+          @(
+            'OPTIC NSIS TEST ARTIFACT — NOT A RELEASE'
+            'UNSIGNED / NOT INSTALLATION-TESTED'
+            "Source commit: ${{ github.sha }}"
+            "Filename: $($file.Name)"
+            "Bytes: $($file.Length)"
+            "SHA256: $($hash.Hash)"
+            "Authenticode status: $signature"
+            'Not published to GitHub Releases'
+            'No Bridge, updater endpoint, or installer execution performed'
+          ) | Set-Content -Path 'smoke-dist/PROVENANCE.txt' -Encoding utf8
+          Get-Content 'smoke-dist/PROVENANCE.txt'
+      - name: Retain short-lived test artifact only
+        uses: actions/upload-artifact@v4
+        with:
+          name: UNSIGNED-DO-NOT-INSTALL-Optic-NSIS-${{ github.run_id }}
+          path: smoke-dist/
+          if-no-files-found: error
+          retention-days: 2
+          compression-level: 0
