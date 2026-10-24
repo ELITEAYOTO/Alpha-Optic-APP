@@ -19,9 +19,9 @@ function object(value) {
 
 export function cargoPackageVersion(contents) {
   if (typeof contents !== "string") return null;
-  const match = contents.match(/^\[package\]\s*\r?\n([\s\S]*?)(?=^\[|\s*$)/m);
-  // Stop after the [package] table, not after a possible transitive dep version.
-  const section = match?.[1];
+  const match = contents.match(/^\[package\][ \t]*\r?\n([\s\S]*)/m);
+  // Stop after the [package] table, not after a possible dependency version.
+  const section = match?.[1]?.split(/^\[/m, 1)[0];
   if (!section) return null;
   const line = section.match(/^version\s*=\s*"([^"\r\n]+)"\s*(?:#.*)?$/m);
   return line?.[1] ?? null;
