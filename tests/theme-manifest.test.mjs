@@ -64,3 +64,10 @@ test("contrast ratio follows canonical black/white reference", () => {
   assert.equal(contrastRatio("#000000", "#ffffff"), 21);
   assert.throws(() => contrastRatio("red", "#ffffff"), TypeError);
 });
+
+test("projection revalidates input even when a caller bypasses the parser", () => {
+  const forged = { ...sample(), colors: { ...sample().colors, accent: "url(javascript:evil)" } };
+  assert.throws(() => themeToCssVariables(forged), TypeError);
+  const extra = { ...sample(), handlers: { click: "run" } };
+  assert.throws(() => themeToCssVariables(extra), TypeError);
+});

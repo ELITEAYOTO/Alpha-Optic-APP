@@ -120,10 +120,14 @@ const CSS_TOKEN_MAP: Readonly<Record<ThemeColorKey, string>> = {
 
 /** Returns a fixed allowlist of CSS custom properties, never a CSS stylesheet. */
 export function themeToCssVariables(theme: ThemeManifest): Readonly<Record<string, string>> {
+  // Recheck at the final styling boundary; TypeScript types are not a runtime
+  // trust guarantee, and a future plugin/adapter may bypass the first parser.
+  const safe = parseThemeManifest(theme);
+  if (safe === null) throw new TypeError("Invalid Optic theme manifest");
   const variables: Record<string, string> = Object.create(null);
   for (const key of THEME_COLOR_KEYS) {
-    variables[CSS_TOKEN_MAP[key]] = theme.colors[key];
+    variables[CSS_TOKEN_MAP[key]] = safe.colors[key];
   }
-  variables["--radius"] = `${theme.radius}px`;
+  variables["--radius"] = `${safe.radius}px`;
   return Object.freeze(variables);
 }
