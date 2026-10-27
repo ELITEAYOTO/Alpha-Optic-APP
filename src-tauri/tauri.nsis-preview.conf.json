@@ -17,7 +17,8 @@
       },
       "webviewInstallMode": {
         "type": "downloadBootstrapper"
-      }
+      },
+      "allowDowngrades": false
     }
   }
 }
