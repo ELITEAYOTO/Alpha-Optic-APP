@@ -65,6 +65,14 @@ jobs:
           $setups = @(Get-ChildItem -LiteralPath 'src-tauri/target/release/bundle/nsis' -Filter '*-setup.exe' -File)
           if ($setups.Count -ne 1) { throw 'Expected one unsigned Preview setup' }
           $sha = (Get-FileHash -LiteralPath $setups[0].FullName -Algorithm SHA256).Hash
+          $rejectedBadDigest = $false
+          try {
+            & './scripts/windows/verify-optic-installer.ps1' -InstallerPath $setups[0].FullName -ExpectedSha256 '0000000000000000000000000000000000000000000000000000000000000000' -ExpectedPublisherThumbprint '0000000000000000000000000000000000000000'
+          } catch {
+            if ($_.Exception.Message -notlike '*Installer SHA-256 mismatch*') { throw }
+            $rejectedBadDigest = $true
+          }
+          if (-not $rejectedBadDigest) { throw 'Critical: mismatched SHA-256 passed the release verification gate' }
           $rejectedAsUnsigned = $false
           try {
             & './scripts/windows/verify-optic-installer.ps1' -InstallerPath $setups[0].FullName -ExpectedSha256 $sha -ExpectedPublisherThumbprint '0000000000000000000000000000000000000000'
@@ -75,7 +83,7 @@ jobs:
             $rejectedAsUnsigned = $true
           }
           if (-not $rejectedAsUnsigned) { throw 'Critical: unsigned Preview setup passed the release verification gate' }
-          'Release verifier correctly refused unsigned CI Preview setup.' | Add-Content -LiteralPath 'preview-dist/PROVENANCE.txt'
+          'Release verifier correctly refused bad SHA-256 and unsigned CI Preview setup.' | Add-Content -LiteralPath 'preview-dist/PROVENANCE.txt'
       - name: Test Preview native WebView2 startup, clean reinstall and AppData probe on hosted Windows
         shell: pwsh
         run: |
