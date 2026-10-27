@@ -51,6 +51,14 @@ Le workflow autonome `.github/workflows/windows-nsis-upgrade-smoke.yml` fabrique
 
 **Attention :** si le workflow échoue, ne pas inférer que l'upgrade fonctionne et corriger sur PR séparée après examen du log. Même une réussite prouverait seulement le remplacement de deux paquets au **même code source** avec métadonnées de version distinctes. Elle **ne** valide **pas** les migrations de vrais paramètres, une montée de version du moteur Rust, un updater Tauri signé, Windows 10/11 propres, les interfaces React ou une distribution utilisable sur PC.
 
+## Variante CI avec WebView2 intégré hors ligne — sans outils développeur sur le PC cible
+
+Le profil historique `tauri.nsis-preview.conf.json` reste un **petit setup** avec `downloadBootstrapper` (Internet nécessaire **uniquement si** WebView2 doit être installé). Une **nouvelle surcouche indépendante et strictement limitée à WebView2**, `src-tauri/tauri.nsis-offline-test.conf.json`, passe en `offlineInstaller` : le bundler Tauri télécharge/intègre, **au moment de construire l'exécutable sur le runner**, l'installateur Evergreen WebView2 officiel. Ce package NSIS plus volumineux peut ensuite installer WebView2 si absent **sans réseau au moment de l'installation**. L'augmentation attendue est d'environ **127 Mo** selon la [documentation Tauri](https://v2.tauri.app/distribute/windows-installer/#webview2-installation-options). Ce n'est **pas** un WebView2 `fixedRuntime` figé à une version.
+
+Le workflow isolé `.github/workflows/windows-nsis-preview-offline.yml` fabrique cette version expérimentale **non signée** sur GitHub-hosted Windows, exige un setup de plus de 50 Mio et un statut `NotSigned`, puis réutilise le test d'installation, de lancement de fenêtre + WebView2, de réinstallation et de désinstallation. **Il ne publie aucun .exe** ; seules les preuves texte sont conservées. La CI ne valide **pas** encore le cas « WebView2 vraiment absent et aucune connexion Internet » sur une machine vierge ; le mode déclaré et la taille ne sont pas suffisants pour en conclure la compatibilité réelle.
+
+**Rust, rustup, cargo, Node.js/npm, Visual Studio et MSVC Build Tools restent uniquement des outils de fabrication sur GitHub ou poste de développeur : ils ne sont pas des prérequis du PC qui installe Optic.** Le code Rust natif et le frontend React sont compilés dans les binaires ; le runtime Windows/WebView2 est traité par NSIS. **Optic AI Bridge n'est pas contenu dans cette Preview** et n'est pas démarré/administré par le setup : ne pas présenter une fenêtre Desktop comme un moteur MCP opérationnel. L'installateur de test est encore **NO-GO sur le PC utilisateur** jusqu'au processus de signature Authenticode, à la source des icônes HD et aux tests Windows 10/11 signés indépendants.
+
 ## Conditions avant un test utilisateur autorisé
 
 1. Faire réussir les checks source et Windows NSIS Preview (incluant la réinstallation propre) sur le même SHA, relire les artefacts et la provenance.
