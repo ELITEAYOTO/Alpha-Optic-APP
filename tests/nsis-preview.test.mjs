@@ -39,6 +39,7 @@ const workflow = () => [
   "./scripts/windows/test-nsis-preview-lifecycle.ps1",
   "preview-dist/LIFECYCLE.txt",
   "'scripts/windows/test-nsis-preview-lifecycle.ps1'",
+  "'scripts/windows/test-nsis-preview-gui.ps1'",
 ].join("\n");
 
 test("repository Preview candidate remains separated, unsigned and without updater", () => {
@@ -111,6 +112,8 @@ test("hosted Preview smoke requires two bounded clean-install cycles and preserv
     "Initial NSIS Preview uninstallation",
     "Clean reinstallation of Optic Preview",
     "Second NSIS Preview uninstallation",
+    "test-nsis-preview-gui.ps1",
+    "Installed Preview native GUI/WebView2 startup:",
     "Real Optic settings/cross-PC sync/version upgrade: NOT TESTED",
     "Optic AI Bridge / user PC: NOT TOUCHED",
   ]) {
@@ -119,4 +122,26 @@ test("hosted Preview smoke requires two bounded clean-install cycles and preserv
   assert.doesNotMatch(source, /Remove-Item[^\r\n]*-Recurse\b/i);
   assert.match(source, /\$firstInstalled -and \$firstRemoved -and \$probeCreated -and \$errors.Count -eq 0/);
   assert.match(source, /\$probeKept\)/);
+});
+
+test("Preview GUI startup proof checks the exact installed app and independently-owned WebView2", () => {
+  const source = readFileSync(new URL("../scripts/windows/test-nsis-preview-gui.ps1", import.meta.url), "utf8");
+  for (const required of [
+    "$env:RUNNER_ENVIRONMENT -ne 'github-hosted'",
+    "$env:GITHUB_REPOSITORY -ne 'ELITEAYOTO/Alpha-Optic-APP'",
+    "Join-Path $env:LOCALAPPDATA 'Optic Preview'",
+    "preview-dist",
+    "PREVIEW_GUI_LAUNCH.txt",
+    "Get-AuthenticodeSignature",
+    "MainWindowHandle",
+    "ParentProcessId",
+    "msedgewebview2.exe",
+    "CloseMainWindow()",
+    "Kill($true)",
+    "React content/navigation verified: NO",
+    "User PC: NOT ACCESSED",
+  ]) {
+    assert.ok(source.includes(required), `Missing Preview GUI security/evidence marker: ${required}`);
+  }
+  assert.doesNotMatch(source, /-WindowStyle\s+Hidden|-ExecutionPolicy\s+Bypass/);
 });
