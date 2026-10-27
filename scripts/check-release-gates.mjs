@@ -61,7 +61,7 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
   if (version !== tauriVersion || version !== cargoVersion) {
     problems.push("Versions divergentes : package.json, tauri.conf.json et Cargo.toml doivent correspondre");
   }
-  if (pkg.name !== "optic-desktop" || config.productName !== "Optic") {
+  if (pkg.name !== "optic-desktop" || config.productName !== (manualPreview ? "Optic Preview" : "Optic")) {
     problems.push("Identité produit Optic incohérente");
   }
 
