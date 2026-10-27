@@ -51,3 +51,16 @@ reproductible de génération via Tauri sont décrits dans
 [ICON_ASSETS.md](../engineering/ICON_ASSETS.md). **Les assets binaires en haute
 définition ne sont pas encore fusionnés** : l'icône 48 px de PR #22 reste active
 sur `main` jusqu'à une validation visuelle Windows.
+
+## Confirmation par captures Windows — 24 octobre, état documentaire du 27 octobre 2026
+
+Deux captures fournies par l'utilisateur sur Windows 10 montrent maintenant la
+**barre de titre native noire**, le **logo Optic** dans le titre et en barre des
+tâches, et le bouton **rétracter l'explorateur** effectif. La seconde affiche
+le rail seul et la page Supervision antérieure à PR #25. Ne pas répéter
+que le logo provisoire Instagram est encore actif : PR #22 l'a corrigé.
+**Non vérifiés** : image Alt+Tab, qualité multi-DPI 125/150 %, survol/focus
+des boutons système et snaps Windows 11. Le design des boutons natifs reste
+celui de Windows ; personnalisation totale uniquement en PR séparée avec
+tests Windows de déplacement, Snap, minimise/maximise, DPI, clavier.
+Source HD 512px toujours non intégrée : le logo natif reste 48px.

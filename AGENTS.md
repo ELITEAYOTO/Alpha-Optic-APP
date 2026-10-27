@@ -33,3 +33,10 @@ Before implementation read README.md, docs/architecture/OVERVIEW.md, docs/archit
 - `ELITEAYOTO/Optic-AI-Bridge-` is being developed concurrently by another AI; treat it as a read-only external dependency unless the operator explicitly authorizes a separate Bridge task.
 - Never create a PR, issue, branch, commit, or update an existing file in the Bridge repo as part of Desktop development.
 - Resolve cross-repository compatibility by local Desktop contracts and a future proposal, not unreviewed edits to Bridge code.
+
+## Canonical continuation (27 October 2026)
+- Before starting new development in another chat, read `docs/engineering/HANDOFF.md` and `docs/engineering/NEXT_CHAT_PROMPT_OPTIC_DESKTOP_2026-10-27.md`; both must be checked against **live GitHub** and real code, not considered timeless facts.
+- User tested Tauri on Windows: dark native titlebar, official Optic taskbar logo, collapsible explorer confirmed in screenshots. PR #25 makes supervision offline honest; user has not yet shown post-#25 screenshots.
+- `windows-nsis-smoke.yml` now **does install, launch WebView2 and uninstall** an unsigned test-only package on a hosted Windows runner. Do not mistake it for a signed installable production release or repeat older docs saying no installation test exists.
+- Never infer the user's local Git status; local `Cargo.toml`, `src-tauri/gen/` and stash history require a fresh `git status` before advising mutating commands.
+- The approved 512px source is **not checked into this repo**; the current native 48px logo is a real improvement, but multi-resolution release icon remains TODO.

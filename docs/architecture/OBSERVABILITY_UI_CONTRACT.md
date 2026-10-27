@@ -51,3 +51,20 @@ Le contrat `telemetry.ts` et le buffer borné `journal.ts` restent inchangés.
 Le jour d'une connexion réelle, un adaptateur Rust authentifié devra
 fournir explicitement ses états ; supprimer l'écran offline sans preuve
 d'authentification serait incorrect. Aucun accès au moteur Bridge ajouté.
+
+## État de livraison et garde de compatibilité — 27 octobre 2026
+
+- PR #25 **fusionnée** sur `main` du Desktop (base confirmée
+  `c5c89006d4041362dd4e791675af5c504be6d25c`, CI post-fusion 4/4).
+- La vue Supervision offline compactée comporte un simple bouton **Retour au bureau**
+  passé par composition `src/app`, sans commande système, sans faux
+  `$ optic events --follow`, sans faux événements. Les modèles
+  `telemetry.ts` et `journal.ts` restent offline inchangés.
+- L'utilisateur a photographié **l'ancienne Supervision**, qui a motivé
+  cette amélioration ; **aucune nouvelle preuve visuelle Windows de #25** reçue
+  à ce point. Un futur agent ne doit pas annoncer que cette nouvelle vue
+  a été approuvée visuellement.
+- Le prochain contrat live devra **authentifier et versionner** la source en
+  Rust/Tauri avant projection d'événements, distinguer absence de source,
+  transport interrompu et retard/gap de séquence, et traiter les exports avec
+  expurgation des secrets. Une connexion réelle reste strictement **non implémentée**.

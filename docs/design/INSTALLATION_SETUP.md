@@ -33,4 +33,4 @@ Le design `391:1138` présente Bridge/Assistant/Projet/Validation ; regrouper le
 - Responsables de modules : `src/features/onboarding/ui/` pour vues et CSS, `model/` pour progression pure/testée ; futur préflight via Rust contrôlé, jamais commande OS directe dans React.
 - Vérifier rendu à 1440 × 900 et 1280 × 800, zoom et WebView2 sur Windows, en plus des validations statiques.
 
-**État actuel : uniquement conception.** Issues #12 / #13, ADR-0006 ; aucune UI first-run réelle ni installateur Windows développé par ces documents.
+**État vérifié au 27 octobre 2026 :** UI first-run toujours **en conception** (#13). Un NSIS **non signé d'essai** a été créé, installé, lancé avec WebView2 puis désinstallé **sur runner GitHub-hosted** (#18–#20), mais **aucun vrai installateur utilisateur prêt à diffuser**. La distinction avant/après lancement reste impérative. Voir #12, #15 et `WINDOWS_DISTRIBUTION.md`.
