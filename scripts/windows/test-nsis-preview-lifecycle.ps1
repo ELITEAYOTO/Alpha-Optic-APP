@@ -84,6 +84,7 @@ $firstInstalled = $false
 $firstRemoved = $false
 $secondInstalled = $false
 $secondRemoved = $false
+$previewGui = $false
 $probeCreated = $false
 $probeKept = $false
 $shaBefore = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash
@@ -164,6 +165,14 @@ if ($firstInstalled -and $firstRemoved -and $probeCreated -and $errors.Count -eq
     Confirm-Installed
     $secondInstalled = $true
     Confirm-SyntheticProfile
+    # Start only the freshly installed application, and stop it before uninstalling.
+    $installedExe = @(Get-ChildItem -LiteralPath $installDir -Filter '*.exe' -File |
+      Where-Object { $_.Name -ne 'uninstall.exe' })
+    if ($installedExe.Count -ne 1) {
+      throw "Expected exactly one application for Preview GUI startup."
+    }
+    & './scripts/windows/test-nsis-preview-gui.ps1' -AppPath $installedExe[0].FullName -InstallRoot $installDir -ReportPath 'preview-dist/PREVIEW_GUI_LAUNCH.txt'
+    $previewGui = $true
   } catch {
     $errors.Add("Reinstall/check: $($_.Exception.Message)")
   } finally {
@@ -191,7 +200,7 @@ if ($probeCreated) {
 }
 
 $pass = ($errors.Count -eq 0 -and $firstInstalled -and $firstRemoved -and
-         $secondInstalled -and $secondRemoved -and $probeKept)
+         $secondInstalled -and $secondRemoved -and $probeKept -and $previewGui)
 
 @(
   'OPTIC PREVIEW NSIS CLEAN REINSTALL — UNSIGNED / HOSTED CI ONLY'
@@ -202,8 +211,9 @@ $pass = ($errors.Count -eq 0 -and $firstInstalled -and $firstRemoved -and
   "Same-version clean reinstall/HKCU: $secondInstalled"
   "Second uninstall: $secondRemoved"
   "Synthetic AppData probe unchanged: $probeKept"
+  "Installed Preview native GUI/WebView2 startup: $previewGui"
   'Real Optic settings/cross-PC sync/version upgrade: NOT TESTED'
-  'WebView2 absent, React visuals, Windows 10/11 clean: NOT TESTED'
+  'WebView2 absent, React pixels/content, Windows 10/11 clean: NOT TESTED'
   'Updater signature / Authenticode / release readiness: NOT TESTED'
   'Optic AI Bridge / user PC: NOT TOUCHED'
   "Result: $(if ($pass) { 'PASS' } else { 'FAIL' })"
