@@ -54,9 +54,9 @@ jobs:
             "Source commit: ${{ github.sha }}"
             "Filename: $($file.Name)"
             "SHA256: $((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash)"
-            'Native install/upgrade/uninstall, Windows 10/11 and UI rendering not yet validated for this profile'
+            'Build provenance only; clean reinstall tested in next step. Version upgrade, Windows 10/11 and UI rendering not validated'
           ) | Set-Content -LiteralPath 'preview-dist/PROVENANCE.txt'
-      - name: Test Preview per-user install and uninstall on isolated Windows runner
+      - name: Test Preview clean reinstall and external-state sentinel on hosted Windows
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
