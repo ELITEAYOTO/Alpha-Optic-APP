@@ -35,6 +35,9 @@ const workflow = () => [
   "Get-FileHash",
   "Get-AuthenticodeSignature",
   "NotSigned",
+  "./scripts/windows/test-nsis-preview-lifecycle.ps1",
+  "preview-dist/LIFECYCLE.txt",
+  "'scripts/windows/test-nsis-preview-lifecycle.ps1'",
 ].join("\n");
 
 test("repository Preview candidate remains separated, unsigned and without updater", () => {
@@ -85,6 +88,7 @@ test("Preview workflow refuses publishing, secrets, elevated permissions or untr
   ]) {
     assert.equal(auditNsisPreview(base(), preview(), workflow() + "\n" + addition).ready, false);
   }
+  assert.equal(auditNsisPreview(base(), preview(), workflow().replace("./scripts/windows/test-nsis-preview-lifecycle.ps1", "echo skipped")).ready, false);
   const unsafe = workflow().replace(
     "github.event.pull_request.head.repo.full_name == github.repository",
     "always()",
