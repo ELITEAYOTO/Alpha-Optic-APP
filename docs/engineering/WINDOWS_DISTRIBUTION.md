@@ -76,6 +76,8 @@ npm run check:release-candidate  # exige un profil NSIS signé/configuré ; DOIT
 Le mode distribution **nécessite** une identité non provisoire, une version cohérente,
 `bundle.active=true`, `targets=nsis`, `currentUser`, `createUpdaterArtifacts=true`,
 une clé publique définie, un endpoint HTTPS et un mode d'installation visible.
+**Nouveau chemin de Preview manuelle :** `npm run check:manual-preview-config` teste séparément le modèle de configuration d'une future **Optic Preview** installée manuellement et sans Tauri Updater actif. Il exige une version non-prototype et cohérente, une identité non `dev.*`, NSIS `currentUser`, mode WebView2 explicite et `allowDowngrades=false`. Le contrôle **doit échouer sur la démo actuelle** (`bundle.active=false`) ; il ne signe ni ne publie le binaire et ne remplace pas le contrôle réel de hash/Authenticode dans `verify-optic-installer.ps1`. Le mode `check:release-candidate` avec updater reste inchangé. Voir `PRIVATE_PREVIEW_RELEASE_GATES.md`.
+
 La clé privée reste hors Git. Aucune URL, clé de production, téléchargement ni package
 signé n'a été ajouté.
 

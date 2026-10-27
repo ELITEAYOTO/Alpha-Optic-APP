@@ -15,6 +15,12 @@ L'objectif est un **premier test manuel et réversible d'Optic Desktop** sur un 
 - PR [#33](https://github.com/ELITEAYOTO/Alpha-Optic-APP/pull/33) : vérificateur en lecture seule du SHA-256 et de la signature Authenticode / empreinte éditeur connue, et tests CI qui **refusent** un faux SHA ou le candidat non signé. Aucune signature réelle créée.
 - Tous ces éléments ont été fusionnés **après CI exact-head verte**. Cela ne constitue pas une signature du binaire ni une qualification Windows 10 vierge.
 
+## Nouveau contrôle statique de Preview manuelle (non signé)
+
+La commande `npm run check:manual-preview-config` est désormais **distincte** de `npm run check:release-candidate`, qui continue d'exiger la configuration de l'updater signé. Le nouveau mode exige une identité `Optic Preview` non `dev.*`, une version SemVer non-prototype synchronisée avec Cargo/npm/Tauri, NSIS par utilisateur, WebView2 explicite, `allowDowngrades=false`, et la **désactivation** des artefacts et du plugin Tauri Updater. Son rôle est uniquement de vérifier la **configuration de distribution manuelle** : même un résultat vert ne constitue **aucune preuve de signature Authenticode, d'installabilité sur Windows 10/11, ni de publication**. Ces autres portes de sécurité restent à satisfaire indépendamment.
+
+Sur la configuration actuelle de développement (`bundle.active=false`, `0.0.1`), ce contrôle est conçu pour **échouer** ; `npm run check` continue de valider le prototype sans activer le bundling. Une configuration Preview **future** devra être soumise à ce nouveau contrôle puis à la revue de release et à la vérification réelle de signature. Aucun fichier de clé/certificat ni endpoint n'a été ajouté.
+
 ## Feu vert : étapes obligatoires pour proposer un setup à l'utilisateur
 
 - [ ] **Éditeur et identité définitive** : choisir un nom de publication, identifiant Tauri stable, version/canal Preview cohérents dans `package.json`, `Cargo.toml`, `tauri.conf.json` et les noms d'artefacts. Ne pas remplacer silencieusement le prototype `0.0.1`.

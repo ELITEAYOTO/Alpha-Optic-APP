@@ -124,3 +124,40 @@ test("candidate rejects incomplete signing, URLs, Windows prompts and installer 
   mutate(c => { c.plugins.updater.windows.installMode = "quiet"; });
   mutate(c => { c.plugins.updater.dangerousInsecureTransportProtocol = true; });
 });
+
+
+test("manual Preview config is separate from automatic signed updater configuration", () => {
+  const manual = candidate();
+  manual.tauriConfig.productName = "Optic Preview";
+  manual.tauriConfig.identifier = "app.optic.desktop.preview";
+  manual.tauriConfig.bundle.windows.allowDowngrades = false;
+  manual.tauriConfig.bundle.createUpdaterArtifacts = false;
+  delete manual.tauriConfig.plugins;
+
+  assert.deepEqual(auditReleaseConfig(manual, { manualPreview: true }), {
+    mode: "manual-preview-candidate", ready: true, problems: [],
+  });
+  // The ordinary updater-required release must still reject this overlay.
+  assert.equal(auditReleaseConfig(manual, { requireDistribution: true }).ready, false);
+
+  const bad = (mutate) => {
+    const data = structuredClone(manual);
+    mutate(data);
+    assert.equal(auditReleaseConfig(data, { manualPreview: true }).ready, false);
+  };
+  bad(x => { x.tauriConfig.bundle.windows.allowDowngrades = true; });
+  bad(x => { delete x.tauriConfig.bundle.windows.allowDowngrades; });
+  bad(x => { x.tauriConfig.bundle.createUpdaterArtifacts = true; });
+  bad(x => { x.tauriConfig.plugins = { updater: { endpoints: ["https://example.com"] } }; });
+  bad(x => { x.tauriConfig.identifier = "dev.optic.desktop.preview"; });
+  bad(x => { x.tauriConfig.productName = "Optic"; });
+  bad(x => { x.tauriConfig.bundle.windows.webviewInstallMode.type = "skip"; });
+  bad(x => { delete x.tauriConfig.bundle.windows.webviewInstallMode; });
+  bad(x => { x.tauriConfig.bundle.windows.nsis.installMode = "both"; });
+  bad(x => { x.packageJson.version = "0.0.1"; x.cargoToml = cargo("0.0.1"); x.tauriConfig.version = "0.0.1"; });
+  bad(x => { x.tauriConfig.version = "9.0.0"; });
+
+  const baseline = inspectCurrentReleaseConfig({ manualPreview: true });
+  assert.equal(baseline.ready, false);
+  assert.equal(baseline.mode, "prototype");
+});
