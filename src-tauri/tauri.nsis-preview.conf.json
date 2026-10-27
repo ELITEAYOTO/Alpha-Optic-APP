@@ -1,22 +1,19 @@
 {
   "productName": "Optic Preview",
   "identifier": "dev.optic.desktop.preview",
-  "app": {
-    "windows": [
-      {
-        "label": "main",
-        "title": "Optic Preview — démonstration"
-      }
-    ]
-  },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": [
+      "nsis"
+    ],
     "createUpdaterArtifacts": false,
     "windows": {
       "nsis": {
         "installMode": "currentUser",
-        "languages": ["French", "English"]
+        "languages": [
+          "French",
+          "English"
+        ]
       },
       "webviewInstallMode": {
         "type": "downloadBootstrapper"
