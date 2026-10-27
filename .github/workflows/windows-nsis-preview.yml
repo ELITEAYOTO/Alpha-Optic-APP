@@ -8,6 +8,8 @@ on:
       - 'src/**'
       - 'package.json'
       - 'package-lock.json'
+      - 'scripts/check-nsis-preview.mjs'
+      - 'tests/nsis-preview.test.mjs'
   workflow_dispatch:
 
 permissions:
@@ -41,7 +43,7 @@ jobs:
           $files = @(Get-ChildItem -LiteralPath $dir -Filter '*-setup.exe' -File)
           if ($files.Count -ne 1) { throw "Expected exactly one setup, got $($files.Count)" }
           $file = $files[0]
-          if ($file.Name -notlike '*Optic*Preview*') { throw "Unexpected preview filename: $($file.Name)" }
+          if ($file.Name -ne 'Optic Preview_0.0.1_x64-setup.exe') { throw "Unexpected preview filename: $($file.Name)" }
           if ((Get-AuthenticodeSignature -LiteralPath $file.FullName).Status -ne 'NotSigned') { throw 'Unexpected Authenticode signature state' }
           New-Item -ItemType Directory -Force 'preview-dist' | Out-Null
           Copy-Item -LiteralPath $file.FullName -Destination 'preview-dist/'
