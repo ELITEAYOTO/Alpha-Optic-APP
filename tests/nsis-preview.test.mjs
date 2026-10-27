@@ -18,6 +18,7 @@ const preview = () => ({
     targets: ["nsis"],
     createUpdaterArtifacts: false,
     windows: {
+      allowDowngrades: false,
       nsis: { installMode: "currentUser", languages: ["French", "English"] },
       webviewInstallMode: { type: "downloadBootstrapper" },
     },
@@ -58,6 +59,8 @@ test("Preview is an additive packaging flavour and must never erase the base win
     x => { x.identifier = "dev.optic.desktop"; },
     x => { x.productName = "Optic"; },
     x => { x.bundle.targets = ["nsis", "msi"]; },
+    x => { x.bundle.windows.allowDowngrades = true; },
+    x => { delete x.bundle.windows.allowDowngrades; },
     x => { x.bundle.windows.nsis.installMode = "both"; },
     x => { x.bundle.windows.nsis.languages = ["English"]; },
     x => { x.bundle.windows.nsis.template = "untrusted.nsi"; },
