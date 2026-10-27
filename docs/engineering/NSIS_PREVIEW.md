@@ -39,6 +39,18 @@ Ce lot ne démontre ni le rendu React réel, ni la fidélité Figma, ni la compa
 
 La CI Preview exécute **deux contrôles négatifs** sur le setup volontairement non signé : elle exige le rejet d'un faux hash, puis du hash correct faute de signature Authenticode. Ne **jamais** enregistrer le faux thumbprint utilisé dans ce test comme identité éditeur et ne jamais recommander de désactiver SmartScreen. Aucune clé de signature/identité réelle n'est actuellement disponible ; ne pas lancer ce script sur un PC utilisateur sans des valeurs officielles attestées. La clé de signature de Tauri Updater 2 reste un mécanisme **distinct** de la signature Windows.
 
+## Nouveau smoke natif entre deux versions (runner Windows uniquement)
+
+Le workflow autonome `.github/workflows/windows-nsis-upgrade-smoke.yml` fabrique deux installateurs **non signés de test**, à partir du même code source Optic Preview : `0.0.1` et une surcouche **strictement limitée à la version** `0.0.2` (`src-tauri/tauri.nsis-upgrade-test.conf.json`). Il exécute ensuite `scripts/windows/test-nsis-preview-upgrade.ps1` **uniquement sur un runner GitHub Windows hébergé**, jamais sur un ordinateur personnel :
+
+- Installation de `0.0.1` dans HKCU, création d'une sonde AppData factice non sensible.
+- Installation silencieuse de `0.0.2` par-dessus `0.0.1`, contrôle du numéro de version Windows et de la sonde.
+- Tentative de rétrogradation silencieuse en `0.0.1` ; le test échoue si la version `0.0.2` n'est pas conservée.
+- Désinstallation contrôlée de la version restante, vérification HKCU, conservation de la sonde, puis retrait limité à cette sonde (aucune suppression récursive).
+- Rapport **texte uniquement** `UPGRADE.txt`, conservé quelques jours ; aucun des deux setups n'est publié comme artefact de téléchargement.
+
+**Attention :** si le workflow échoue, ne pas inférer que l'upgrade fonctionne et corriger sur PR séparée après examen du log. Même une réussite prouverait seulement le remplacement de deux paquets au **même code source** avec métadonnées de version distinctes. Elle **ne** valide **pas** les migrations de vrais paramètres, une montée de version du moteur Rust, un updater Tauri signé, Windows 10/11 propres, les interfaces React ou une distribution utilisable sur PC.
+
 ## Conditions avant un test utilisateur autorisé
 
 1. Faire réussir les checks source et Windows NSIS Preview (incluant la réinstallation propre) sur le même SHA, relire les artefacts et la provenance.

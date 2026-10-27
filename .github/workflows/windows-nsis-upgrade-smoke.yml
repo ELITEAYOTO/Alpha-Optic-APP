@@ -1,0 +1,98 @@
+name: Windows NSIS Preview version transition (unsigned CI only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-nsis-upgrade-smoke.yml'
+      - 'src-tauri/tauri.nsis-preview.conf.json'
+      - 'src-tauri/tauri.nsis-upgrade-test.conf.json'
+      - 'src-tauri/**'
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/windows/test-nsis-preview-upgrade.ps1'
+      - 'tests/nsis-upgrade.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade-smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: windows-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - name: Restore pinned dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate source before bundling
+        run: npm run check
+      - name: Verify upgrade profile is exactly a test-only version override
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $upgrade = Get-Content -Raw 'src-tauri/tauri.nsis-upgrade-test.conf.json' | ConvertFrom-Json
+          if ($upgrade.PSObject.Properties.Count -ne 1 -or $upgrade.version -ne '0.0.2') {
+            throw 'Upgrade overlay must be version 0.0.2 ONLY.'
+          }
+          $preview = Get-Content -Raw 'src-tauri/tauri.nsis-preview.conf.json' | ConvertFrom-Json
+          if ($preview.productName -ne 'Optic Preview' -or
+              $preview.identifier -ne 'dev.optic.desktop.preview' -or
+              $preview.bundle.active -ne $true -or
+              $preview.bundle.createUpdaterArtifacts -ne $false -or
+              $preview.bundle.windows.allowDowngrades -ne $false -or
+              $preview.bundle.windows.nsis.installMode -ne 'currentUser') {
+            throw 'Unsafe Preview upgrade configuration.'
+          }
+      - name: Build CI-only version 0.0.1 NSIS
+        run: npm run tauri -- build --ci --bundles nsis --config src-tauri/tauri.nsis-preview.conf.json
+      - name: Preserve exact 0.0.1 setup during second build
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $path = 'src-tauri/target/release/bundle/nsis/Optic Preview_0.0.1_x64-setup.exe'
+          if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw '0.0.1 installer was not built.' }
+          if ((Get-AuthenticodeSignature -LiteralPath $path).Status -ne 'NotSigned') { throw 'Unexpected signature.' }
+          Copy-Item -LiteralPath $path -Destination "$env:RUNNER_TEMP\optic-preview-0.0.1-ci.exe"
+          $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+          Set-Content -LiteralPath "$env:RUNNER_TEMP\optic-preview-0.0.1.sha256" -Value $hash
+      - name: Build CI-only version 0.0.2 NSIS (same app, version-only overlay)
+        run: npm run tauri -- build --ci --bundles nsis --config src-tauri/tauri.nsis-preview.conf.json --config src-tauri/tauri.nsis-upgrade-test.conf.json
+      - name: Restore and validate both exact CI-built NSIS packages
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dir = 'src-tauri/target/release/bundle/nsis'
+          $old = Join-Path $dir 'Optic Preview_0.0.1_x64-setup.exe'
+          $new = Join-Path $dir 'Optic Preview_0.0.2_x64-setup.exe'
+          if (-not (Test-Path -LiteralPath $new -PathType Leaf)) { throw '0.0.2 installer was not built.' }
+          if (-not (Test-Path -LiteralPath $old -PathType Leaf)) {
+            Copy-Item -LiteralPath "$env:RUNNER_TEMP\optic-preview-0.0.1-ci.exe" -Destination $old
+          }
+          if ((Get-FileHash -LiteralPath $old -Algorithm SHA256).Hash -ne
+              (Get-Content -LiteralPath "$env:RUNNER_TEMP\optic-preview-0.0.1.sha256")) {
+            throw '0.0.1 setup unexpectedly changed in the second build.'
+          }
+          if ((Get-AuthenticodeSignature -LiteralPath $new).Status -ne 'NotSigned') {
+            throw 'Unexpected 0.0.2 Authenticode signature.'
+          }
+          New-Item -ItemType Directory -Force 'upgrade-smoke-results' | Out-Null
+      - name: Test actual 0.0.1 to 0.0.2 install transition and refuse silent downgrade
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & './scripts/windows/test-nsis-preview-upgrade.ps1' -OldInstallerPath 'src-tauri/target/release/bundle/nsis/Optic Preview_0.0.1_x64-setup.exe' -NewInstallerPath 'src-tauri/target/release/bundle/nsis/Optic Preview_0.0.2_x64-setup.exe' -ReportPath 'upgrade-smoke-results/UPGRADE.txt'
+      - name: Retain text report only (no unsigned setup distribution)
+        uses: actions/upload-artifact@v4
+        with:
+          name: NSIS-TEST-REPORT-ONLY-${{ github.run_id }}
+          path: upgrade-smoke-results/UPGRADE.txt
+          if-no-files-found: error
+          retention-days: 7
