@@ -95,6 +95,9 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
       // STILL needs independent Authenticode signature, official provenance and
       // native Windows verification. Never imply the pure check proves signing.
       mode = "manual-preview-candidate";
+      if (typeof config.identifier === "string" && config.identifier.startsWith("dev.")) {
+        problems.push("Preview manuelle : identifiant dev.* provisoire interdit");
+      }
       if (config.productName !== "Optic Preview") {
         problems.push("Preview manuelle : nom produit Optic Preview requis");
       }
@@ -110,27 +113,27 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
         problems.push("Preview manuelle : choisir explicitement un mode d'installation WebView2");
       }
     } else {
-    if (bundle.createUpdaterArtifacts !== true) {
-      problems.push("Bundle candidat : createUpdaterArtifacts doit être true (Tauri v2)");
-    }
-    const updater = object(object(config.plugins).updater);
-    const pubkey = updater.pubkey;
-    if (typeof pubkey !== "string" || pubkey.trim().length < 80 ||
-        /PLACEHOLDER|YOUR_|CONTENT FROM|BEGIN PRIVATE KEY/i.test(pubkey) ||
-        /^(?:[A-Za-z]:[\\/]|[\\/]|~[\\/]|file:|\.{1,2}[\\/])/i.test(pubkey.trim())) {
-      problems.push("Clé PUBLIQUE updater réelle requise dans la config (jamais une clé privée ni un chemin)");
-    }
-    if (!Array.isArray(updater.endpoints) || updater.endpoints.length !== 1 ||
-        !isSafeUpdateEndpoint(updater.endpoints[0])) {
-      problems.push("Un endpoint de release HTTPS de production est requis");
-    }
-    if (updater.dangerousInsecureTransportProtocol === true) {
-      problems.push("Transport updater non sûr explicitement interdit");
-    }
-    if (!["passive", "basicUi"].includes(object(updater.windows).installMode)) {
-      problems.push("Updater Windows : installMode visible, passive ou basicUi requis");
-    }
-    }
+      if (bundle.createUpdaterArtifacts !== true) {
+        problems.push("Bundle candidat : createUpdaterArtifacts doit être true (Tauri v2)");
+      }
+      const updater = object(object(config.plugins).updater);
+      const pubkey = updater.pubkey;
+      if (typeof pubkey !== "string" || pubkey.trim().length < 80 ||
+          /PLACEHOLDER|YOUR_|CONTENT FROM|BEGIN PRIVATE KEY/i.test(pubkey) ||
+          /^(?:[A-Za-z]:[\\/]|[\\/]|~[\\/]|file:|\.{1,2}[\\/])/i.test(pubkey.trim())) {
+        problems.push("Clé PUBLIQUE updater réelle requise dans la config (jamais une clé privée ni un chemin)");
+      }
+      if (!Array.isArray(updater.endpoints) || updater.endpoints.length !== 1 ||
+          !isSafeUpdateEndpoint(updater.endpoints[0])) {
+        problems.push("Un endpoint de release HTTPS de production est requis");
+      }
+      if (updater.dangerousInsecureTransportProtocol === true) {
+        problems.push("Transport updater non sûr explicitement interdit");
+      }
+      if (!["passive", "basicUi"].includes(object(updater.windows).installMode)) {
+        problems.push("Updater Windows : installMode visible, passive ou basicUi requis");
+      }
+      }
   } else {
     problems.push("bundle.active doit être un booléen explicite");
   }
