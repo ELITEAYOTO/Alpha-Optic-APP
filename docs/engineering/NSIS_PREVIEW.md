@@ -20,9 +20,15 @@ Contrôles négatifs `npm run check:nsis-preview` et `tests/nsis-preview.test.mj
 
 **Preuve limitée :** le protocole Preview installé/désinstallé sur Windows GitHub-hosted n'établit pas le rendu React, la compatibilité Windows 10/11, la réputation SmartScreen, l'antivirus, la restauration après upgrade, ni le fonctionnement hors ligne. **Ne pas annoncer le test réussi avant le résultat CI sur la tête exacte de PR.** Le profil *Smoke Test*, distinct, bénéficie déjà de tests installation/désinstallation et démarrage WebView2 ; leurs résultats ne sont pas automatiquement transférables à Preview.
 
+## Nouveau test de réinstallation propre (CI, validation encore requise)
+
+Le scénario `test-nsis-preview-lifecycle.ps1` est étendu à deux cycles : première installation / désinstallation, puis **réinstallation de la même version `0.0.1` depuis exactement le même setup**, avec seconde désinstallation. À chaque cycle, le test exige l'inscription dans HKCU et l'absence de résidus de l'installation binaire. Entre les deux, il place un fichier de test synthétique, sans secret, sous `%APPDATA%/dev.optic.desktop.preview` (hors du répertoire NSIS `%LOCALAPPDATA%/Optic Preview`), puis vérifie qu'il est inchangé après les désinstallations. Le fichier de test est nettoyé sans supprimer récursivement d'autres données. L'exécution est réservée à un **runner éphémère GitHub-hosted Windows**.
+
+Ce test démontre uniquement que l'installateur n'efface pas ce **fichier factice** sur son runner. Il ne prouve **ni** que les futurs vrais réglages et secrets Optic sont correctement persistés, **ni** une mise à niveau `0.0.1 → 0.0.2`, **ni** une synchronisation entre plusieurs PC. La réussite ne peut être déclarée qu'après vérification de la CI **sur le SHA exact de la PR concernée** ; les signatures et le mécanisme de mise à jour restent inactifs.
+
 ## Conditions avant un test utilisateur autorisé
 
-1. Faire réussir les checks source et Windows NSIS Preview sur le même SHA, relire les artefacts et la provenance.
+1. Faire réussir les checks source et Windows NSIS Preview (incluant la réinstallation propre) sur le même SHA, relire les artefacts et la provenance.
 2. Confirmer les résultats d'installation/désinstallation Preview du runner (identité, HKCU, chemin, nettoyage contrôlé), puis ajouter séparément les tests WebView2 propre à Preview, upgrade/réinstallation et conservation de données.
 3. Confirmer une image/logo haute résolution authentique, les textes du programme et l'assistant first-run en français.
 4. Définir la politique de signature Authenticode Windows et de distribution. Une version non signée peut susciter SmartScreen : **ne pas conseiller de contourner les protections**.
