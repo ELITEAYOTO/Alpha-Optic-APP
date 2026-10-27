@@ -1,100 +1,64 @@
-# Optic Desktop — handoff canonique (24 octobre 2026)
+# Optic Desktop — passation canonique (27 octobre 2026)
 
-**Ce fichier est la source de reprise.** Il remplace les anciens statuts narratifs. Lire aussi `AGENTS.md`, `docs/engineering/WORKFLOW.md`, `docs/architecture/MODULE_BOUNDARIES.md`, `docs/security/SECURITY_MODEL.md`, `docs/design/UI_D.md`, `docs/architecture/OBSERVABILITY_UI_CONTRACT.md` et `docs/architecture/THEMES.md`.
+> Vérification GitHub du 27 octobre 2026. Cette page décrit l'état observé, non une autorisation de distribuer l'application. **Actualiser les SHA, PR, CI et issues à chaque reprise.**
 
-## 1. Repositories — STRICT
+## Périmètre et garde-fous
 
-- **Écrire UNIQUEMENT dans** `ELITEAYOTO/Alpha-Optic-APP` : https://github.com/ELITEAYOTO/Alpha-Optic-APP
-- **Bridge externe, lecture seule** : `ELITEAYOTO/Optic-AI-Bridge-` : https://github.com/ELITEAYOTO/Optic-AI-Bridge-
-- Une AUTRE IA développe activement le Bridge. Aucun commit, branche, issue, PR, modification, fusion ou action de workflow dans le dépôt Bridge sans mandat nouveau et explicite. Éviter également de supposer qu'un ancien SHA/contrat du Bridge est encore actuel.
-- Si une évolution de Bridge est nécessaire, la documenter dans le dépôt Desktop et préparer une proposition de contrat à soumettre à l'utilisateur/à l'autre IA, **sans action GitHub côté Bridge**.
+- **Seul dépôt modifiable :** `ELITEAYOTO/Alpha-Optic-APP` (branche `main`).
+- `ELITEAYOTO/Optic-AI-Bridge-` est développé par une autre IA : **lecture seule, jamais de branche, PR, issue, commit, fusion ou workflow dans ce dépôt** pendant une tâche Desktop.
+- REL est également hors périmètre.
+- Aucun accès au PC utilisateur, installation, test physique ou commande locale sans accord spécifique. La CI GitHub s'exécute exclusivement sur runners hébergés.
+- Produit **Optic**, moteur **Optic AI Bridge**, jamais « Lab ».
+- Bridge seul décide des permissions, sessions et effets sensibles. Demande ≠ permission effective ; demande d'arrêt ≠ terminaison native prouvée ; simulation/offline ≠ connexion authentifiée.
+- Windows-first ; ne pas représenter le prototype comme une V1 distribuable ni comme un Bridge connecté.
 
-## 2. GitHub vérifié à cette passation
+## État GitHub constaté lors de la reprise
 
-La branche `main` du Desktop **avant la PR de cette mise à jour documentaire** : `6e67fb7cea325bca08bbae3d681329889d60a654`.
+- Dernier commit renvoyé par la recherche de commits : `c5c89006d4041362dd4e791675af5c504be6d25c` — `feat: honest offline supervision UX (#25)`, daté du 24/10/2026.
+- PR #25 fusionnée via ce commit ; écran de supervision offline compact, suppression de la fausse commande `$ optic events --follow`, retour Bureau, états clairement « non connecté / flux indisponible / historique inaccessible ».
+- PR #24 fusionnée via `89ecfc12a4c53bb12c59eb95306d68805f3c59e7` : validateur du candidat logo officiel 512px/ICO multi-tailles **sans remplacer les assets actuels**.
+- PR #22 fusionnée via `3c47da1580fd260e91723fcdc20b9c2fe75f0de7` : icône native Optic 48px, barre Windows sombre, décorations natives conservées.
+- PR #21 fusionnée via `b0314b0f0181ed9bd427fea31507b28de49f2763` : explorateur rétractable, focus/hover.
+- Recherche des PR ouvertes lors de cette reprise : aucune.
+- Le détail des vérifications CI de `main` **n'a pas été revérifié pour cette nouvelle passation** : ne pas extrapoler les anciens 4/4.
+- Les captures Windows du 24/10 montrent bien le logo, le titre sombre et le rail repliable ; **elles précèdent le rendu réel de la nouvelle Supervision #25**, qui reste donc à vérifier visuellement sur Windows.
 
-| PR | Résultat vérifié |
-| --- | --- |
-| #1 Fondation modulaire | Fusionnée, `9a4e78e` |
-| #2 Bootstrap React/Tauri | Fusionnée, `479b545` |
-| #5 Responsabilité CSS | Fusionnée, `52530ac` |
-| #6 Journal d'événements offline | Fusionnée, `dffffa4` |
-| #7 Thèmes déclaratifs | Fusionnée, `6e67fb7` ; tests exact-head `534b4c8` verts avant fusion |
+## Produit/architecture actuelle
 
-Au contrôle précédant ce document, aucune PR n'était ouverte ; les issues **#3** (migration de la V1.6.2 réelle) et **#4** (contrat authentifié Desktop ↔ Bridge) restaient ouvertes. Le contrôle Foundation sur `6e67fb7` était vert, la CI Desktop du *merge commit* était encore en cours. **Revérifier état/SHAs/CI en début de nouveau chat : ceci est un instantané, pas une vérité permanente.**
+- Tauri 2, hôte Rust minimal, React 19 / TypeScript / Vite ; `package-lock.json`, Cargo verrouillé.
+- Prototype UI D sombre **Carbone et corail**, déclinaison claire Lin/grenat, source Figma : https://www.figma.com/design/OGItF1Qa9wLGoSp2ieGJk4?node-id=320-130
+- Navigation Bureau, Projets, Sessions, Autorisations, Supervision, Terminal, Connexions, Paramètres.
+- Supervision = lecture seule, offline explicite ; terminal développeur = fonctionnalité distincte, **non interactive tant qu'aucun contrat sécurisé n'est validé**.
+- Contrats statiques offline d'états et de journal ; thèmes tiers déclaratifs sans JS/CSS arbitraire.
+- Aucun IPC authentifié réel, aucune supervision live, aucune exécution shell, aucun updater actif. `bundle.active=false` sur la configuration normale.
+- NSIS CI expérimental : construction, installation/désinstallation isolées et signal fenêtre + enfant WebView2 sur runner Windows. **Cela ne prouve ni rendu React visuel, ni signature, ni disponibilité publique**.
+- La source originale React V1.6.2 a fait l'objet d'un audit statique, pas d'une migration complète : voir `docs/engineering/V162_SOURCE_AUDIT.md`.
 
-## 3. Stack, implémentation réelle et limites
+## Méthode non négociable pour le prochain agent
 
-- **Implémenté dans le dépôt :** Tauri 2 / Rust hôte minimal ; React 19 + TypeScript + Vite ; shell de démonstration inspiré de l'UI D ; navigation Bureau/Projets/Sessions/Autorisations/Supervision/Terminal/Connexions/Paramètres ; écran d'accueil ; vues séparées de supervision et de terminal **inactives** ; tokens CSS ; CSS réparti par propriétaire ; `package-lock.json` et `src-tauri/Cargo.lock` ; CI Node Windows+Ubuntu et `cargo check --locked` Windows.
-- **Contrats offline implémentés :** `src/contracts/telemetry.ts` filtre/rejette les événements inconnus/malformés ; `src/features/supervision/model/journal.ts` gère un buffer UI borné, ordre, doublons, lacunes et changement de source ; `tests/supervision-contract.test.mjs`.
-- **Projection de contrôle hors ligne implémentée :** `src/contracts/control-status.ts` distingue Bridge, session, autorisation, révocation et terminaison native ; source `offline/demo` strictement validée, sans revendication de connexion authentifiée. `DesktopShell` affiche les états hors ligne via cette projection ; `tests/control-status.test.mjs` couvre versions, champs inconnus et axes indépendants. Aucun IPC ni permission réelle. Voir ADR-0005.
-- **Accueil UI D (premier lot) :** mise en page compacte 1280 × 800 (rail 60 px, explorateur 215 px), densité 1440 × 900, navigation accessible et logo multicolore vérifié, dérivé 48 px. Aucun IPC ni statut réel ajouté. **Revue visuelle Windows et absence de scroll non encore validées**. Voir issue #3 et `docs/design/UI_D.md`.
-- **Thèmes offline implémentés :** `src/features/themes/model/theme-manifest.ts` valide le manifeste déclaratif, 14 couleurs, contraste principal >= 4.5:1, rayon, projection de variables CSS ; `tests/theme-manifest.test.mjs`. Ce code n'active pas encore les thèmes dans l'UI ; aucune galerie, téléchargement ni exécution tierce.
-- **NON implémentés :** liaison réelle au Bridge, IPC authentifié, moteur d'autorisation dans Desktop, abonnement aux événements Bridge, journal d'audit persistant, ConPTY, shell interactif, xterm.js, Monaco diff, watchers FS, passerelle MCP externe, mise à jour, packaging MSI/portable, marketplace de thèmes/extensions.
-- Le logo/icon actuel est **temporaire**. La fenêtre Tauri utilise encore les décorations natives Windows. `bundle.active=false`. Aucun exécutable final / installation Windows utilisateur n'a été validé.
-- **IMPORTANT :** la **source originale React V1.6.2 a été retrouvée et auditée statiquement** le 24 octobre (archive SHA-256 `0d305e732d21be4771b09dbb6ca70ad795d47139877a431d0a977801af130cef`) ; voir `docs/engineering/V162_SOURCE_AUDIT.md`. Elle n'a **pas** été migrée dans ce dépôt ni testée sur Windows ; le shell actuel reste un bootstrap expérimental.
+1. Vérifier d'abord dépôt, `main` exact, PR, issues et CI récentes ; lire `AGENTS.md`, `README.md`, ce fichier, `docs/engineering/WORKFLOW.md`, `docs/architecture/MODULE_BOUNDARIES.md`, `docs/security/SECURITY_MODEL.md`, `docs/design/UI_D.md` et ADR pertinente.
+2. Une responsabilité par **branche isolée et petite PR**. Aucune écriture directe sur `main`. Pas de dépendance nouvelle sans étude et justification.
+3. Architecture `app -> features -> contracts/shared`; composition dans `src/app`, jamais d'import d'une feature sœur ni de logique de privilèges dans React.
+4. Ajouter les tests négatifs et positifs : formats/version IPC, erreurs, états offline, accessibilité, focus, annulation, bornes et nettoyage selon le changement.
+5. CI : `npm ci`, `npm run check`, Rust Windows `cargo check --locked --manifest-path src-tauri/Cargo.toml`, jobs GitHub Windows/Ubuntu, NSIS si pertinent. **Valider sur le HEAD exact de la PR**, fusion uniquement après contrôles requis verts, puis CI de `main`.
+6. Pour les modifications visuelles : comparer Figma, vérifier 1440×900 et 1280×800, navigation clavier, contraste, reduced motion, absence de scroll non souhaité. Ne pas prétendre à un test utilisateur sans nouvelles captures.
+7. Documenter les besoins futurs de Bridge **uniquement dans Desktop** sous forme de contrats/propositions.
+8. À la fin, actualiser cette passation avec les vérifications factuelles, SHA, PR, CI et limites ; éviter plusieurs fichiers de handoff concurrents.
 
-## 4. Objectif produit & décisions validées
+## Priorités après la PR #25
 
-Nom affiché : **Optic** ; moteur : **Optic AI Bridge** ; ne jamais renommer le produit « Lab ». Windows-first. UI **D Carbone et corail** validée, variante claire Lin et grenat. Figma https://www.figma.com/design/OGItF1Qa9wLGoSp2ieGJk4?node-id=320-130 ; références détaillées dans `docs/design/UI_D.md`. L'utilisateur a ajouté dans son espace de design une image de configuration/installation : inspiration distincte pour le parcours initial, **pas un asset déjà importé** ni autorisation de génération d'autres images.
+1. **Revue utilisateur Windows du rendu Supervision #25**, après mise à jour du clone local en préservant le stash de `Cargo.toml` et `src-tauri/gen/` tant qu'il n'a pas été explicitement vérifié.
+2. **Issue #23 :** intégrer le vrai candidat logo officiel 512px haute définition *seulement après accès à la source exacte vérifiée* (SHA-256 `d353f8a07d908dd43d6db9e169c913e8e6de5ef0509eab9369c373b690b01c2d`), tests de structure puis rendu Windows; ne pas agrandir le 48px.
+3. **Issue #3 :** poursuivre la migration sélective de V1.6.2 vers les modules UI D, conserver la direction Figma et éviter les faux états live.
+4. **Issue #4 :** préparer le contrat IPC Desktop↔Bridge (version, identité, authentification, flux d'événements, curseur, reconnect, révocation, nettoyage), sans toucher au moteur.
+5. **Issues #12, #13, #15 :** distribution Windows signée, premier démarrage Figma, mises à jour signées avec limites de confiance claires. Aucune release distribuable tant que les gates ne sont pas prouvées.
 
-Deux consoles réellement distinctes à terme :
-1. **Supervision**, lecture seule, démarrage automatique avec Bridge lancé par Optic ; logs réels structurés, horodatés, filtrables, bornés et récupérables sous contrat.
-2. **Terminal développeur**, interactif seulement après validation Rust ; xterm.js + ConPTY candidats, profiles autorisés, isolement Windows réel nécessaire ; jamais d'exécution PowerShell/CMD libre par défaut.
+## Documents de référence
 
-Afficher modifications de code par fichier et lignes ajoutées/supprimées (Monaco Diff candidat), corrélées aux opérations et permissions effectives. Thèmes communautaires : données déclaratives, sans scripts/CSS arbitraire. Extensions/boutons ajoutés par utilisateurs : future catégorie **séparée**, à permissions explicites. Préparer prise en charge de MCP tiers (Figma et autres) côté Bridge **après revue des contrats, compatibilités et authentification** ; ne pas prétendre une connexion Figma fonctionnelle.
+- `AGENTS.md` ; `docs/engineering/WORKFLOW.md` ; `docs/design/UI_D.md`
+- `docs/engineering/ICON_ASSETS.md` ; `docs/design/NATIVE_WINDOW_CHROME.md`
+- `docs/architecture/OBSERVABILITY_UI_CONTRACT.md` ; `docs/architecture/MODULE_BOUNDARIES.md`
+- `docs/security/SECURITY_MODEL.md` ; `docs/engineering/WINDOWS_DISTRIBUTION.md`
+- `docs/engineering/V162_SOURCE_AUDIT.md`
 
-## 5. Invariants sécurité / architecture
-
-- **Bridge Rust est l'unique autorité sur droits, sessions et effets sensibles.** Tauri n'est pas un second PolicyEngine ; React n'accorde aucun droit. Demande ≠ accord ≠ droit effectif ; révocation ≠ processus terminé ; état inconnu ≠ « arrêté ».
-- Respecter DAG `app -> features -> shared` et `features -> contracts/shared` ; jamais import direct d'une feature sœur ou dans `app` depuis une feature. Composition dans `src/app`; composants/styles dans modules propriétaires. Le garde-fou `scripts/check-boundaries.mjs` est une base statique **non exhaustive**.
-- Pas de `App.tsx` géant, `utils.ts` transversal, contexte mondial de permissions ou fichier Rust unique combinant tous les services.
-- Isoler les adaptateurs `demo/offline/live`. Ne jamais convertir une simulation en statut réel ni lire le stdout JSON-RPC de MCP comme un flux de logs.
-- Les sorties du terminal et des serveurs MCP sont non fiables ; pas de secrets dans logs/exports. Les thèmes ne donnent aucun accès au système.
-- Bridge Windows V1 était **NO-GO au dernier audit historique** ; le prochain chat doit vérifier le statut actuel avec le propriétaire Bridge, sans déclarer une résolution sur la base du code Desktop.
-
-## 6. Méthode de travail
-
-1. À chaque reprise, vérifier dépôt, `main` exact, PR ouvertes, éventuelles contributions externes, issues et résultats des CI récentes **dans le seul repo Desktop**.
-2. Lire `AGENTS.md`, règles/ADR et fichiers concernés. Prendre une seule responsabilité à la fois ; ouvrir **petite branche et PR**, pas d'écriture directement sur `main` sauf exception motivée.
-3. Ajouter tests unitaires/contrats sur erreurs, bornes, annulation, reconnexion et invariants. Utiliser `npm ci`, `npm run check`, `cargo check --locked --manifest-path src-tauri/Cargo.toml` et GitHub Actions. Pas de dépendance ajoutée sans raison documentée.
-4. Examiner toutes les CI sur **le SHA exact** avant squash-merge, puis vérifier l'exécution post-fusion ; si CI en cours, laisser la PR ouverte.
-5. Ne pas toucher au PC local de l'utilisateur ni déclencher des tests/installeurs physiques sans accord spécifique.
-6. Garder `HANDOFF.md` court, fidèle à GitHub et à jour lors de chaque fin de chantier ; ne pas accumuler des fichiers « HANDOFF_NEXT_CHAT » redondants.
-
-## 6 bis. Installation et configuration — chantier identifié, pas encore développé
-
-- **Issue #12 :** NSIS professionnel, portable distinct, WebView2, dépendances utilisateur vs développement, versions/compatibilité, signature, updates et validations Windows.
-- **Issue #13 :** assistant de première utilisation UI D fondé sur les cadres Figma `407:1659`, `407:1676`, puis `391:1138` ; ne pas les redessiner arbitrairement.
-- Voir `docs/engineering/WINDOWS_DISTRIBUTION.md`, `docs/design/INSTALLATION_SETUP.md` et ADR-0006 (native installation ≠ app first-run).
-- **Aucune release installable, aucun mode portable vérifié, aucune installation automatique de Bridge.** `bundle.active=false`. Node/Rust sont les outils de build, pas des prérequis à demander à l'utilisateur final.
-
-## 6 ter. Mises à jour — socle d'affichage, non activé
-
-- **Issue #15** : updater signé Tauri 2, canaux, métadonnées, consentement et vérifications Windows ; dépend de #12 (artefact réellement installable) et #4 (quiescence Bridge).
-- `src/features/updates/` apporte un modèle UI borné et une section des Paramètres clairement **non activée**, avec tests et ADR-0007. Pas de plugin updater branché, pas d'endpoint ou de clé publique, pas de téléchargement ni installation, `bundle.active=false` inchangé.
-- Ne pas appeler cela « mises à jour disponibles » tant qu'il n'y a pas de release/signature/pubkey/CI Windows et d'adaptateur natif.
-
-- **Garde-fou release :** `scripts/check-release-gates.mjs` contrôle automatiquement cohérence version/identité et interdit une configuration updater active ou incomplète ; `npm run check:release-candidate` reste volontairement rouge tant que le package Windows n'est pas prêt (issue #12 et #15). Ces validations sont statiques, **pas une preuve de signature ou de packaging**.
-
-- **NSIS CI smoke (#12.A) :** profil `src-tauri/tauri.nsis-smoke.conf.json` et workflow Windows isolé, sans signature ni installation et sans release publique. Tester la construction et recueillir checksum / provenance uniquement ; voir `docs/engineering/WINDOWS_DISTRIBUTION.md`. Une CI packaging verte ne certifie **pas** un installeur prêt pour les utilisateurs.
-
-- **NSIS cycle de vie CI (#12.B première tranche) :** script `scripts/windows/test-nsis-lifecycle.ps1` et workflow isolé : installation silencieuse uniquement sur runner GitHub hébergé, vérification registre/fichiers, désinstallation/cleanup et rapport temporaire. **Ne déclarer testé qu'après CI NSIS verte sur le SHA exact.** Pas de UI/WebView2 absent/upgrade, pas de signature ni de publication.
-
-- **WebView2 GUI CI (#12.B) :** test de fenêtre Win32 et processus `msedgewebview2.exe` enfant de l'application installée, avant désinstallation NSIS. Runner GitHub hébergé uniquement ; aucune validation de pixels/React réel. Résultat à confirmer sur SHA CI avant fusion.
-
-- **Test visuel utilisateur Windows :** app source compilée et ouverte ; barre de titre blanche, icônes natives provisoires, explorer à replier, hovers à revoir. Lot explorer/hover sans droits natifs, lot titre/logo séparé ; animation de démarrage planifiée mais pas activée. Voir `docs/design/UI_D.md`.
-
-- **Icône Optic 512 px (préparation) :** source officielle vérifiée SHA-256 `d353f8a0…` et pack ICO multi-tailles créé hors Git. `scripts/check-native-icon-candidate.mjs` valide en lecture seule l'empreinte source et les tailles ICO ; pas de nouvel asset natif fusionné, l'icône 48 px reste en place jusqu'au test Windows. Voir `docs/engineering/ICON_ASSETS.md` et issue #23.
-
-- **Revue Windows réelle (24/10) :** captures utilisateur confirment barre de titre sombre, icône native Optic et explorateur replié. La supervision offline apparaît excessivement vide, avec une fausse ligne CLI. Lot ciblé : écran offline compact et états vérifiables sans connexion, journal Rust et contrôle Bridge inchangés. Voir `docs/architecture/OBSERVABILITY_UI_CONTRACT.md`.
-
-## 7. Prochaines priorités recommandées
-
-1. **Issue #3 :** reprendre l'audit statique de l'archive récupérée (voir `docs/engineering/V162_SOURCE_AUDIT.md`), importer l'asset logo vérifié puis migrer en petites PR les interactions du prototype vers les modules UI D ; vérifier 1440×900 et 1280×800, clavier/focus, absence de scroll accueil et simulations explicites.
-2. **Issue #4 :** détailler côté Desktop les interfaces `BridgeState / SessionState / AuthorizationState`, protocole proposé avec version, identité d'instance, authentification, event cursor, reconnexion, expurgation ; **pas d'implémentation live** sans accord/revue du Bridge.
-3. Faire apparaître dans l'UI des **états purement offline** et les composants de thèmes prévisualisables (sans import réseau) avec tests ; ne pas connecter des appels Rust encore hypothétiques.
-4. Préparer le design du terminal/supervision/connexion MCP externe via ADR, sans lancer de shell ni ajouter un proxy MCP privilégié.
-5. Améliorer progressivement les checks de modules (imports dynamiques, TS resolver), tests d'interface, accessibilité, réduction des écarts Figma, audit du processus Windows.
-
-**Aucun développement GitHub côté Bridge n'est une tâche du successeur.**
+Cette passation remplace les instantanés de commits antérieurs; conserver les documents thématiques pour les détails techniques.
