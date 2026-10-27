@@ -1,0 +1,62 @@
+name: Windows Optic Preview NSIS candidate (unsigned)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-nsis-preview.yml'
+      - 'src-tauri/tauri.nsis-preview.conf.json'
+      - 'src-tauri/**'
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-preview:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - name: Restore pinned dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify offline source gates
+        run: npm run check
+      - name: Build private preview NSIS (not signed, updater disabled)
+        run: npm run tauri -- build --ci --bundles nsis --config src-tauri/tauri.nsis-preview.conf.json
+      - name: Record candidate identity and SHA-256
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dir = 'src-tauri/target/release/bundle/nsis'
+          $files = @(Get-ChildItem -LiteralPath $dir -Filter '*-setup.exe' -File)
+          if ($files.Count -ne 1) { throw "Expected exactly one setup, got $($files.Count)" }
+          $file = $files[0]
+          if ($file.Name -notlike '*Optic*Preview*') { throw "Unexpected preview filename: $($file.Name)" }
+          if ((Get-AuthenticodeSignature -LiteralPath $file.FullName).Status -ne 'NotSigned') { throw 'Unexpected Authenticode signature state' }
+          New-Item -ItemType Directory -Force 'preview-dist' | Out-Null
+          Copy-Item -LiteralPath $file.FullName -Destination 'preview-dist/'
+          @(
+            'OPTIC PRIVATE PREVIEW — UNSIGNED; NOT APPROVED FOR DISTRIBUTION'
+            'Tauri Updater disabled; NO production release'
+            "Source commit: ${{ github.sha }}"
+            "Filename: $($file.Name)"
+            "SHA256: $((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash)"
+            'Native install/upgrade/uninstall, Windows 10/11 and UI rendering not yet validated for this profile'
+          ) | Set-Content -LiteralPath 'preview-dist/PROVENANCE.txt'
+      - name: Retain candidate for inspection (not public release)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PRIVATE-UNSIGNED-OPTIC-PREVIEW-${{ github.run_id }}
+          path: preview-dist/
+          if-no-files-found: error
+          retention-days: 2
