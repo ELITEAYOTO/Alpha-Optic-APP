@@ -16,7 +16,8 @@
     "check:release-candidate": "node scripts/check-release-gates.mjs --release",
     "check:nsis-smoke": "node scripts/check-nsis-smoke.mjs",
     "check:icon-candidate": "node scripts/check-native-icon-candidate.mjs",
-    "check:nsis-preview": "node scripts/check-nsis-preview.mjs"
+    "check:nsis-preview": "node scripts/check-nsis-preview.mjs",
+    "check:manual-preview-config": "node scripts/check-release-gates.mjs --manual-preview"
   },
   "dependencies": {
     "react": "19.3.1",
