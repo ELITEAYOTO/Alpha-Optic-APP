@@ -121,7 +121,7 @@ test("hosted Preview smoke requires two bounded clean-install cycles and preserv
   }
   assert.doesNotMatch(source, /Remove-Item[^\r\n]*-Recurse\b/i);
   assert.match(source, /\$firstInstalled -and \$firstRemoved -and \$probeCreated -and \$errors.Count -eq 0/);
-  assert.match(source, /\$probeKept\)/);
+  assert.match(source, /\$probeKept -and \$previewGui\)/);
 });
 
 test("Preview GUI startup proof checks the exact installed app and independently-owned WebView2", () => {
