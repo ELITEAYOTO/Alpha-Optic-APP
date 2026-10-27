@@ -55,7 +55,8 @@ $probeContent = 'OPTIC_UPGRADE_CI_SENTINEL_V1; synthetic non-secret, NOT user se
 function PreviewRecords([string]$registryRoot) {
   return @(Get-ChildItem -LiteralPath $registryRoot -ErrorAction SilentlyContinue | ForEach-Object {
     $record = Get-ItemProperty -LiteralPath $_.PSPath
-    if ($record.PSObject.Properties['DisplayName']?.Value -eq 'Optic Preview') { $record }
+    $label = $record.PSObject.Properties['DisplayName']
+    if ($null -ne $label -and $label.Value -eq 'Optic Preview') { $record }
   })
 }
 
