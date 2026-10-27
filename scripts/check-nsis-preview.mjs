@@ -49,8 +49,11 @@ export function auditNsisPreview(base, preview, workflow) {
     error("Preview must build only an unsigned NSIS bundle, without updater artifacts");
   }
   const windows = bundle?.windows;
-  if (!hasOnlyKeys(windows, ["nsis", "webviewInstallMode"])) {
+  if (!hasOnlyKeys(windows, ["nsis", "webviewInstallMode", "allowDowngrades"])) {
     error("Unexpected Windows packaging configuration");
+  }
+  if (windows?.allowDowngrades !== false) {
+    error("Preview must explicitly reject silent NSIS downgrades");
   }
   if (!hasOnlyKeys(windows?.nsis, ["installMode", "languages"]) ||
       windows?.nsis?.installMode !== "currentUser" ||
