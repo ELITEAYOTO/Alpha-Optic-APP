@@ -44,6 +44,12 @@ La section **Paramètres → Mises à jour** apparaît maintenant en mode **non 
 
 Le workflow `windows-nsis-smoke.yml` prépare un installateur **NSIS non signé** sur GitHub Actions Windows, avec empreinte SHA-256 et rétention de 2 jours. `npm run check:nsis-smoke` vérifie l'isolation de son profil de test. **Le workflow teste maintenant une installation et une désinstallation silencieuses sur un runner Windows hébergé temporaire**, en contrôlant le registre HKCU, les fichiers et le nettoyage. Il teste également une **preuve de démarrage natif** (fenêtre Windows et processus WebView2 propre à Optic) ; il ne teste **pas** le rendu React, WebView2 absent, l’upgrade, la signature ou le PC de l’utilisateur ; **le binaire demeure non approuvé pour diffusion**. Le packaging normal d’Optic reste désactivé. Voir [le plan Windows](docs/engineering/WINDOWS_DISTRIBUTION.md) et [issue #12](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/12).
 
+## Optic Preview — installateur Windows expérimental (non signé)
+
+Un profil **Optic Preview** séparé permet maintenant de construire un installeur NSIS `currentUser` sur GitHub Actions Windows, avec contrôles SHA-256 et essai d'installation/désinstallation sur runner hébergé (PR #29). Il n'est **pas** publié dans les Releases et n'est **pas prêt** pour un PC personnel : identité provisoire, non signé, pas de validation Windows 10/11 propre, pas d'updater live ni de fonctionnement garanti sans Internet pour WebView2. Le build normal reste `bundle.active=false`.
+
+Voir le [guide du candidat NSIS](docs/engineering/NSIS_PREVIEW.md), l'[issue #28](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/28) et [ADR-0007](docs/decisions/ADR-0007-SIGNED-UPDATES.md) pour les étapes de signature et de mise à jour.
+
 ## Lire avant toute modification
 
 1. [AGENTS.md](AGENTS.md) : règles non négociables, interdiction d'écriture dans le Bridge.
