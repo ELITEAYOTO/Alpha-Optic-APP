@@ -7,8 +7,8 @@
 ## Déjà présent
 
 - Tauri 2 / Rust hôte minimal et React / TypeScript / Vite.
-- Navigation modulaire, accueil, supervision en lecture seule et terminal développeur séparés mais **inactifs**.
-- Projection d'événements offline validée, historique visuel borné avec tests.
+- Navigation modulaire, accueil et explorateur rétractable ; Supervision affiche un état **hors ligne compact** (aucun flux réellement connecté), Terminal développeur distinct **désactivé**.
+- Projection d'événements offline typés, modèle de journal borné avec tests **sans abonnement Bridge live**.
 - Manifeste de thème communautaire **déclaratif offline** validé et testé (pas de marketplace ni d'activation UI).
 - CI GitHub Actions : Node/React Windows et Ubuntu, contrôle Rust sur runner Windows ; dépendances npm/Cargo verrouillées.
 
@@ -28,7 +28,7 @@ npm run check
 npm run tauri dev
 ```
 
-Le build source réussi en CI **n'est pas** un test d'installateur, une validation du PC utilisateur ou une connexion réelle au Bridge. Le packaging est désactivé et l'icône du bootstrap n'est pas le logo officiel.
+Le build source réussi en CI ne prouve ni la qualité visuelle ni une connexion au Bridge. **L'utilisateur a réellement compilé et ouvert le prototype Windows** : titre natif sombre, logo Optic et explorateur repliable observés. **Un NSIS non signé de test a été installé/lancé/désinstallé uniquement sur runner hébergé** ; le packaging de distribution normale reste désactivé. L'icône native actuelle utilise le logo Optic officiel **48 px**, pas encore le jeu HD final.
 
 ## Distribution et premier démarrage (planifiés)
 
@@ -51,4 +51,6 @@ Le workflow `windows-nsis-smoke.yml` prépare un installateur **NSIS non signé*
 3. [Méthode](docs/engineering/WORKFLOW.md), [frontières des modules](docs/architecture/MODULE_BOUNDARIES.md) et [sécurité](docs/security/SECURITY_MODEL.md).
 4. [Design UI D](docs/design/UI_D.md), [observabilité](docs/architecture/OBSERVABILITY_UI_CONTRACT.md), [thèmes](docs/architecture/THEMES.md).
 
-**Priorités :** vérifier la source V1.6.2 et migrer fidèlement Figma UI D ; concevoir le contrat IPC authentifié sans toucher au Bridge ; poursuivre les modules dans de petites PR vérifiées sur le SHA exact.
+**Priorités :** poursuivre la migration UI D fidèle depuis l'archive V1.6.2 déjà auditée, vérifier par capture la Supervision hors ligne revue en PR #25, préparer le first-run #13, intégrer le véritable logo haute définition après preuve de source, et proposer un futur contrat IPC authentifié **sans jamais toucher au Bridge**. Toute PR doit passer les CI sur son SHA exact.
+
+**Reprise entre chats (27 octobre 2026) :** lire le [handoff canonique](docs/engineering/HANDOFF.md) puis le [prompt complet à copier](docs/engineering/NEXT_CHAT_PROMPT_OPTIC_DESKTOP_2026-10-27.md). Ne pas prendre l'ancienne documentation de 24 octobre comme un état GitHub actuel.

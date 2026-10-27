@@ -100,18 +100,13 @@ le statut Authenticode, puis stocke un artefact Actions nommé **UNSIGNED-DO-NOT
 pendant **2 jours**. L'artefact est potentiellement téléchargeable par les personnes
 autorisées à consulter les Actions du dépôt : il **ne doit pas être redistribué**.
 
-**Aucune installation ou exécution du setup**, aucune release GitHub, aucune
-signature, aucune mise à jour, aucun accès au PC utilisateur et aucune opération
-sur le moteur Bridge ne sont déclenchés par ce workflow.
+**Note historique (lot #18 seulement) :** à ce premier jalon, le workflow ne testait pas encore l'installation. **Ce passage est dépassé par #19 et #20 : aujourd'hui le setup est exécuté en mode silencieux sur un runner GitHub-hosted, l'application est lancée et WebView2 observé, puis désinstallée**. Aucune release GitHub, signature, mise à jour, action sur le PC utilisateur ou opération sur le moteur Bridge n'est déclenchée.
 
 `node scripts/check-nsis-smoke.mjs` est exécuté depuis `npm run check`. Il
 refuse les ajouts dangereux au profil smoke : élévation implicite, MSI, WebView2
 ignoré, plugins/updater activés, publication de release ou secrets CI de signature.
 
-**Gates encore manquants :** identité éditeur définitive, icônes natives
-professionnelles, Authenticode, signature Tauri Updater, installation / désinstallation
-/ mise à jour **réelles** sur Windows et support offline de WebView2. Même si le
-workflow NSIS devient vert, la distribution reste expérimentale et non approuvée.
+**Gates encore manquants :** identité éditeur définitive, icônes natives **haute définition**, Authenticode, signature Tauri Updater, **installation et mise à jour signées** en VM Windows 10/11 indépendante (avec/sans WebView2, compte non administrateur, upgrade/downgrade/rollback) et support WebView2 offline. Le cycle **installation/désinstallation expérimental** est déjà vert en CI (#19/#20), mais ne constitue pas une release approuvée.
 
 
 ### #12.B (première tranche) — cycle installation/désinstallation dans une CI isolée
@@ -163,3 +158,13 @@ installation hors ligne, mise à jour signée, qualité de la navigation,
 zoom et accessibilité doivent faire l'objet de contrôles séparés. Un
 runner sans session interactive peut échouer ; ne pas affaiblir les
 assertions pour cacher ce résultat.
+
+## État consolidé vérifié le 27 octobre 2026 — ne plus reprendre les jalons historiques isolément
+
+- `main` avant PR documentaire : `c5c89006d4041362dd4e791675af5c504be6d25c`, 4/4 contrôles source post-fusion verts ; **PR #25** fusionnée (Supervision offline). Vérifier le vrai SHA nouveau après intégration documentaire.
+- Le smoke PR actuel a **réellement réussi** : compilation `Optic Smoke Test 0.0.1` non signé, `setup.exe /S`, contrôle HKCU, fichiers/version, fenêtre Win32 et sous-processus WebView2, fermeture `uninstall.exe /S`, absence de résidus. Ces preuves sont **sur runner GitHub hébergé** seulement, sans installation sur l'ordinateur utilisateur.
+- L'utilisateur a aussi **compilé et lancé le prototype Tauri depuis source sur Windows 10** : capture montrant la barre native sombre, l'icône Optic, l'explorateur replié et l'ancien état Supervision. Ce test local ne prouve **pas** que le setup NSIS non signé serait approprié pour sa machine.
+- Les corrections de titre/icone Windows #22 et explorateur #21 sont fusionnées ; logo natif encore dérivé du **48px**. Source 512px et pack HD préparés hors dépôt, validateur #24 fusionné, intégration réelle non faite.
+- **La distribution reste NO-GO** : identité définitive, signature de code, updater signé, portable, WebView2 manquant/offline, anti-downgrade/rollback, migration, consentement et tests d'installation Windows indépendant. Ne pas proposer de télécharger/exécuter l'artefact `UNSIGNED-DO-NOT-INSTALL` pour un utilisateur.
+- `bundle.active=false` dans le profil normal. Le choix portable/installé relève du téléchargement/setup, **pas** d'un écran React après démarrage. Node/Rust/Visual Studio sont des dépendances de **développement**, non des prérequis à imposer à l'utilisateur final.
+- Voir `docs/engineering/HANDOFF.md`, issues #12/#13/#15 et ADR-0006/0007.
