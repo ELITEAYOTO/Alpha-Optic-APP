@@ -133,7 +133,7 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
       if (!["passive", "basicUi"].includes(object(updater.windows).installMode)) {
         problems.push("Updater Windows : installMode visible, passive ou basicUi requis");
       }
-      }
+    }
   } else {
     problems.push("bundle.active doit être un booléen explicite");
   }
