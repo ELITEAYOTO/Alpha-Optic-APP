@@ -1,0 +1,55 @@
+name: Audit signed Optic Preview Release (read-only)
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Approved preview tag, e.g. v0.1.0-preview.1'
+        type: string
+        required: true
+      source_commit_sha:
+        description: 'Independently approved 40-character source commit SHA'
+        type: string
+        required: true
+      installer_sha256:
+        description: 'SHA-256 of the approved release setup from an independent source'
+        type: string
+        required: true
+      publisher_thumbprint:
+        description: 'Approved Authenticode signer certificate SHA-1 thumbprint'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify-release-only:
+    if: github.repository == 'ELITEAYOTO/Alpha-Optic-APP' && github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout official main with release tags for source verification
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact draft/prerelease asset and publisher signature (NEVER EXECUTE)
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          SOURCE_COMMIT_SHA: ${{ inputs.source_commit_sha }}
+          INSTALLER_SHA256: ${{ inputs.installer_sha256 }}
+          PUBLISHER_THUMBPRINT: ${{ inputs.publisher_thumbprint }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & './scripts/windows/audit-preview-release.ps1' -ReleaseTag $env:RELEASE_TAG -ExpectedSourceSha $env:SOURCE_COMMIT_SHA -ExpectedSha256 $env:INSTALLER_SHA256 -ExpectedPublisherThumbprint $env:PUBLISHER_THUMBPRINT
+      - name: Retain audit report ONLY (never redistribute installer)
+        uses: actions/upload-artifact@v4
+        with:
+          name: SIGNED-PREVIEW-READONLY-AUDIT-${{ github.run_id }}
+          path: preview-release-audit/AUDIT.txt
+          if-no-files-found: error
+          retention-days: 7
