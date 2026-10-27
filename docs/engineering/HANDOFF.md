@@ -1,10 +1,10 @@
 # OPTIC DESKTOP — passation canonique Windows (état vérifié le 27 octobre 2026)
 
 **Dépôt autorisé :** https://github.com/ELITEAYOTO/Alpha-Optic-APP  
-**main GitHub confirmé après la PR #29 (27/10/2026) :** `2bd43f0e30437bc1f2090b0481e0a1e6e38abb7c`, squash-merge de la [PR #29](https://github.com/ELITEAYOTO/Alpha-Optic-APP/pull/29).  
-**Contrôles exact-head de la PR #29 (`c855fdb583cfefed863d17f67613cad39f6b578f`) :** architecture, frontend Ubuntu/Windows, Rust Windows, smoke NSIS de référence et nouveau build + install/uninstall Optic Preview : **tous verts**. Le statut des runs `push` de `main` n'était pas disponible via la recherche PR-only au moment de cette mise à jour ; ne pas présenter ces checks comme une validation post-fusion.  
-**Statut de distribution :** candidat NSIS **privé, non signé et non approuvé pour installation utilisateur**. Aucun updater réel, aucune release, aucun Bridge intégré. Relire `docs/engineering/NSIS_PREVIEW.md` avant tout travail de distribution.  
-**IMPORTANT :** la prochaine session doit contrôler `main`, les PR, les issues et les CI réellement accessibles ; ces valeurs sont un instantané.
+**main GitHub confirmé après la PR #33 (27/10/2026) :** `ca8f987b2f2cccdba3e5d5de669e21e776755c08`, squash-merge de la [PR #33](https://github.com/ELITEAYOTO/Alpha-Optic-APP/pull/33). **Re-vérifier `main` au début du prochain chat ; cet instantané devient caduc après cette PR documentaire.**  
+**Preuves exact-head PR #31, #32, #33 :** Foundation/architecture, Desktop source Windows/Ubuntu/Rust et Windows NSIS Preview **verts sur leurs têtes respectives**. #31 : réinstallation même version + préservation d'une sonde AppData. #32 : démarrage Win32/WebView2 du binaire Preview. #33 : refus contrôlé d'un hash invalide et d'une signature absente. **La recherche d'Actions utilisée ne donne pas les runs `push` de `main` ; ne pas affirmer une CI post-fusion verte.**  
+**Statut de distribution :** candidat NSIS privé de CI **non signé, non distribué et NON approuvé pour installation sur le PC utilisateur**. Pas d'updater réel, pas de release, pas de Bridge intégré. **Prochaine lecture : `docs/engineering/PRIVATE_PREVIEW_RELEASE_GATES.md`**, puis `NSIS_PREVIEW.md`.  
+**Rappel :** aucune commande/installateur sur le PC utilisateur sans accord spécifique ; GitHub Actions est distinct. L'alerte « Optic prêt à installer » contrôle les futures Releases, et ne doit pas notifier sur des artefacts `PRIVATE-UNSIGNED`.
 
 ## 1. Périmètre et autorité — impératifs
 
@@ -94,6 +94,14 @@
 - `scripts/check-nsis-preview.mjs`, `tests/nsis-preview.test.mjs` et `npm run check:nsis-preview` interdisent updater/secrets, publication, privilèges inattendus, écrasement `app.windows` et omission du test natif.
 - **Non acquis :** certificate Authenticode, signing key updater Tauri, HTTPS endpoint, version stable, icône HD intégrée, portable, Windows 10/11 réel propre, upgrade/rollback, WebView2 absent, visuel React effectif, onboarding first-run et Bridge live. Ne pas conseiller d'installer l'artefact non signé sur un PC utilisateur.
 - Prochain lot recommandé : planifier les vérifications d'upgrade/réinstallation Preview et conservation des données sur runner avant d'activer un pipeline signé ; coordination release/Bridge seulement après contrats et approbation.
+
+## 7 ter. Conditions de première Preview privée après #31–#33
+
+- **[#31](https://github.com/ELITEAYOTO/Alpha-Optic-APP/pull/31)** `5dafd45246ccd2fdf88bc0dfd3b49f5eaaf77f06` : NSIS Preview installé, désinstallé, réinstallé dans la **même version** sur GitHub-hosted Windows ; sonde de test AppData conservée. **Pas** de vraie migration des réglages ni synchronisation multi-PC.
+- **[#32](https://github.com/ELITEAYOTO/Alpha-Optic-APP/pull/32)** `310c98afd2432321099d82d42c98f2cd66a44e93` : **binaire Preview installé** lancé, fenêtre Win32 et processus enfant WebView2 observés, fermé avant désinstallation. **Pas** de preuve visuelle React/Figma ou Windows 10 vierge.
+- **[#33](https://github.com/ELITEAYOTO/Alpha-Optic-APP/pull/33)** `ca8f987b2f2cccdba3e5d5de669e21e776755c08` : `scripts/windows/verify-optic-installer.ps1` vérifie SHA-256 + signature Authenticode valide + thumbprint éditeur connu, **en lecture seule**. CI refuse le mauvais SHA ainsi que l'unsigned CI. Aucun vrai certificat de publication n'est encore fourni.
+- La **première installation privée signée** peut être approuvée **avant** l'activation des mises à jour automatiques Tauri, si publication/provenance, éditeur/certificat, tests Windows 10/11, WebView2 et retour arrière sont établis. Lire la checklist `PRIVATE_PREVIEW_RELEASE_GATES.md`. Ne pas demander au propriétaire d'installer des artefacts `PRIVATE-UNSIGNED` ou de contourner SmartScreen.
+- Saisie volontaire nécessaire ultérieurement : décision d'identité/éditeur et de solution de signature Windows. **Ne pas inventer de certificat, domaine, clé ou version.** Pas de Bridge installé/contrôlé.
 
 ## 8. Suite priorisée et méthode autonome
 
