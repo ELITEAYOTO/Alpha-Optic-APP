@@ -14,16 +14,16 @@ L'utilisateur change souvent d'ordinateur Windows. Une vraie installation par do
 
 ## CI et provenance
 
-Workflow `.github/workflows/windows-nsis-preview.yml` : vérifie le code, fabrique un setup NSIS sur `windows-latest`, exige un nom de fichier exact, contrôle son statut **NotSigned** et son SHA-256. Artefact temporaire (2 jours) `PRIVATE-UNSIGNED-OPTIC-PREVIEW-...`, jamais GitHub Releases.
+Workflow `.github/workflows/windows-nsis-preview.yml` : vérifie le code, fabrique un setup NSIS sur `windows-latest`, exige un nom de fichier exact, contrôle son statut **NotSigned** et son SHA-256. Le script `scripts/windows/test-nsis-preview-lifecycle.ps1` installe ensuite le candidat uniquement sur le runner hébergé, vérifie l'identité, l'enregistrement HKCU, la version, le binaire et l'uninstaller, puis désinstalle proprement. Le rapport temporaire `LIFECYCLE.txt` n'est une preuve que lorsque le job **sur le même SHA** réussit. Artefact temporaire (2 jours) `PRIVATE-UNSIGNED-OPTIC-PREVIEW-...`, jamais GitHub Releases.
 
 Contrôles négatifs `npm run check:nsis-preview` et `tests/nsis-preview.test.mjs` : refusent les changements d'identité inattendus, l'écrasement de la fenêtre, les permissions ou privilèges élargis, les téléchargements WebView2 ignorés, les clés/serveurs d'updater et les actions de publication depuis la CI.
 
-**Preuve limitée :** réussir une compilation et obtenir le SHA-256 ne prouve ni installation/désinstallation de ce profil Preview, ni rendu React, ni compatibilité Windows 10/11, ni réputation SmartScreen, ni antivirus ni support offline. Le profil *Smoke Test*, distinct, bénéficie déjà de tests installation/désinstallation et démarrage WebView2 ; leurs résultats ne sont pas automatiquement transférables à Preview.
+**Preuve limitée :** le protocole Preview installé/désinstallé sur Windows GitHub-hosted n'établit pas le rendu React, la compatibilité Windows 10/11, la réputation SmartScreen, l'antivirus, la restauration après upgrade, ni le fonctionnement hors ligne. **Ne pas annoncer le test réussi avant le résultat CI sur la tête exacte de PR.** Le profil *Smoke Test*, distinct, bénéficie déjà de tests installation/désinstallation et démarrage WebView2 ; leurs résultats ne sont pas automatiquement transférables à Preview.
 
 ## Conditions avant un test utilisateur autorisé
 
 1. Faire réussir les checks source et Windows NSIS Preview sur le même SHA, relire les artefacts et la provenance.
-2. Tester spécifiquement une installation/désinstallation Preview sur un runner Windows isolé (identité, registre HKCU, chemin, WebView2, nettoyage sans perte de données) puis upgrade/réinstallation.
+2. Confirmer les résultats d'installation/désinstallation Preview du runner (identité, HKCU, chemin, nettoyage contrôlé), puis ajouter séparément les tests WebView2 propre à Preview, upgrade/réinstallation et conservation de données.
 3. Confirmer une image/logo haute résolution authentique, les textes du programme et l'assistant first-run en français.
 4. Définir la politique de signature Authenticode Windows et de distribution. Une version non signée peut susciter SmartScreen : **ne pas conseiller de contourner les protections**.
 5. Faire vérifier un installateur approprié sur Windows 10/11 x64 sans outils de développement, avec consentement exprès avant tout test sur un PC personnel.
