@@ -40,6 +40,10 @@ const workflow = () => [
   "preview-dist/LIFECYCLE.txt",
   "'scripts/windows/test-nsis-preview-lifecycle.ps1'",
   "'scripts/windows/test-nsis-preview-gui.ps1'",
+  "'scripts/windows/verify-optic-installer.ps1'",
+  "./scripts/windows/verify-optic-installer.ps1",
+  "Verify release preflight refuses the unsigned CI-only setup",
+  "Critical: unsigned Preview setup passed the release verification gate",
 ].join("\n");
 
 test("repository Preview candidate remains separated, unsigned and without updater", () => {
@@ -144,4 +148,27 @@ test("Preview GUI startup proof checks the exact installed app and independently
     assert.ok(source.includes(required), `Missing Preview GUI security/evidence marker: ${required}`);
   }
   assert.doesNotMatch(source, /-WindowStyle\s+Hidden|-ExecutionPolicy\s+Bypass/);
+});
+
+test("Windows installer verifier is strictly read-only, hash-pinned, publisher-pinned and signature-required", () => {
+  const script = readFileSync(new URL("../scripts/windows/verify-optic-installer.ps1", import.meta.url), "utf8");
+  for (const required of [
+    "[Environment]::OSVersion.Platform",
+    "Get-Item -LiteralPath",
+    "Get-FileHash -LiteralPath",
+    "Get-AuthenticodeSignature -LiteralPath",
+    "[System.Management.Automation.SignatureStatus]::Valid",
+    "ExpectedPublisherThumbprint",
+    "SHA-256 mismatch",
+    "untrusted or invalid",
+    "independently approved publisher pin",
+    "No installer was executed and no certificate store was changed.",
+  ]) {
+    assert.ok(script.includes(required), `Missing release verification marker: ${required}`);
+  }
+  assert.doesNotMatch(script, /\b(Start-Process|Invoke-Expression|Invoke-WebRequest|New-Item|Remove-Item|Import-Certificate|Install-Module|Set-AuthenticodeSignature)\b/i);
+  const workflowText = readFileSync(new URL("../.github/workflows/windows-nsis-preview.yml", import.meta.url), "utf8");
+  assert.match(workflowText, /Verify release preflight refuses the unsigned CI-only setup/);
+  assert.match(workflowText, /Critical: unsigned Preview setup passed the release verification gate/);
+  assert.match(workflowText, /-ExpectedPublisherThumbprint '0000000000000000000000000000000000000000'/);
 });
