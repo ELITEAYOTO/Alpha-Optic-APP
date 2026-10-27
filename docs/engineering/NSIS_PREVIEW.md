@@ -26,6 +26,12 @@ Le scénario `test-nsis-preview-lifecycle.ps1` est étendu à deux cycles : prem
 
 Ce test démontre uniquement que l'installateur n'efface pas ce **fichier factice** sur son runner. Il ne prouve **ni** que les futurs vrais réglages et secrets Optic sont correctement persistés, **ni** une mise à niveau `0.0.1 → 0.0.2`, **ni** une synchronisation entre plusieurs PC. La réussite ne peut être déclarée qu'après vérification de la CI **sur le SHA exact de la PR concernée** ; les signatures et le mécanisme de mise à jour restent inactifs.
 
+## Démarrage natif du binaire installé (contrôle CI supplémentaire)
+
+Le test `test-nsis-preview-gui.ps1` vérifie désormais, pendant la deuxième installation propre et **avant désinstallation**, l'ouverture d'une fenêtre Win32 associée à l'exécutable réellement installé ainsi qu'un processus `msedgewebview2.exe` directement enfant de son PID. Un arrêt borné et la confirmation de fin du processus sont obligatoires avant la désinstallation. Le script refuse toute exécution hors du runner GitHub-hosted Windows et hors du répertoire dédié à **Optic Preview** ; il génère `preview-dist/PREVIEW_GUI_LAUNCH.txt` pour distinguer ses preuves de la compilation du setup.
+
+Ce lot ne démontre ni le rendu React réel, ni la fidélité Figma, ni la compatibilité Windows 10/11 en machine vierge, ni un WebView2 absent, ni une mise à niveau signée. **Les résultats sont seulement confirmés lorsque le workflow passe au vert sur le SHA exact.**
+
 ## Conditions avant un test utilisateur autorisé
 
 1. Faire réussir les checks source et Windows NSIS Preview (incluant la réinstallation propre) sur le même SHA, relire les artefacts et la provenance.
