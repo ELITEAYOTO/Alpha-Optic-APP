@@ -11,6 +11,7 @@ on:
       - 'scripts/check-nsis-preview.mjs'
       - 'tests/nsis-preview.test.mjs'
       - 'scripts/windows/test-nsis-preview-lifecycle.ps1'
+      - 'scripts/windows/test-nsis-preview-gui.ps1'
   workflow_dispatch:
 
 permissions:
@@ -56,7 +57,7 @@ jobs:
             "SHA256: $((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash)"
             'Build provenance only; clean reinstall tested in next step. Version upgrade, Windows 10/11 and UI rendering not validated'
           ) | Set-Content -LiteralPath 'preview-dist/PROVENANCE.txt'
-      - name: Test Preview clean reinstall and external-state sentinel on hosted Windows
+      - name: Test Preview native WebView2 startup, clean reinstall and AppData probe on hosted Windows
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
