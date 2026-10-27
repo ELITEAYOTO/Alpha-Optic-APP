@@ -83,6 +83,12 @@ export function auditNsisPreview(base, preview, workflow) {
       !workflow.includes("'scripts/windows/test-nsis-preview-gui.ps1'")) {
     error("Preview must verify install/uninstall and native GUI on trusted hosted Windows");
   }
+  if (!workflow.includes("'scripts/windows/verify-optic-installer.ps1'") ||
+      !workflow.includes("./scripts/windows/verify-optic-installer.ps1") ||
+      !workflow.includes("Verify release preflight refuses the unsigned CI-only setup") ||
+      !workflow.includes("Critical: unsigned Preview setup passed the release verification gate")) {
+    error("Unsigned Preview must be rejected by the future signed-release verifier");
+  }
   if (!workflow.includes("actions/upload-artifact@v4") ||
       !workflow.includes("PRIVATE-UNSIGNED-OPTIC-PREVIEW") ||
       !workflow.includes("retention-days: 2") ||
