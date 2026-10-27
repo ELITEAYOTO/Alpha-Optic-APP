@@ -1,10 +1,10 @@
 # OPTIC DESKTOP — passation canonique Windows (état vérifié le 27 octobre 2026)
 
 **Dépôt autorisé :** https://github.com/ELITEAYOTO/Alpha-Optic-APP  
-**Dernier main GitHub contrôlé AVANT cette PR documentaire :** `c5c89006d4041362dd4e791675af5c504be6d25c` (PR #25 squash-merge).  
-**CI de ce SHA :** `architecture`, `frontend (ubuntu-latest)`, `frontend (windows-latest)`, `windows-rust` : **4/4 success**.  
-**PR ouvertes à ce point de contrôle :** 0. Les PR #1, #2, #5–#11 (selon existence), #14, #16–#22 et #24–#25 concernées sont fusionnées ; ne pas déduire des numéros manquants qu'il y a eu une PR.  
-**IMPORTANT :** ceci est un instantané, pas une promesse que GitHub restera identique. Au prochain chat, **recontrôler `main`, PR, issues, SHA de CI et documents actuels avant toute écriture**. Après fusion de cette PR, remplacer ce SHA de référence par le nouveau `main` constaté.
+**main GitHub confirmé après la PR #29 (27/10/2026) :** `2bd43f0e30437bc1f2090b0481e0a1e6e38abb7c`, squash-merge de la [PR #29](https://github.com/ELITEAYOTO/Alpha-Optic-APP/pull/29).  
+**Contrôles exact-head de la PR #29 (`c855fdb583cfefed863d17f67613cad39f6b578f`) :** architecture, frontend Ubuntu/Windows, Rust Windows, smoke NSIS de référence et nouveau build + install/uninstall Optic Preview : **tous verts**. Le statut des runs `push` de `main` n'était pas disponible via la recherche PR-only au moment de cette mise à jour ; ne pas présenter ces checks comme une validation post-fusion.  
+**Statut de distribution :** candidat NSIS **privé, non signé et non approuvé pour installation utilisateur**. Aucun updater réel, aucune release, aucun Bridge intégré. Relire `docs/engineering/NSIS_PREVIEW.md` avant tout travail de distribution.  
+**IMPORTANT :** la prochaine session doit contrôler `main`, les PR, les issues et les CI réellement accessibles ; ces valeurs sont un instantané.
 
 ## 1. Périmètre et autorité — impératifs
 
@@ -85,12 +85,22 @@
 - **#15** updater **signé** sur stable/preview, consentement, canal, erreurs et anti-downgrade ; pas de plugin ou endpoint réel.
 - **#23** chrome Windows premium, ICO haute résolution, animation de lancement, DPI/Alt+Tab/keyboard/Snap, ne pas supprimer décorations sans validation.
 
+## 7 bis. Nouvelle étape NSIS Preview — PR #29 (27 octobre 2026)
+
+- **Issue #28** : besoin explicite de l'utilisateur de pouvoir installer Optic rapidement sur plusieurs PC Windows, puis de recevoir des mises à jour signées. **Ne pas confondre réinstallation simple et synchronisation automatique des réglages entre PC**, non implémentée.
+- Branche de développement fusionnée : `feat/nsis-private-preview-profile-2026-10-27`. Fichier `src-tauri/tauri.nsis-preview.conf.json`, identité isolée **Optic Preview**, paquet NSIS `currentUser` FR/EN, WebView2 `downloadBootstrapper`, **updater désactivé** ; configuration normale toujours `bundle.active=false`.
+- Workflow `.github/workflows/windows-nsis-preview.yml` : Windows GitHub-hosted, compilation NSIS, statut `NotSigned`, SHA-256, artefact court de 2 jours **PRIVATE-UNSIGNED-OPTIC-PREVIEW**, **pas de GitHub Release**.
+- Nouveau protocole `scripts/windows/test-nsis-preview-lifecycle.ps1` limité à GitHub-hosted : installation, HKCU, version, binaire, désinstallation/cleanup sans suppression arbitraire. Succès natif **sur SHA exact #29** ; pas de test PC utilisateur.
+- `scripts/check-nsis-preview.mjs`, `tests/nsis-preview.test.mjs` et `npm run check:nsis-preview` interdisent updater/secrets, publication, privilèges inattendus, écrasement `app.windows` et omission du test natif.
+- **Non acquis :** certificate Authenticode, signing key updater Tauri, HTTPS endpoint, version stable, icône HD intégrée, portable, Windows 10/11 réel propre, upgrade/rollback, WebView2 absent, visuel React effectif, onboarding first-run et Bridge live. Ne pas conseiller d'installer l'artefact non signé sur un PC utilisateur.
+- Prochain lot recommandé : planifier les vérifications d'upgrade/réinstallation Preview et conservation des données sur runner avant d'activer un pipeline signé ; coordination release/Bridge seulement après contrats et approbation.
+
 ## 8. Suite priorisée et méthode autonome
 
 1. **Tout de suite :** recontrôler GitHub, tests, PR et docs de cette passation ; corriger toute incohérence avant développement.
 2. **Sécuriser des preuves visuelles** (quand utilisateur volontaire) de #25, mesure absence de scroll et focus aux deux résolutions ; conserver captures sans secrets. Ne pas confondre validation de code et qualité visuelle.
 3. **Un petit lot à la fois :** par exemple modèle purement offline/testé de first-run (#13), ou amélioration accessible de Supervision/accueil, ou réellement intégrer la source icon HD si ses octets vérifiés sont accessibles, ou qualité du champ statut; ne pas mélanger Figma, setup natif, Bridge et mises à jour dans une même PR.
-4. **Plus tard** préparer le vrai packaging NSIS par utilisateur, variante portable distincte, signatures Authenticode et updater, gestion WebView2 absent/offline, upgrade/downgrade/rollback, versions distinctes application/Bridge/protocole, jamais installation automatique d'un Bridge non autorisé. Aucun Node/Rust chez l'utilisateur final attendu.
+4. **Packaging :** le NSIS Preview expérimental est déjà construit et installé/désinstallé en CI, mais aucun installeur utilisateur n'est prêt. Poursuivre variante portable distincte, signatures Authenticode et updater, gestion WebView2 absent/offline, upgrade/downgrade/rollback, versions distinctes application/Bridge/protocole, jamais installation automatique d'un Bridge non autorisé. Aucun Node/Rust chez l'utilisateur final attendu.
 5. Contrat Bridge : préparer une **proposition** dans le dépôt Desktop seulement ; tester identité, version, canaux, changements d'état, révocation, fin native avant de rendre de vraies commandes actives. Pas d'inférence de permission côté React.
 
 **Discipline :** confirmer `repository_full_name` sur chaque écriture ; branche isolée issue du SHA `main` vérifié ; petite PR diff/test/documentation ; CI exact-head `architecture`, `frontend (windows-latest)`, `frontend (ubuntu-latest)`, `windows-rust` + NSIS smoke si déclenché ; aucun merge pendant échec/en cours ; squash avec SHA attendu ; `main` postmerge 4/4 ; issues et ce handoff synchronisés ; annonce exacte des preuves et non-preuves. Ne pas entretenir deux documents de passation contradictoires : celui-ci fait foi, le fichier `NEXT_CHAT_PROMPT...` est une instruction à copier, pas une source historique autonome.
