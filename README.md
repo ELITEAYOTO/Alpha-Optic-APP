@@ -48,6 +48,8 @@ Le workflow `windows-nsis-smoke.yml` prépare un installateur **NSIS non signé*
 
 Un profil **Optic Preview** séparé permet maintenant de construire un installeur NSIS `currentUser` sur GitHub Actions Windows, avec contrôles SHA-256 et essai d'installation/désinstallation sur runner hébergé (PR #29). Il n'est **pas** publié dans les Releases et n'est **pas prêt** pour un PC personnel : identité provisoire, non signé, pas de validation Windows 10/11 propre, pas d'updater live ni de fonctionnement garanti sans Internet pour WebView2. Le build normal reste `bundle.active=false`.
 
+Avant le premier essai sur un PC utilisateur, suivre la [checklist de Preview privée signée](docs/engineering/PRIVATE_PREVIEW_RELEASE_GATES.md) : identité éditeur, signature/provenance, tests Windows 10/11 et consignes de retour arrière. **Un premier essai manuel n'exige pas que l'updater automatique soit déjà activé.**
+
 Voir le [guide du candidat NSIS](docs/engineering/NSIS_PREVIEW.md), l'[issue #28](https://github.com/ELITEAYOTO/Alpha-Optic-APP/issues/28) et [ADR-0007](docs/decisions/ADR-0007-SIGNED-UPDATES.md) pour les étapes de signature et de mise à jour.
 
 ## Lire avant toute modification
