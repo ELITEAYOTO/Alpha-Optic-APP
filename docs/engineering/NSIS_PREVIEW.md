@@ -9,6 +9,7 @@ L'utilisateur change souvent d'ordinateur Windows. Une vraie installation par do
 - Source : `src-tauri/tauri.conf.json` = prototype normal, `bundle.active=false`.
 - Extension : `src-tauri/tauri.nsis-preview.conf.json` = `Optic Preview`, identifiant distinct `dev.optic.desktop.preview`, NSIS `currentUser` français/anglais.
 - WebView2 : `downloadBootstrapper` **nécessite Internet lorsque le runtime doit être installé** ; ne pas annoncer un installateur entièrement autonome/offline.
+- `bundle.windows.allowDowngrades=false` : un installateur NSIS **plus ancien** doit être refusé en mode silencieux/passif/mise à jour lorsqu'une version supérieure est déjà installée. D'après la documentation Tauri, cela n'empêche pas une personne de désinstaller manuellement puis d'installer une version antérieure : ce n'est **pas** une protection de données anti-rollback ni une validation native de deux versions. La CI vérifie le réglage et empêche sa suppression accidentelle. Référence : https://v2.tauri.app/reference/config/#windowsconfig.
 - `createUpdaterArtifacts=false` ; aucun plugin updater ou endpoint n'est activé. Le nom/identifiant ne sont **pas définitifs**.
 - La configuration de la fenêtre est héritée de la base. Ne pas définir une liste partielle `app.windows` dans la surcouche : Tauri applique JSON Merge Patch et remplacerait la liste entière.
 
