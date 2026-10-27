@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { auditNsisPreview, inspectNsisPreview } from "../scripts/check-nsis-preview.mjs";
 
 const base = () => ({
@@ -94,4 +95,28 @@ test("Preview workflow refuses publishing, secrets, elevated permissions or untr
     "always()",
   );
   assert.equal(auditNsisPreview(base(), preview(), unsafe).ready, false);
+});
+
+test("hosted Preview smoke requires two bounded clean-install cycles and preserves external synthetic state", () => {
+  const source = readFileSync(new URL("../scripts/windows/test-nsis-preview-lifecycle.ps1", import.meta.url), "utf8");
+  for (const required of [
+    "$env:RUNNER_ENVIRONMENT -ne 'github-hosted'",
+    "$env:GITHUB_REPOSITORY -ne 'ELITEAYOTO/Alpha-Optic-APP'",
+    "Refusing to execute anything except the exact CI-produced Optic Preview installer.",
+    "Get-AuthenticodeSignature",
+    "Join-Path $env:APPDATA 'dev.optic.desktop.preview'",
+    "An Optic Preview installation already exists; refusing to replace it.",
+    "Confirm-SyntheticProfile",
+    "Initial NSIS Preview installation",
+    "Initial NSIS Preview uninstallation",
+    "Clean reinstallation of Optic Preview",
+    "Second NSIS Preview uninstallation",
+    "Real Optic settings/cross-PC sync/version upgrade: NOT TESTED",
+    "Optic AI Bridge / user PC: NOT TOUCHED",
+  ]) {
+    assert.ok(source.includes(required), `Missing NSIS safety/proof marker: ${required}`);
+  }
+  assert.doesNotMatch(source, /Remove-Item[^\r\n]*-Recurse\b/i);
+  assert.match(source, /\$firstInstalled -and \$firstRemoved -and \$probeCreated -and \$errors.Count -eq 0/);
+  assert.match(source, /\$probeKept\)/);
 });
