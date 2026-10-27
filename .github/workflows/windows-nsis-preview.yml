@@ -10,6 +10,7 @@ on:
       - 'package-lock.json'
       - 'scripts/check-nsis-preview.mjs'
       - 'tests/nsis-preview.test.mjs'
+      - 'scripts/windows/test-nsis-preview-lifecycle.ps1'
   workflow_dispatch:
 
 permissions:
@@ -55,6 +56,13 @@ jobs:
             "SHA256: $((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash)"
             'Native install/upgrade/uninstall, Windows 10/11 and UI rendering not yet validated for this profile'
           ) | Set-Content -LiteralPath 'preview-dist/PROVENANCE.txt'
+      - name: Test Preview per-user install and uninstall on isolated Windows runner
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(Get-ChildItem -LiteralPath 'src-tauri/target/release/bundle/nsis' -File -Filter '*-setup.exe')
+          if ($files.Count -ne 1) { throw "Expected one Preview setup, found $($files.Count)" }
+          & './scripts/windows/test-nsis-preview-lifecycle.ps1' -InstallerPath $files[0].FullName -ReportPath 'preview-dist/LIFECYCLE.txt'
       - name: Retain candidate for inspection (not public release)
         uses: actions/upload-artifact@v4
         with:
