@@ -32,6 +32,12 @@ Le test `test-nsis-preview-gui.ps1` vérifie désormais, pendant la deuxième in
 
 Ce lot ne démontre ni le rendu React réel, ni la fidélité Figma, ni la compatibilité Windows 10/11 en machine vierge, ni un WebView2 absent, ni une mise à niveau signée. **Les résultats sont seulement confirmés lorsque le workflow passe au vert sur le SHA exact.**
 
+## Préflight de sécurité avant une future installation utilisateur
+
+`scripts/windows/verify-optic-installer.ps1` est un vérificateur PowerShell **en lecture seule** ; il ne télécharge rien, ne lance aucun setup et ne modifie pas les certificats. Il exige trois entrées issues d'une **release officielle vérifiée indépendamment** : le chemin du setup NSIS, l'empreinte SHA-256 exacte (64 caractères hexadécimaux) et l'empreinte du certificat Authenticode de l'éditeur approuvé (40 caractères hexadécimaux). Le script refuse un fichier de taille/nom inattendu, un raccourci/reparse point, un hash différent, une signature absente ou non valide et un éditeur non conforme au certificat attendu. Un contrôle réussi prouve seulement la provenance cryptographique attendue de **ces octets**, pas la sécurité absolue du programme.
+
+La CI Preview exécute **deux contrôles négatifs** sur le setup volontairement non signé : elle exige le rejet d'un faux hash, puis du hash correct faute de signature Authenticode. Ne **jamais** enregistrer le faux thumbprint utilisé dans ce test comme identité éditeur et ne jamais recommander de désactiver SmartScreen. Aucune clé de signature/identité réelle n'est actuellement disponible ; ne pas lancer ce script sur un PC utilisateur sans des valeurs officielles attestées. La clé de signature de Tauri Updater 2 reste un mécanisme **distinct** de la signature Windows.
+
 ## Conditions avant un test utilisateur autorisé
 
 1. Faire réussir les checks source et Windows NSIS Preview (incluant la réinstallation propre) sur le même SHA, relire les artefacts et la provenance.
