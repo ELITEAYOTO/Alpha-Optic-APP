@@ -16,16 +16,16 @@ if ($env:GITHUB_ACTIONS -ne 'true' -or
 $root = [IO.Path]::GetFullPath($InstallRoot)
 $expected = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'Optic Preview'))
 if (-not [string]::Equals($root, $expected, [StringComparison]::OrdinalIgnoreCase)) {
-  throw 'Refusing to start an app outside the smoke installation directory.'
+  throw 'Refusing to start an app outside the Preview installation directory.'
 }
 $appFile = (Resolve-Path -LiteralPath $AppPath -ErrorAction Stop).Path
 if (-not [string]::Equals([IO.Path]::GetDirectoryName($appFile), $root, [StringComparison]::OrdinalIgnoreCase) -or
     [IO.Path]::GetExtension($appFile) -ne '.exe' -or
     [IO.Path]::GetFileName($appFile) -eq 'uninstall.exe') {
-  throw 'Only the installed unsigned smoke executable may be started.'
+  throw 'Only the installed unsigned Preview executable may be started.'
 }
 if ((Get-AuthenticodeSignature -LiteralPath $appFile).Status -ne 'NotSigned') {
-  throw 'Unexpected Authenticode signature in unsigned smoke.'
+  throw 'Unexpected Authenticode signature in unsigned Preview.'
 }
 $reportRoot = [IO.Path]::GetFullPath((Join-Path $env:GITHUB_WORKSPACE 'preview-dist'))
 $report = [IO.Path]::GetFullPath((Join-Path $env:GITHUB_WORKSPACE $ReportPath))
