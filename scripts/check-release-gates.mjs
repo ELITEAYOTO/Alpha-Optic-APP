@@ -47,7 +47,7 @@ export function isSafeUpdateEndpoint(endpoint) {
   }
 }
 
-export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { requireDistribution = false } = {}) {
+export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { requireDistribution = false, manualPreview = false } = {}) {
   const problems = [];
   const pkg = object(packageJson);
   const config = object(tauriConfig);
@@ -71,7 +71,7 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
     if (bundle.createUpdaterArtifacts || object(config.plugins).updater !== undefined) {
       problems.push("Prototype désactivé : ne pas laisser d'updater actif ou d'artefacts signés configurés");
     }
-    if (requireDistribution) problems.push("Aucune distribution : bundle.active=false");
+    if (requireDistribution || manualPreview) problems.push("Aucune distribution : bundle.active=false");
   } else if (bundle.active === true) {
     mode = "candidate";
     if (config.identifier === "dev.optic.desktop" ||
@@ -90,6 +90,26 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
     if (object(object(bundle.windows).webviewInstallMode).type === "skip") {
       problems.push("Installateur NSIS : impossible d'ignorer le prérequis WebView2");
     }
+    if (manualPreview) {
+      // This is a separate unsigned/configuration-only gate. A real user's setup
+      // STILL needs independent Authenticode signature, official provenance and
+      // native Windows verification. Never imply the pure check proves signing.
+      mode = "manual-preview-candidate";
+      if (config.productName !== "Optic Preview") {
+        problems.push("Preview manuelle : nom produit Optic Preview requis");
+      }
+      if (bundle.createUpdaterArtifacts !== false || object(config.plugins).updater !== undefined) {
+        problems.push("Preview manuelle : plugin et artefacts Tauri Updater doivent rester désactivés");
+      }
+      if (object(bundle.windows).allowDowngrades !== false) {
+        problems.push("Preview manuelle : rétrogradations NSIS interdites explicitement");
+      }
+      if (!["downloadBootstrapper", "embedBootstrapper", "offlineInstaller"].includes(
+        object(object(bundle.windows).webviewInstallMode).type
+      )) {
+        problems.push("Preview manuelle : choisir explicitement un mode d'installation WebView2");
+      }
+    } else {
     if (bundle.createUpdaterArtifacts !== true) {
       problems.push("Bundle candidat : createUpdaterArtifacts doit être true (Tauri v2)");
     }
@@ -110,6 +130,7 @@ export function auditReleaseConfig({ packageJson, cargoToml, tauriConfig }, { re
     if (!["passive", "basicUi"].includes(object(updater.windows).installMode)) {
       problems.push("Updater Windows : installMode visible, passive ou basicUi requis");
     }
+    }
   } else {
     problems.push("bundle.active doit être un booléen explicite");
   }
@@ -126,16 +147,20 @@ export function inspectCurrentReleaseConfig(options) {
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   const args = process.argv.slice(2);
-  if (args.some(x => x !== "--release")) {
-    console.error("Usage: node scripts/check-release-gates.mjs [--release]");
+  if (args.some(x => x !== "--release" && x !== "--manual-preview") ||
+      (args.includes("--release") && args.includes("--manual-preview"))) {
+    console.error("Usage: node scripts/check-release-gates.mjs [--release | --manual-preview]");
     process.exitCode = 2;
   } else {
-    const result = inspectCurrentReleaseConfig({ requireDistribution: args.includes("--release") });
+    const result = inspectCurrentReleaseConfig({
+      requireDistribution: args.includes("--release"),
+      manualPreview: args.includes("--manual-preview"),
+    });
     if (!result.ready) {
       for (const issue of result.problems) console.error("RELEASE GATE: " + issue);
       process.exitCode = 1;
     } else {
-      console.log("Optic " + result.mode + " config: source checks OK; no signature/install verification performed");
+      console.log("Optic " + result.mode + " config: source checks OK; no real signature, Windows tests or publication verified");
     }
   }
 }
