@@ -1,0 +1,102 @@
+name: Windows NSIS Preview WebView2 offline (CI only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-nsis-preview-offline.yml'
+      - 'src-tauri/tauri.nsis-offline-test.conf.json'
+      - 'src-tauri/tauri.nsis-preview.conf.json'
+      - 'src-tauri/**'
+      - 'src/**'
+      - 'scripts/windows/test-nsis-preview-lifecycle.ps1'
+      - 'scripts/windows/test-nsis-preview-gui.ps1'
+      - 'tests/nsis-offline.test.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-preview:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: windows-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - name: Restore pinned developer dependencies (CI only)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify source and isolated offline WebView2 profile
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          npm run check
+          if ($LASTEXITCODE -ne 0) { throw 'Source checks failed' }
+          $overlay = Get-Content -Raw -LiteralPath 'src-tauri/tauri.nsis-offline-test.conf.json' | ConvertFrom-Json
+          if ($overlay.PSObject.Properties.Count -ne 1 -or
+              $overlay.bundle.PSObject.Properties.Count -ne 1 -or
+              $overlay.bundle.windows.PSObject.Properties.Count -ne 1 -or
+              $overlay.bundle.windows.webviewInstallMode.PSObject.Properties.Count -ne 1 -or
+              $overlay.bundle.windows.webviewInstallMode.type -cne 'offlineInstaller') {
+            throw 'Offline overlay must override only WebView2 install mode.'
+          }
+          $preview = Get-Content -Raw -LiteralPath 'src-tauri/tauri.nsis-preview.conf.json' | ConvertFrom-Json
+          if ($preview.productName -cne 'Optic Preview' -or
+              $preview.identifier -cne 'dev.optic.desktop.preview' -or
+              $preview.bundle.windows.allowDowngrades -ne $false -or
+              $preview.bundle.windows.nsis.installMode -cne 'currentUser' -or
+              $preview.bundle.createUpdaterArtifacts -ne $false) {
+            throw 'Offline variant must keep the same restricted Preview identity.'
+          }
+      - name: Build UNSIGNED offline WebView2 NSIS Preview (not a user release)
+        run: npm run tauri -- build --ci --bundles nsis --config src-tauri/tauri.nsis-preview.conf.json --config src-tauri/tauri.nsis-offline-test.conf.json
+      - name: Validate the offline installer payload and unsigned identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dir = 'src-tauri/target/release/bundle/nsis'
+          $setups = @(Get-ChildItem -LiteralPath $dir -Filter '*-setup.exe' -File)
+          if ($setups.Count -ne 1 -or $setups[0].Name -cne 'Optic Preview_0.0.1_x64-setup.exe') {
+            throw 'Expected exactly one CI-produced Optic Preview setup.'
+          }
+          $installer = $setups[0]
+          if ($installer.Length -lt 50MB) {
+            throw 'Offline WebView2 payload appears absent (setup smaller than 50 MiB).'
+          }
+          if ((Get-AuthenticodeSignature -LiteralPath $installer.FullName).Status -ne 'NotSigned') {
+            throw 'Unexpected signature for private offline CI test.'
+          }
+          New-Item -ItemType Directory -Force -Path 'preview-dist' | Out-Null
+          @(
+            'OPTIC PREVIEW WEBVIEW2 OFFLINE — UNSIGNED CI EXPERIMENT; NOT FOR USER INSTALLATION'
+            "Source commit: ${{ github.sha }}"
+            "Installer: $($installer.Name)"
+            "Size bytes: $($installer.Length)"
+            "SHA256: $((Get-FileHash -LiteralPath $installer.FullName -Algorithm SHA256).Hash)"
+            'Tauri offlineInstaller: EMBEDDED IN NSIS SETUP (size checked only)'
+            'Rust, Node.js, npm, MSVC, VS Build Tools: BUILD ONLY; NOT SHIPPED OR REQUIRED ON TARGET'
+            'WebView2 missing on target and Windows 10/11 clean images: NOT TESTED'
+            'Installer signing, real user release and Bridge integration: NOT PRESENT'
+          ) | Set-Content -LiteralPath 'preview-dist/OFFLINE_REPORT.txt'
+      - name: Verify offline Preview still installs, launches and uninstalls on hosted Windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & './scripts/windows/test-nsis-preview-lifecycle.ps1' -InstallerPath 'src-tauri/target/release/bundle/nsis/Optic Preview_0.0.1_x64-setup.exe' -ReportPath 'preview-dist/LIFECYCLE.txt'
+      - name: Retain text verification only, NEVER an unsigned setup
+        uses: actions/upload-artifact@v4
+        with:
+          name: NSIS-OFFLINE-WEBVIEW2-REPORT-ONLY-${{ github.run_id }}
+          path: |
+            preview-dist/OFFLINE_REPORT.txt
+            preview-dist/LIFECYCLE.txt
+            preview-dist/PREVIEW_GUI_LAUNCH.txt
+          if-no-files-found: error
+          retention-days: 7
