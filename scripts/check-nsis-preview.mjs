@@ -77,6 +77,11 @@ export function auditNsisPreview(base, preview, workflow) {
       /\bpull_request_target\s*:|\bworkflow_run\s*:/m.test(workflow)) {
     error("Preview must run only in trusted same-repository PRs or manual dispatch");
   }
+  if (!workflow.includes("./scripts/windows/test-nsis-preview-lifecycle.ps1") ||
+      !workflow.includes("preview-dist/LIFECYCLE.txt") ||
+      !workflow.includes("'scripts/windows/test-nsis-preview-lifecycle.ps1'")) {
+    error("Preview must verify install/uninstall on a trusted hosted Windows runner");
+  }
   if (!workflow.includes("actions/upload-artifact@v4") ||
       !workflow.includes("PRIVATE-UNSIGNED-OPTIC-PREVIEW") ||
       !workflow.includes("retention-days: 2") ||
