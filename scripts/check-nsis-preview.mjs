@@ -79,8 +79,9 @@ export function auditNsisPreview(base, preview, workflow) {
   }
   if (!workflow.includes("./scripts/windows/test-nsis-preview-lifecycle.ps1") ||
       !workflow.includes("preview-dist/LIFECYCLE.txt") ||
-      !workflow.includes("'scripts/windows/test-nsis-preview-lifecycle.ps1'")) {
-    error("Preview must verify install/uninstall on a trusted hosted Windows runner");
+      !workflow.includes("'scripts/windows/test-nsis-preview-lifecycle.ps1'") ||
+      !workflow.includes("'scripts/windows/test-nsis-preview-gui.ps1'")) {
+    error("Preview must verify install/uninstall and native GUI on trusted hosted Windows");
   }
   if (!workflow.includes("actions/upload-artifact@v4") ||
       !workflow.includes("PRIVATE-UNSIGNED-OPTIC-PREVIEW") ||
