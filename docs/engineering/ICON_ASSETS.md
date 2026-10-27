@@ -16,6 +16,16 @@ Le logo officiel 512×512 sur fond transparent, transmis par l'utilisateur, a
 - Source et pack ICO multi-tailles réunis dans un **ZIP de préparation**
   de cette conversation. Ils ne sont **pas encore intégrés** au dépôt.
 
+## Nouvelle vérification de l'archive (27 octobre 2026)
+
+L'archive originale `optic-native-icons-512.zip` a été **retrouvée dans les fichiers de l'utilisateur** et inspectée en lecture seule dans un environnement isolé, sans action sur son PC. Contenu vérifié :
+
+- `optic-logo-512.png` et `icon.png` : **512×512 RGBA** avec le même SHA-256 `d353f8a07d908dd43d6db9e169c913e8e6de5ef0509eab9369c373b690b01c2d` (conforme à la source documentée).
+- `icon.ico` : SHA-256 `d106bd091ad44488d0d2df1d30565bdf88c228125ce3a1e5cb5c848addc1ca01`. Tailles annoncées/décodées : **16, 24, 32, 48, 64, 128, 256 px**.
+- L'archive contient aussi un README et une liste SHA-256.
+
+**Ceci prouve la disponibilité et l'identité du pack, PAS son intégration dans GitHub.** Les fichiers versionnés dans `src-tauri/icons` restent inchangés tant que les véritables octets binaires de l'archive n'ont pas été ajoutés sur une branche contrôlée, leur intégrité vérifiée et la CI/résolution DPI exécutées. Ne pas produire un nouvel ICO en agrandissant la miniature 48 px. La livraison NSIS utilisateur demeure bloquée par la signature et les tests OS indépendamment du logo.
+
 ## Génération reproductible sans dépendance supplémentaire
 
 Depuis la racine du projet et avec `npm ci` déjà effectué, utiliser la
