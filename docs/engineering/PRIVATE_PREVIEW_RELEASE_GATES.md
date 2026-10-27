@@ -21,6 +21,14 @@ La commande `npm run check:manual-preview-config` est désormais **distincte** d
 
 Sur la configuration actuelle de développement (`bundle.active=false`, `0.0.1`), ce contrôle est conçu pour **échouer** ; `npm run check` continue de valider le prototype sans activer le bundling. Une configuration Preview **future** devra être soumise à ce nouveau contrôle puis à la revue de release et à la vérification réelle de signature. Aucun fichier de clé/certificat ni endpoint n'a été ajouté.
 
+## Audit en lecture seule d'une future GitHub Release Preview signée
+
+Le nouveau workflow manuel `.github/workflows/audit-signed-preview-release.yml` permet de **vérifier**, sur runner Windows GitHub hébergé et **depuis `main` uniquement**, le fichier exact d'une future Release **brouillon ou préversion** `vX.Y.Z-preview.N`. Ce workflow ne crée aucune Release et **n'exécute jamais le setup téléchargé**. Il n'est **pas exécutable utilement à ce stade** : aucune Release signée réelle ni empreinte de certificat d'éditeur approuvée n'existent.
+
+Les quatre paramètres devront être contrôlés **hors du seul téléchargement à auditer** : tag de préversion, SHA du commit source (40 hex), SHA-256 du setup exact (64 hex) et empreinte du certificat Authenticode approuvé (40 hex). Le workflow vérifie que le tag pointe **exactement** vers le SHA approuvé et qu'il descend de `main`, que la Release GitHub appartient au dépôt officiel et contient un seul `Optic Preview_<version>_x64-setup.exe`, puis **télécharge sans exécuter** ce fichier dans l'espace éphémère du runner. Il réutilise `scripts/windows/verify-optic-installer.ps1` pour le SHA et la signature Authenticode valide avec certificat attendu. **Seul un rapport texte** peut être conservé, jamais le setup.
+
+Ce contrôle ajoute une preuve de **correspondance des octets et de l'éditeur**, **pas** une preuve que le logiciel est sûr, que son code interne est fonctionnel, que la signature bénéficie d'une réputation SmartScreen, ni que Windows 10 et 11 sont testés. Un rapport `PASS` conserve explicitement la mention `NOT DISTRIBUTION APPROVAL` ; toute décision de publication et d'installation utilisateur reste manuelle et soumise aux conditions ci-dessous. La signature Tauri Updater est un mécanisme distinct, toujours absent. CLI GitHub officiel : https://cli.github.com/manual/gh_release_view et https://cli.github.com/manual/gh_release_download.
+
 ## Feu vert : étapes obligatoires pour proposer un setup à l'utilisateur
 
 - [ ] **Éditeur et identité définitive** : choisir un nom de publication, identifiant Tauri stable, version/canal Preview cohérents dans `package.json`, `Cargo.toml`, `tauri.conf.json` et les noms d'artefacts. Ne pas remplacer silencieusement le prototype `0.0.1`.
