@@ -1,0 +1,18 @@
+.optic-settings .theme-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+.optic-settings .theme-option { display: flex; flex-direction: column; min-width: 0; padding: 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--text); text-align: left; transition: border-color 120ms ease, box-shadow 120ms ease; }
+.optic-settings .theme-option:hover, .optic-settings .theme-option:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.optic-settings .theme-option[aria-pressed="true"] { border-color: var(--accent); }
+.optic-settings .theme-mini { display: flex; height: 89px; width: 100%; border-radius: 5px; overflow: hidden; background: var(--bg); border: 1px solid var(--border); }
+.optic-settings .theme-mini-rail { width: 20%; background: var(--rail); border-right: 1px solid var(--border); }
+.optic-settings .theme-mini-body { display: flex; flex-direction: column; gap: 7px; flex: 1; padding: 9px 12px; background: var(--bg); }
+.optic-settings .theme-mini-head { width: 94%; height: 9px; border-radius: 3px; background: var(--surface); }
+.optic-settings .theme-mini-line { width: 72%; height: 5px; border-radius: 3px; background: var(--muted); opacity: .55; }
+.optic-settings .theme-mini-line.short { width: 52%; }
+.optic-settings .theme-mini-button { align-self: flex-end; width: 44%; min-height: 14px; border-radius: 3px; background: var(--accent); }
+.optic-settings .theme-option-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; padding: 10px 2px 2px; }
+.optic-settings .theme-option-name { font-size: 12px; font-weight: 600; line-height: 1.3; }
+.optic-settings .theme-option-indicator { color: var(--accent); font-size: 10px; font-weight: 700; }
+.optic-settings .theme-preview-status { font-size: 11px; color: var(--muted); margin-top: 13px; }
+@media (max-width: 1300px) { .optic-settings .theme-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 1030px) { .optic-settings .theme-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (prefers-reduced-motion: reduce) { .optic-settings .theme-option { transition: none; } }

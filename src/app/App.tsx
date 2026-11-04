@@ -5,6 +5,7 @@ import { OverviewScreen } from "../features/overview";
 import { SupervisionScreen } from "../features/supervision";
 import { DeveloperTerminalScreen } from "../features/terminal";
 import { SettingsScreen } from "../features/settings";
+import { ThemePicker } from "../features/themes";
 import { UpdatesPanel } from "../features/updates";
 import packageInfo from "../../package.json";
 import { DEFAULT_THEME_ID, findBuiltinTheme } from "../features/themes/model/builtin-themes";
@@ -55,10 +56,10 @@ export function App() {
         ? <DeveloperTerminalScreen />
         : section === "settings"
           ? <SettingsScreen updatesSection={<UpdatesPanel prototypeVersion={packageInfo.version} />}
-            activeThemeId={selectedThemeId}
-            previewThemeId={previewThemeId}
-            onPreviewTheme={setPreviewThemeId}
-            onSelectTheme={selectTheme} />
+              appearanceSection={<ThemePicker activeThemeId={selectedThemeId}
+                previewThemeId={previewThemeId}
+                onPreviewTheme={setPreviewThemeId}
+                onSelectTheme={selectTheme} />} />
           : (
           <section className="placeholder" aria-labelledby="placeholder-title">
             <div className="eyebrow">MODULE EN PRÉPARATION</div>

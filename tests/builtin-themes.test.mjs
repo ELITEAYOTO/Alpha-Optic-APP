@@ -5,7 +5,7 @@ import { BUILTIN_THEMES, DEFAULT_THEME_ID, findBuiltinTheme } from "../src/featu
 import { parseThemeManifest, themeToCssVariables } from "../src/features/themes/model/theme-manifest.ts";
 
 const overview = readFileSync(new URL("../src/features/overview/ui/OverviewScreen.tsx", import.meta.url), "utf8");
-const settings = readFileSync(new URL("../src/features/settings/ui/SettingsScreen.tsx", import.meta.url), "utf8");
+const settings = readFileSync(new URL("../src/features/themes/ui/ThemePicker.tsx", import.meta.url), "utf8");
 const shell = readFileSync(new URL("../src/app/layout/DesktopShell.tsx", import.meta.url), "utf8");
 const shellCss = readFileSync(new URL("../src/app/layout/DesktopShell.css", import.meta.url), "utf8");
 const app = readFileSync(new URL("../src/app/App.tsx", import.meta.url), "utf8");
