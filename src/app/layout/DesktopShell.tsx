@@ -75,7 +75,6 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
             / Espace de travail / {destinations.find(({ id }) => id === active)?.label}
           </div>
         </div>
-        <div className="titlebar-tools">
           <button type="button" className="command-trigger" ref={commandTrigger}
             aria-haspopup="dialog" aria-controls="command-palette" aria-expanded={commandOpen}
             title="Rechercher une commande (Ctrl+K)" onClick={() => setCommandOpen(open => !open)}>
@@ -84,6 +83,8 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
             </svg>
             <span>Rechercher une commande…</span><kbd>Ctrl K</kbd>
           </button>
+        <div className="titlebar-tools">
+
           <div className="title-actions">
             <span className="bridge-state"><span className="state-dot" />Bridge non connecté</span>
             <button type="button" disabled title="Bridge non connecté : démarrage indisponible">Démarrer</button>

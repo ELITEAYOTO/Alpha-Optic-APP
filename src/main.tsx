@@ -8,6 +8,7 @@ import "./features/overview/ui/OverviewScreen.css";
 import "./shared/styles/feedback.css";
 import "./features/supervision/ui/SupervisionScreen.css";
 import "./features/settings/ui/SettingsScreen.css";
+import "./features/themes/ui/ThemePicker.css";
 import "./features/updates/ui/UpdatesPanel.css";
 
 const root = document.getElementById("root");

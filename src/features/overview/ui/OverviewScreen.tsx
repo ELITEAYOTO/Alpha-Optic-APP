@@ -1,7 +1,6 @@
 import { overviewDisplay, exampleRecentProjects } from "../model/demo";
 
 type OverviewDestination = "projects";
-type Appearance = "light" | "dark";
 
 const context = [
   { label: "PROJET", ...overviewDisplay.project },
@@ -11,21 +10,14 @@ const context = [
 
 interface Props {
   onNavigate: (section: OverviewDestination) => void;
-  appearance: Appearance;
-  onToggleAppearance: () => void;
 }
 
-export function OverviewScreen({ onNavigate, appearance, onToggleAppearance }: Props) {
+export function OverviewScreen({ onNavigate }: Props) {
   return (
     <section className="overview" aria-labelledby="overview-title">
       <header className="overview-heading">
         <div className="overview-topline">
           <div className="overview-path">BUREAU / OPTIC</div>
-          <button type="button" className="theme-toggle" onClick={onToggleAppearance}
-            aria-label={appearance === "dark" ? "Activer le thème clair" : "Activer le thème sombre"}
-            title="Seules les couleurs de l'interface changent">
-            Thème : {appearance === "dark" ? "Carbone et corail" : "Lin et grenat"} <span aria-hidden="true">▾</span>
-          </button>
         </div>
         <h1 id="overview-title">Votre bureau</h1>
         <p className="intro">Préparez votre environnement sans perdre votre contexte.</p>

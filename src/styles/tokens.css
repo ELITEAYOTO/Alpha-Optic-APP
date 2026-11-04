@@ -18,22 +18,4 @@
   --positive: #a1c5b1;
   --radius: 7px;
 }
-.optic-theme-root { width: 100%; height: 100%; color-scheme: dark; background: var(--bg); color: var(--text); }
-.optic-theme-root[data-theme="light"] {
-  color-scheme: light;
-  --bg: #f5f2ee;
-  --surface: #fffefd;
-  --subtle: #efeae6;
-  --rail: #25232a;
-  --explorer: #ede9e6;
-  --raised: #f6f3f0;
-  --border: #ded8d5;
-  --text: #29272b;
-  --muted: #716b70;
-  --faint: #978e94;
-  --accent: #96566c;
-  --on-accent: #ffffff;
-  --selected: #e9dde2;
-  --warning: #b17a45;
-  --positive: #497665;
-}
+.optic-theme-root { width: 100%; height: 100%; background: var(--bg); color: var(--text); }
