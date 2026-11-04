@@ -64,3 +64,16 @@ des boutons système et snaps Windows 11. Le design des boutons natifs reste
 celui de Windows ; personnalisation totale uniquement en PR séparée avec
 tests Windows de déplacement, Snap, minimise/maximise, DPI, clavier.
 Source HD 512px toujours non intégrée : le logo natif reste 48px.
+
+## Branche UI D — barre personnalisée Windows / recherche globale (04/11/2026)
+
+Évolution proposée dans une PR distincte, **à valider sur Windows avant fusion** :
+
+- Fenêtre `main` Tauri : `decorations: false`. L'unique barre en React reprend les contrôles minimiser, maximiser/restaurer, fermer.
+- Déplacement via `data-tauri-drag-region` sur les seules zones décoratives de l'en-tête ; rechercher et cliquer restent interactifs.
+- Permissions Tauri limitées à `minimize`, `toggle-maximize`, `close`, `start-dragging`. `@tauri-apps/api` épinglé sur `2.12.4` (MIT ou Apache 2.0), sans plugin, sans accès au shell ni au Bridge.
+- Palette de commandes `Ctrl+K` : navigation des pages uniquement ; aucune opération système ou autorisation réelle.
+- **Risque Windows** : une barre non native peut avoir un comportement différent pour les Snap Layouts au survol du bouton agrandir, pour les raccourcis système, et aux DPI 125/150 %. Contrôler visuellement les deux thèmes sous Win10/Win11 ; si l'équivalence n'est pas confirmée, ne pas fusionner cette PR.
+- Conserver fermeture Alt+F4, déplacement, double clic sur zone déplaçable, snapping, redimensionnement, focus clavier, raccourci Ctrl+K. Ne pas utiliser ce prototype comme preuve de gestion de l'arrêt d'une session Bridge.
+
+Sur une version future reliée au Bridge, la fermeture devra proposer le traitement explicite des sessions actives ; une fermeture de la fenêtre n'est jamais une preuve de terminaison native.
