@@ -3,8 +3,6 @@
 .overview-heading { border-bottom: 1px solid var(--border); padding-bottom: 26px; }
 .overview-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
 .overview-path { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .045em; }
-.overview .theme-toggle { border: 0; background: transparent; color: var(--muted); padding: 5px 2px; font-size: 11px; text-align: right; }
-.overview .theme-toggle:hover, .overview .new-project-link:hover { color: var(--text); text-decoration: underline; }
 .overview-heading h1 { font-size: 32px; line-height: 1.18; }
 .overview-heading .intro { margin-top: 12px; line-height: 1.45; color: var(--muted); }
 .overview .feature-strip { display: flex; align-items: center; justify-content: space-between; gap: 20px; background: var(--subtle); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 20px 24px; margin: 26px 0 15px; min-height: 151px; }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { destinations, type Destination } from "./navigation";
 import { DesktopShell } from "./layout/DesktopShell";
 import { OverviewScreen } from "../features/overview";
@@ -7,8 +7,19 @@ import { DeveloperTerminalScreen } from "../features/terminal";
 import { SettingsScreen } from "../features/settings";
 import { UpdatesPanel } from "../features/updates";
 import packageInfo from "../../package.json";
+import { DEFAULT_THEME_ID, findBuiltinTheme } from "../features/themes/model/builtin-themes";
+import { themeToCssVariables } from "../features/themes/model/theme-manifest";
 
-type Appearance = "dark" | "light";
+const THEME_PREFERENCE_KEY = "optic.ui.theme-id";
+
+function readThemePreference(): string {
+  try {
+    const id = window.localStorage.getItem(THEME_PREFERENCE_KEY);
+    return findBuiltinTheme(id)?.id ?? DEFAULT_THEME_ID;
+  } catch {
+    return DEFAULT_THEME_ID;
+  }
+}
 
 const descriptions: Record<Destination, string> = {
   home: "Le point de départ de votre espace de travail.",
@@ -23,17 +34,31 @@ const descriptions: Record<Destination, string> = {
 
 export function App() {
   const [section, setSection] = useState<Destination>("home");
-  const [appearance, setAppearance] = useState<Appearance>("dark");
+  const [selectedThemeId, setSelectedThemeId] = useState(readThemePreference);
+  const [previewThemeId, setPreviewThemeId] = useState<string | null>(null);
+  const renderedTheme = findBuiltinTheme(previewThemeId) ?? findBuiltinTheme(selectedThemeId)!;
+
+  function selectTheme(id: string) {
+    const theme = findBuiltinTheme(id);
+    if (!theme) return;
+    setSelectedThemeId(theme.id);
+    setPreviewThemeId(null);
+    try { window.localStorage.setItem(THEME_PREFERENCE_KEY, theme.id); }
+    catch { /* Theme stays active for this session if storage is unavailable. */ }
+  }
   const item = destinations.find(({ id }) => id === section);
   const content = section === "home"
-    ? <OverviewScreen onNavigate={setSection} appearance={appearance}
-        onToggleAppearance={() => setAppearance(current => current === "dark" ? "light" : "dark")} />
+    ? <OverviewScreen onNavigate={setSection} />
     : section === "supervision"
       ? <SupervisionScreen onReturnHome={() => setSection("home")} />
       : section === "terminal"
         ? <DeveloperTerminalScreen />
         : section === "settings"
-          ? <SettingsScreen updatesSection={<UpdatesPanel prototypeVersion={packageInfo.version} />} />
+          ? <SettingsScreen updatesSection={<UpdatesPanel prototypeVersion={packageInfo.version} />}
+            activeThemeId={selectedThemeId}
+            previewThemeId={previewThemeId}
+            onPreviewTheme={setPreviewThemeId}
+            onSelectTheme={selectTheme} />
           : (
           <section className="placeholder" aria-labelledby="placeholder-title">
             <div className="eyebrow">MODULE EN PRÉPARATION</div>
@@ -44,7 +69,8 @@ export function App() {
         );
 
   return (
-    <div className="optic-theme-root" data-theme={appearance}>
+    <div className="optic-theme-root" data-theme={renderedTheme.id}
+      style={{ ...themeToCssVariables(renderedTheme), colorScheme: renderedTheme.appearance } as CSSProperties}>
       <DesktopShell active={section} onNavigate={setSection}>
         {content}
       </DesktopShell>
