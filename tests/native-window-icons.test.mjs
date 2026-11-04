@@ -26,13 +26,18 @@ test("native taskbar logo uses the exact approved Optic header asset", () => {
   assert.equal(ico.length, 22 + size);
 });
 
-test("Optic retains native Windows chrome and its dark window theme", () => {
+test("Optic uses a custom Windows titlebar with the smallest window-only capabilities", () => {
   const main = config.app.windows.find(w => w.label === "main");
   assert.ok(main);
-  assert.equal(main.decorations, true);
+  assert.equal(main.decorations, false);
   assert.equal(main.theme, "Dark");
   assert.deepEqual(config.bundle.icon, ["icons/icon.png", "icons/icon.ico"]);
   assert.equal(config.bundle.active, false);
-  assert.deepEqual(capability.permissions, []);
+  assert.deepEqual(capability.permissions, [
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging",
+  ]);
   assert.equal(config.app.withGlobalTauri, undefined);
 });

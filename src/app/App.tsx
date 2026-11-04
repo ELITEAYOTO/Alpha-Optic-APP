@@ -8,6 +8,8 @@ import { SettingsScreen } from "../features/settings";
 import { UpdatesPanel } from "../features/updates";
 import packageInfo from "../../package.json";
 
+type Appearance = "dark" | "light";
+
 const descriptions: Record<Destination, string> = {
   home: "Le point de départ de votre espace de travail.",
   projects: "Un projet n'accorde jamais automatiquement l'accès à ses fichiers.",
@@ -21,9 +23,11 @@ const descriptions: Record<Destination, string> = {
 
 export function App() {
   const [section, setSection] = useState<Destination>("home");
+  const [appearance, setAppearance] = useState<Appearance>("dark");
   const item = destinations.find(({ id }) => id === section);
   const content = section === "home"
-    ? <OverviewScreen onNavigate={setSection} />
+    ? <OverviewScreen onNavigate={setSection} appearance={appearance}
+        onToggleAppearance={() => setAppearance(current => current === "dark" ? "light" : "dark")} />
     : section === "supervision"
       ? <SupervisionScreen onReturnHome={() => setSection("home")} />
       : section === "terminal"
@@ -40,8 +44,10 @@ export function App() {
         );
 
   return (
-    <DesktopShell active={section} onNavigate={setSection}>
-      {content}
-    </DesktopShell>
+    <div className="optic-theme-root" data-theme={appearance}>
+      <DesktopShell active={section} onNavigate={setSection}>
+        {content}
+      </DesktopShell>
+    </div>
   );
 }
