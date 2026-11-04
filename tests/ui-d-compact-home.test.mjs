@@ -34,7 +34,7 @@ test("overview preserves preparation and context but replaces checks/activity wi
 });
 
 test("light and dark palettes share the same DOM and geometric rules", () => {
-  assert.match(app, /data-theme=\{appearance\}/);
+  assert.match(app, /data-theme=\{renderedTheme\.id\}/);
   assert.match(app, /themeToCssVariables\(renderedTheme\)/);
   assert.match(app, /onSelectTheme=\{selectTheme\}/);
   assert.doesNotMatch(home, /onToggleAppearance|theme-toggle|Thème :/);
