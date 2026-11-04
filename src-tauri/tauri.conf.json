@@ -18,17 +18,22 @@
         "height": 900,
         "minWidth": 980,
         "minHeight": 660,
-        "decorations": true,
+        "decorations": false,
         "theme": "Dark"
       }
     ],
     "security": {
-      "capabilities": ["main-minimal"],
+      "capabilities": [
+        "main-minimal"
+      ],
       "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:5173 ws://127.0.0.1:5173"
     }
   },
   "bundle": {
     "active": false,
-    "icon": ["icons/icon.png", "icons/icon.ico"]
+    "icon": [
+      "icons/icon.png",
+      "icons/icon.ico"
+    ]
   }
 }
