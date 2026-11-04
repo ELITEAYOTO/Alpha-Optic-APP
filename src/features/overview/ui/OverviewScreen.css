@@ -1,14 +1,18 @@
-/* UI D overview: owned by the overview feature. No styles leak into other screens. */
+/* UI D: one layout for both palettes; colors are resolved from theme tokens only. */
 .overview { width: 100%; min-width: 0; }
 .overview-heading { border-bottom: 1px solid var(--border); padding-bottom: 26px; }
-.overview-path { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .045em; margin-bottom: 28px; }
+.overview-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+.overview-path { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .045em; }
+.overview .theme-toggle { border: 0; background: transparent; color: var(--muted); padding: 5px 2px; font-size: 11px; text-align: right; }
+.overview .theme-toggle:hover, .overview .new-project-link:hover { color: var(--text); text-decoration: underline; }
 .overview-heading h1 { font-size: 32px; line-height: 1.18; }
-.overview-heading .intro { margin-top: 12px; line-height: 1.45; }
+.overview-heading .intro { margin-top: 12px; line-height: 1.45; color: var(--muted); }
 .overview .feature-strip { display: flex; align-items: center; justify-content: space-between; gap: 20px; background: var(--subtle); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 20px 24px; margin: 26px 0 15px; min-height: 151px; }
 .overview .feature-strip .eyebrow { color: var(--muted); margin: 0 0 16px; }
 .overview .feature-strip h2 { font-size: 23px; line-height: 1.25; letter-spacing: -.018em; }
 .overview .feature-strip p { color: var(--muted); margin-top: 11px; line-height: 1.4; }
 .overview .primary-button { border: 0; background: var(--accent); color: var(--on-accent); border-radius: 6px; font-size: 12px; font-weight: 700; padding: 14px 18px; white-space: nowrap; flex: none; }
+.overview .primary-button:hover { filter: brightness(1.06); }
 .overview .section-heading { border-bottom: 1px solid var(--border); padding: 0 0 12px; margin-top: 18px; }
 .overview .section-heading h2 { font-size: 10px; letter-spacing: .055em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
 .overview .context-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; padding: 20px 0 25px; border-bottom: 1px solid var(--border); }
@@ -17,18 +21,20 @@
 .overview .context-item small { color: var(--faint); font-size: 10px; letter-spacing: .055em; }
 .overview .context-item strong { font-size: 15px; line-height: 1.2; overflow-wrap: anywhere; }
 .overview .context-item span { color: var(--muted); font-size: 12px; line-height: 1.3; }
-.overview .check-list > div { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr) auto; align-items: center; gap: 14px; min-height: 44px; padding: 9px 4px; border-bottom: 1px solid var(--border); }
-.overview .check-list strong { font-size: 12px; font-weight: 500; }
-.overview .check-list strong::before { content: ""; display: inline-block; background: var(--warning); width: 7px; height: 7px; margin-right: 12px; border-radius: 50%; }
-.overview .check-list span { color: var(--muted); font-size: 12px; }
-.overview .check-list button, .overview .activity-link { background: none; border: 0; color: var(--accent); font-size: 12px; font-weight: 600; padding: 5px; white-space: nowrap; }
-.overview .activity-heading { display: flex; justify-content: space-between; align-items: center; }
-.overview .empty-activity { color: var(--muted); padding-top: 14px; font-size: 12px; line-height: 1.4; }
-
-/* Matching the narrower Figma frame without forcing an internal home scroll. */
+.overview .recent-heading { display: flex; align-items: center; justify-content: space-between; border: 0; padding-bottom: 0; margin-top: 18px; }
+.overview .new-project-link { background: transparent; border: 0; color: var(--accent); font-size: 11px; padding: 5px 2px; }
+.overview .recent-example-notice { font-size: 10px; color: var(--faint); margin: 8px 0 0; }
+.overview .recent-project-list { margin-top: 8px; border-top: 1px solid var(--border); }
+.overview .recent-project { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,.85fr) 155px; align-items: center; gap: 15px; min-height: 61px; padding: 8px 8px; border-bottom: 1px solid var(--border); }
+.overview .recent-project-name { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.overview .recent-project-name strong { font-size: 13px; font-weight: 600; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.overview .recent-project-dot { height: 8px; width: 8px; border-radius: 50%; background: var(--positive); flex: 0 0 8px; }
+.overview .recent-project-meta { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.overview .recent-project-resume { background: var(--accent); color: var(--on-accent); border-radius: 6px; border: 0; padding: 10px; min-width: 0; font-size: 12px; font-weight: 600; }
+.overview .recent-project-resume:disabled { opacity: .60; }
 @media (max-width: 1340px) {
   .overview-heading { padding-bottom: 21px; }
-  .overview-path { margin-bottom: 19px; }
+  .overview-topline { margin-bottom: 19px; }
   .overview-heading h1 { font-size: 28px; }
   .overview-heading .intro { margin-top: 9px; font-size: 13px; }
   .overview .feature-strip { min-height: 114px; margin: 19px 0 18px; padding: 14px 18px; }
@@ -36,20 +42,21 @@
   .overview .feature-strip h2 { font-size: 19px; }
   .overview .feature-strip p { margin-top: 10px; font-size: 11px; }
   .overview .primary-button { padding: 13px 14px; }
-  .overview .section-heading { margin-top: 16px; padding-bottom: 10px; }
+  .overview .section-heading { margin-top: 16px; }
   .overview .context-grid { gap: 14px; padding: 15px 0 17px; }
   .overview .context-item { gap: 8px; }
   .overview .context-item strong { font-size: 14px; }
-  .overview .check-list > div { min-height: 43px; padding: 8px 2px; }
-  .overview .empty-activity { padding-top: 13px; }
+  .overview .recent-project { grid-template-columns: minmax(0,1fr) minmax(0,.9fr) 115px; gap: 10px; padding-inline: 2px; }
 }
 @media (max-width: 1080px) {
   .overview .feature-strip { flex-wrap: wrap; }
   .overview .context-grid { gap: 10px; }
-  .overview .check-list > div { grid-template-columns: minmax(0, 1fr) auto; }
-  .overview .check-list span { grid-row: 2; grid-column: 1 / -1; }
+  .overview .recent-project { grid-template-columns: minmax(0, 1fr) 112px; }
+  .overview .recent-project-meta { grid-column: 1; grid-row: 2; padding-left: 22px; }
+  .overview .recent-project-resume { grid-column: 2; grid-row: 1 / 3; }
 }
 @media (max-height: 740px) {
   .overview .feature-strip { min-height: auto; }
   .overview .context-grid { padding-block: 12px; }
+  .overview .recent-project { min-height: 52px; }
 }
