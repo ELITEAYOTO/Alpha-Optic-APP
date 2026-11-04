@@ -1,4 +1,4 @@
-import { parseThemeManifest, type ThemeColors, type ThemeManifest } from "./theme-manifest";
+import { parseThemeManifest, type ThemeColors, type ThemeManifest } from "./theme-manifest.ts";
 
 /** Built-in appearances are data-only. No layout, script, permission or Bridge state belongs to a theme. */
 const dark: ThemeColors = {
