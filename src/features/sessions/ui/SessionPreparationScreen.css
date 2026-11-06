@@ -95,3 +95,14 @@
   .session-demo-trace li { flex-direction: column; gap: 4px; }
   .session-demo-trace span { text-align: left; }
 }
+
+/* Virtual read-only MCP examples. Collapsed by default inside contract details. */
+.session-virtual-lab { padding: 15px; border-top: 1px solid var(--border); background: var(--subtle); }
+.session-virtual-lab > strong { display: block; font-size: 12px; }
+.session-virtual-lab > p { font-size: 11px; line-height: 1.5; color: var(--muted); margin: 7px 0 13px; }
+.session-virtual-form { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.session-virtual-form label { font-size: 11px; font-weight: 600; }
+.session-virtual-form select { min-width: 135px; flex: 1; border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; background: var(--surface); color: var(--text); }
+.session-virtual-output { margin-top: 12px; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+.session-virtual-output > span { display: block; color: var(--warning); font-size: 10px; font-weight: 650; padding: 9px 11px; border-bottom: 1px solid var(--border); }
+.session-virtual-output pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 250px; overflow-y: auto; margin: 0; padding: 12px; font-size: 11px; line-height: 1.5; font-family: ui-monospace, Consolas, monospace; color: var(--text); background: var(--surface); }
