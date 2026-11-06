@@ -58,3 +58,35 @@ export function buildPreviewTrace(projectName: string | null, requested: readonl
     { stage: "04 · Admission", result: "REFUS SIMULÉ — Bridge hors ligne, aucun appel transmis" },
   ];
 }
+
+/** An entirely in-memory exercise; inputs and output are hard-coded virtual samples. */
+export type VirtualToolName = "session_info" | "fs_list" | "fs_read";
+export const VIRTUAL_TOOLS: readonly VirtualToolName[] = ["session_info", "fs_list", "fs_read"];
+
+export interface VirtualExampleResult {
+  readonly tool: VirtualToolName;
+  readonly sampleInput: Readonly<Record<string, string>>;
+  readonly sampleOutput: Readonly<Record<string, unknown>>;
+  readonly simulation: true;
+}
+export function runVirtualExample(tool: VirtualToolName): VirtualExampleResult {
+  if (tool === "session_info") {
+    return { tool, sampleInput: {}, sampleOutput: {
+      session: "none", host: "not-connected", authority: "not-granted",
+      note: "Exemple virtuel : aucune interrogation de l'hôte"
+    }, simulation: true };
+  }
+  if (tool === "fs_list") {
+    return { tool, sampleInput: { path: "." }, sampleOutput: {
+      entries: [{ name: "README.md", type: "file" }, { name: "src", type: "directory" }],
+      next_cursor: null, note: "Liste fictive en mémoire — pas de dossier parcouru"
+    }, simulation: true };
+  }
+  if (tool === "fs_read") {
+    return { tool, sampleInput: { path: "README.md" }, sampleOutput: {
+      example_text: "# Projet fictif\\nCe contenu n'existe que dans la Preview.",
+      note: "Texte illustratif, pas une réponse MCP brute ni un fichier lu"
+    }, simulation: true };
+  }
+  throw new Error("Exemple virtuel non autorisé.");
+}
