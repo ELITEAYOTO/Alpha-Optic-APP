@@ -47,11 +47,18 @@ export function App() {
     try { window.localStorage.setItem(THEME_PREFERENCE_KEY, theme.id); }
     catch { /* Theme stays active for this session if storage is unavailable. */ }
   }
+  function navigateTo(destination: Destination) {
+    // Preview is only temporary while browsing the appearance settings.
+    // Clear it synchronously even when navigation unmounts a hovered theme card.
+    setPreviewThemeId(null);
+    setSection(destination);
+  }
+
   const item = destinations.find(({ id }) => id === section);
   const content = section === "home"
-    ? <OverviewScreen onNavigate={setSection} />
+    ? <OverviewScreen onNavigate={navigateTo} />
     : section === "supervision"
-      ? <SupervisionScreen onReturnHome={() => setSection("home")} />
+      ? <SupervisionScreen onReturnHome={() => navigateTo("home")} />
       : section === "terminal"
         ? <DeveloperTerminalScreen />
         : section === "settings"
@@ -72,7 +79,7 @@ export function App() {
   return (
     <div className="optic-theme-root" data-theme={renderedTheme.id}
       style={{ ...themeToCssVariables(renderedTheme), colorScheme: renderedTheme.appearance } as CSSProperties}>
-      <DesktopShell active={section} onNavigate={setSection}>
+      <DesktopShell active={section} onNavigate={navigateTo}>
         {content}
       </DesktopShell>
     </div>
