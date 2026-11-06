@@ -27,6 +27,23 @@ test("eight built-in themes are validated, declarative and keep identical geomet
   assert.equal(findBuiltinTheme("not-in-catalogue"), undefined);
 });
 
+test("all eight settings preview tiles pass own-property-safe style objects to React", () => {
+  // themeToCssVariables deliberately returns a null-prototype record for safe token output.
+  // Passing that record directly as React's style prop can crash rendering: it has
+  // no hasOwnProperty method. Copy it into a plain JS object at the JSX boundary.
+  for (const theme of BUILTIN_THEMES) {
+    const tokens = themeToCssVariables(theme);
+    assert.equal(Object.getPrototypeOf(tokens), null);
+    assert.equal(typeof tokens.hasOwnProperty, "undefined");
+    const reactStyle = { ...tokens };
+    assert.equal(Object.getPrototypeOf(reactStyle), Object.prototype);
+    assert.equal(reactStyle.hasOwnProperty("--accent"), true);
+    assert.equal(Object.keys(reactStyle).length, 15);
+  }
+  assert.match(settings, /style=\\{\\{\\s*\\.\\.\\.themeToCssVariables\\(theme\\)\\s*\\}\\s+as CSSProperties\\}/);
+  assert.doesNotMatch(settings, /style=\\{themeToCssVariables\\(theme\\) as CSSProperties\\}/);
+});
+
 test("appearance exists only in settings with temporary hover and explicit click apply", () => {
   assert.doesNotMatch(overview, /theme-toggle|onToggleAppearance|Thème :/);
   assert.match(settings, /BUILTIN_THEMES\.map/);
