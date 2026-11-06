@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PREVIEW_TOOL_CATALOG, buildPreparationChecks, buildPreviewTrace, type PermissionIntent } from "../model/bridge-preview-contract";
+import { PREVIEW_TOOL_CATALOG, VIRTUAL_TOOLS, runVirtualExample, buildPreparationChecks, buildPreviewTrace, type PermissionIntent, type VirtualToolName, type VirtualExampleResult } from "../model/bridge-preview-contract";
 
 export interface SessionProjectOption { readonly id: string; readonly name: string }
 type RequestIntent = PermissionIntent;
@@ -30,6 +30,8 @@ export function SessionPreparationScreen({ projects, selectedProjectId,
   const [requests, setRequests] = useState<readonly RequestIntent[]>([]);
   const [duration, setDuration] = useState<15 | 60>(15);
   const [showSimulation, setShowSimulation] = useState(false);
+  const [demoTool, setDemoTool] = useState<VirtualToolName>("session_info");
+  const [virtualOutput, setVirtualOutput] = useState<VirtualExampleResult | null>(null);
   const project = projects.find(item => item.id === selectedProjectId);
   const checks = buildPreparationChecks(project?.name ?? null, requests);
   const trace = buildPreviewTrace(project?.name ?? null, requests);
@@ -115,6 +117,29 @@ export function SessionPreparationScreen({ projects, selectedProjectId,
                       : tool.category === "conditional" ? "Autorité distincte nécessaire" : "Contrôle opérateur requis"}</small>
                   </div>
                 ))}
+              </div>
+              <div className="session-virtual-lab">
+                <strong>Laboratoire fictif · lecture uniquement</strong>
+                <p>Essayez un exemple en mémoire. Aucune requête MCP ni lecture de votre ordinateur.</p>
+                <div className="session-virtual-form">
+                  <label htmlFor="session-example-tool">Outil à simuler</label>
+                  <select id="session-example-tool" value={demoTool} onChange={event => {
+                    const requested = event.target.value as VirtualToolName;
+                    if (VIRTUAL_TOOLS.includes(requested)) { setDemoTool(requested); setVirtualOutput(null); }
+                  }}>
+                    {VIRTUAL_TOOLS.map(tool => <option value={tool} key={tool}>{tool}</option>)}
+                  </select>
+                  <button type="button" className="session-outline-action"
+                    onClick={() => setVirtualOutput(runVirtualExample(demoTool))}>
+                    Tester l'exemple fictif
+                  </button>
+                </div>
+                {virtualOutput && (
+                  <div className="session-virtual-output" role="status">
+                    <span>RÉSULTAT SIMULÉ — aucune exécution réelle</span>
+                    <pre>{JSON.stringify(virtualOutput, null, 2)}</pre>
+                  </div>
+                )}
               </div>
             </details>
             <div className="session-alert">
