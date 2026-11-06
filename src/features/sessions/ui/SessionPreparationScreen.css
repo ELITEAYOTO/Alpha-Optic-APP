@@ -47,3 +47,10 @@
 @media (max-width: 1200px) { .session-layout { grid-template-columns: minmax(155px, 210px) minmax(0,1fr); gap: 12px; } .session-editor { padding: 20px; } .session-field-row { grid-template-columns: minmax(100px,140px) minmax(0,1fr); } }
 @media (max-width: 950px) { .session-layout { grid-template-columns: 1fr; } .session-steps ol { display: grid; grid-template-columns: repeat(4, 1fr); } .session-steps li { min-height: auto; padding: 4px; } .session-steps li:not(:last-child)::after { display: none; } .session-steps li small { display: none; } .session-editor { min-height: 400px; } .session-permission-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .session-field-row { grid-template-columns: 1fr; gap: 8px; } }
+
+/* Consistent optical centering for approved UI D wizard buttons. */
+.session-footer .session-cancel, .session-footer .session-next {
+  display: inline-flex; align-items: center; justify-content: center;
+  text-align: center; line-height: 1.2; min-height: 44px;
+}
+.session-footer .session-next { min-width: 205px; }
