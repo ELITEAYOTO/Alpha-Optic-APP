@@ -11,11 +11,12 @@ interface Props {
   active: Destination;
   onNavigate: (value: Destination) => void;
   children: ReactNode;
+  selectedProjectName: string | null;
 }
 
 type WindowAction = "minimize" | "maximize" | "close";
 
-export function DesktopShell({ active, onNavigate, children }: Props) {
+export function DesktopShell({ active, onNavigate, children, selectedProjectName }: Props) {
   const [explorerHidden, setExplorerHidden] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
@@ -163,7 +164,7 @@ export function DesktopShell({ active, onNavigate, children }: Props) {
           <div className="explorer-kicker">EXPLORATEUR</div>
           <div className="project-selector">
             <span className="project-glyph"><NavigationIcon name="projects" /></span>
-            <span><strong>Aucun projet</strong><small>Mode démonstration</small></span>
+            <span><strong>{selectedProjectName ?? "Aucun projet"}</strong><small>{selectedProjectName ? "Brouillon local · aucun accès" : "Mode démonstration"}</small></span>
           </div>
           <div className="explorer-kicker">ACCÈS RAPIDE</div>
           <div className="explorer-links">
