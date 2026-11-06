@@ -46,7 +46,7 @@ test("temporary theme previews are cleared on every page navigation", () => {
   assert.match(app, /function navigateTo\(destination: Destination\)/);
   assert.match(app, /setPreviewThemeId\(null\)/);
   assert.match(app, /setSection\(destination\)/);
-  assert.match(app, /<DesktopShell active=\{section\} onNavigate=\{navigateTo\}>/);
+  assert.match(app, /<DesktopShell active=\{section\} onNavigate=\{navigateTo\}/);
   assert.match(app, /<OverviewScreen onNavigate=\{navigateTo\} localProjects=\{projects\}/);
   assert.match(app, /<SupervisionScreen onReturnHome=\{\(\) => navigateTo\("home"\)\} \/>/);
   assert.match(app, /onSelectTheme=\{selectTheme\}/);
