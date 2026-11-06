@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { PREVIEW_TOOL_CATALOG, VIRTUAL_TOOLS, runVirtualExample, buildPreparationChecks, buildPreviewTrace, type PermissionIntent, type VirtualToolName, type VirtualExampleResult } from "../model/bridge-preview-contract";
 
 export interface SessionProjectOption { readonly id: string; readonly name: string }
-type RequestIntent = "read" | "modify" | "create" | "delete";
+type RequestIntent = PermissionIntent;
 const permissionChoices: readonly { id: RequestIntent; label: string; detail: string }[] = [
   { id: "read", label: "Lire", detail: "Consulter des fichiers du futur périmètre" },
   { id: "modify", label: "Modifier", detail: "Modifier après autorisation réelle" },
@@ -28,14 +29,19 @@ export function SessionPreparationScreen({ projects, selectedProjectId,
   const [step, setStep] = useState(1);
   const [requests, setRequests] = useState<readonly RequestIntent[]>([]);
   const [duration, setDuration] = useState<15 | 60>(15);
+  const [showSimulation, setShowSimulation] = useState(false);
+  const [demoTool, setDemoTool] = useState<VirtualToolName>("session_info");
+  const [virtualOutput, setVirtualOutput] = useState<VirtualExampleResult | null>(null);
   const project = projects.find(item => item.id === selectedProjectId);
+  const checks = buildPreparationChecks(project?.name ?? null, requests);
+  const trace = buildPreviewTrace(project?.name ?? null, requests);
 
   function toggleRequest(id: RequestIntent) {
     setRequests(items => items.includes(id) ? items.filter(value => value !== id) : [...items, id]);
   }
 
   return (
-    <section className="module-screen session-screen" aria-labelledby="session-title">
+    <section className="module-screen session-screen" data-step={step} aria-labelledby="session-title">
       <header className="session-heading">
         <div className="session-heading-line">
           <span className="eyebrow">BROUILLON / CONFIGURATION</span>
@@ -79,6 +85,12 @@ export function SessionPreparationScreen({ projects, selectedProjectId,
                 <small>Choix de dossier indisponible sans contrat Bridge validé.</small>
               </div>
             </div>
+            {project && (
+              <div className="session-draft-summary" role="note">
+                <span>BROUILLON CHOISI</span><strong>{project.name}</strong>
+                <small>Contexte navigateur uniquement · aucune ressource ouverte</small>
+              </div>
+            )}
             {!project && <button className="session-link" type="button" onClick={onCreateProject}>
               + Créer un brouillon dans Projets
             </button>}
@@ -93,6 +105,43 @@ export function SessionPreparationScreen({ projects, selectedProjectId,
                 <small>Connexion authentifiée à intégrer ultérieurement.</small>
               </div>
             </div>
+            <details className="session-tool-details">
+              <summary>Explorer le catalogue MCP de référence <span>SIMULATION</span></summary>
+              <p className="session-tool-hint">Noms d'outils issus du contrat public du Bridge. Aucun outil n'est appelé et aucun droit n'est accordé.</p>
+              <div className="session-tool-list">
+                {PREVIEW_TOOL_CATALOG.map(tool => (
+                  <div className="session-tool-row" key={tool.name}>
+                    <code>{tool.name}</code>
+                    <span>{tool.description}</span>
+                    <small>{tool.category === "base" ? "Outil de base ≠ autorisation"
+                      : tool.category === "conditional" ? "Autorité distincte nécessaire" : "Contrôle opérateur requis"}</small>
+                  </div>
+                ))}
+              </div>
+              <div className="session-virtual-lab">
+                <strong>Laboratoire fictif · lecture uniquement</strong>
+                <p>Essayez un exemple en mémoire. Aucune requête MCP ni lecture de votre ordinateur.</p>
+                <div className="session-virtual-form">
+                  <label htmlFor="session-example-tool">Outil à simuler</label>
+                  <select id="session-example-tool" value={demoTool} onChange={event => {
+                    const requested = event.target.value as VirtualToolName;
+                    if (VIRTUAL_TOOLS.includes(requested)) { setDemoTool(requested); setVirtualOutput(null); }
+                  }}>
+                    {VIRTUAL_TOOLS.map(tool => <option value={tool} key={tool}>{tool}</option>)}
+                  </select>
+                  <button type="button" className="session-outline-action"
+                    onClick={() => setVirtualOutput(runVirtualExample(demoTool))}>
+                    Tester l'exemple fictif
+                  </button>
+                </div>
+                {virtualOutput && (
+                  <div className="session-virtual-output" role="status">
+                    <span>RÉSULTAT SIMULÉ — aucune exécution réelle</span>
+                    <pre>{JSON.stringify(virtualOutput, null, 2)}</pre>
+                  </div>
+                )}
+              </div>
+            </details>
             <div className="session-alert">
               <strong>Bridge non connecté</strong>
               <p>Vous pouvez parcourir les étapes pour revoir l'interface, mais aucun assistant ne sera lancé.</p>
@@ -111,6 +160,10 @@ export function SessionPreparationScreen({ projects, selectedProjectId,
                 </label>
               ))}
             </fieldset>
+            <div className="session-intent-summary" role="status">
+              <strong>{requests.length} intention{requests.length > 1 ? "s" : ""} de droit sélectionnée{requests.length > 1 ? "s" : ""}</strong>
+              <span>Préparation UI uniquement. Une autorité réelle exige une validation opérateur et des TaskLeases indépendantes.</span>
+            </div>
             <div className="session-field-row">
               <label htmlFor="session-duration">DURÉE ENVISAGÉE</label>
               <div className="session-field-body">
@@ -136,6 +189,32 @@ export function SessionPreparationScreen({ projects, selectedProjectId,
               <div><dt>Durée envisagée</dt><dd>{duration} minutes</dd></div>
               <div><dt>Session réelle</dt><dd>Non créée</dd></div>
             </dl>
+            <div className="session-demo-controls">
+              <button type="button" className="session-outline-action"
+                aria-expanded={showSimulation}
+                onClick={() => setShowSimulation(value => !value)}>
+                {showSimulation ? "Masquer l'essai simulé" : "Tester le parcours (simulation)"}
+              </button>
+              <span>Sans connexion, commande, fichier ni processus réel.</span>
+            </div>
+            {showSimulation && (
+              <section className="session-demo-report" aria-label="Résultats simulés de préparation">
+                <h3>Simulation de contrôle · aucun appel Bridge</h3>
+                <div className="session-demo-checks">
+                  {checks.map(check => (
+                    <div key={check.key} className="session-demo-check">
+                      <strong>{check.label}</strong>
+                      <span>{check.result === "preview-ready" ? "UI prête" : "Bloqué / non connecté"}</span>
+                      <small>{check.detail}</small>
+                    </div>
+                  ))}
+                </div>
+                <h3>Chronologie fictive</h3>
+                <ol className="session-demo-trace">
+                  {trace.map(entry => <li key={entry.stage}><strong>{entry.stage}</strong><span>{entry.result}</span></li>)}
+                </ol>
+              </section>
+            )}
           </>}
           <div className="session-safety" role="status">
             <strong>Aucune permission implicite</strong>

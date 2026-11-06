@@ -64,3 +64,26 @@ export function serializeLocalProjects(projects: readonly LocalProjectDraft[]): 
     throw new Error("Brouillons invalides.");
   return JSON.stringify({ schemaVersion: 1, projects });
 }
+
+/** UI-only rename of a browser draft; never changes a disk directory. */
+export function renameLocalProject(
+  current: readonly LocalProjectDraft[], id: string, requestedName: string,
+): LocalProjectDraft[] {
+  if (!PROJECT_ID.test(id) || !current.some(project => project.id === id))
+    throw new Error("Brouillon local introuvable.");
+  const name = normalizeProjectName(requestedName);
+  if (!name) throw new Error("Saisissez un nom valide (1 à 64 caractères, sans chemin).");
+  if (current.some(project => project.id !== id &&
+      project.name.toLocaleLowerCase("fr") === name.toLocaleLowerCase("fr")))
+    throw new Error("Ce nom existe déjà dans les brouillons.");
+  return current.map(project => project.id === id ? { ...project, name } : project);
+}
+
+/** Remove only one localStorage draft. No effect on files, processes or Bridge. */
+export function removeLocalProject(
+  current: readonly LocalProjectDraft[], id: string,
+): LocalProjectDraft[] {
+  if (!PROJECT_ID.test(id) || !current.some(project => project.id === id))
+    throw new Error("Brouillon local introuvable.");
+  return current.filter(project => project.id !== id);
+}

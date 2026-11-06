@@ -7,7 +7,7 @@ import { DeveloperTerminalScreen } from "../features/terminal";
 import { SettingsScreen } from "../features/settings";
 import { ThemePicker } from "../features/themes";
 import { ProjectsScreen, LOCAL_PROJECTS_KEY, parseLocalProjects,
-  appendLocalProject, serializeLocalProjects, type LocalProjectDraft } from "../features/projects";
+  appendLocalProject, renameLocalProject, removeLocalProject, serializeLocalProjects, type LocalProjectDraft } from "../features/projects";
 import { SessionPreparationScreen } from "../features/sessions";
 import { UpdatesPanel } from "../features/updates";
 import packageInfo from "../../package.json";
@@ -85,6 +85,29 @@ export function App() {
     }
   }
 
+  function renameProject(id: string, name: string): { ok: boolean; error?: string } {
+    try {
+      const updated = renameLocalProject(projects, id, name);
+      window.localStorage.setItem(LOCAL_PROJECTS_KEY, serializeLocalProjects(updated));
+      setProjects(updated);
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : "Impossible de renommer le brouillon." };
+    }
+  }
+
+  function removeProject(id: string): { ok: boolean; error?: string } {
+    try {
+      const updated = removeLocalProject(projects, id);
+      window.localStorage.setItem(LOCAL_PROJECTS_KEY, serializeLocalProjects(updated));
+      setProjects(updated);
+      if (selectedProjectId === id) setSelectedProjectId(null);
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : "Impossible de retirer le brouillon." };
+    }
+  }
+
   function selectLocalProject(id: string) {
     if (!id) { setSelectedProjectId(null); return; }
     if (projects.some(project => project.id === id)) setSelectedProjectId(id);
@@ -111,7 +134,8 @@ export function App() {
       ? <ProjectsScreen projects={projects} selectedProjectId={selectedProjectId}
           createOpen={projectCreateOpen} onStartCreate={() => setProjectCreateOpen(true)}
           onCancelCreate={() => setProjectCreateOpen(false)} onCreate={createProject}
-          onSelect={selectLocalProject} onPrepare={prepareLocalProject} />
+          onSelect={selectLocalProject} onPrepare={prepareLocalProject}
+          onRename={renameProject} onRemove={removeProject} />
       : section === "sessions"
         ? <SessionPreparationScreen projects={projects} selectedProjectId={selectedProjectId}
             onSelectProject={selectLocalProject} onCreateProject={startNewProject}

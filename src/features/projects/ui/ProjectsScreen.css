@@ -70,3 +70,18 @@
   .projects-heading-main .projects-primary { align-self: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) { .projects-primary, .projects-action-row { transition: none; } }
+
+/* Local-only project management, revealed only on the selected browser draft. */
+.projects-draft-toolbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 9px 0 3px; }
+.projects-draft-toolbar > span { margin-right: auto; color: var(--muted); font-size: 11px; line-height: 1.4; }
+.projects-draft-editor { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 13px; margin-top: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.projects-draft-editor label { flex-basis: 100%; font-size: 11px; font-weight: 600; }
+.projects-draft-editor input { flex: 1; min-width: 140px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 5px; padding: 10px 12px; font: inherit; }
+.projects-draft-editor .projects-primary { min-height: 37px; }
+.projects-draft-confirm { padding: 14px; border: 1px solid var(--warning); border-radius: 6px; background: var(--subtle); margin-top: 9px; }
+.projects-draft-confirm strong { display: block; font-size: 12px; margin-bottom: 8px; }
+.projects-draft-confirm p { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+.projects-outline { display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.2; min-height: 36px; padding: 9px 12px; background: var(--raised); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+.projects-outline:hover { border-color: var(--accent); }
+.projects-draft-confirm .projects-text-button { margin-left: 12px; }
+.projects-screen .projects-error { color: var(--warning); font-size: 11px; font-weight: 600; margin-top: 7px; }

@@ -10,15 +10,21 @@ interface Props {
   onCreate: (name: string) => { ok: boolean; error?: string };
   onSelect: (id: string) => void;
   onPrepare: (id: string) => void;
+  onRename: (id: string, name: string) => { ok: boolean; error?: string };
+  onRemove: (id: string) => { ok: boolean; error?: string };
 }
 
 /** UI D library: project rows, selected context and actions are distinct views.
  * Nothing here grants Bridge authority or opens a filesystem folder.
  */
 export function ProjectsScreen({ projects, selectedProjectId, createOpen,
-  onStartCreate, onCancelCreate, onCreate, onSelect, onPrepare }: Props) {
+  onStartCreate, onCancelCreate, onCreate, onSelect, onPrepare, onRename, onRemove }: Props) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [renameName, setRenameName] = useState("");
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
+  const [localActionError, setLocalActionError] = useState<string | null>(null);
   const selectedProject = projects.find(project => project.id === selectedProjectId);
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -27,6 +33,19 @@ export function ProjectsScreen({ projects, selectedProjectId, createOpen,
     if (!result.ok) { setError(result.error ?? "Création impossible."); return; }
     setName("");
     setError(null);
+  }
+
+  function submitRename(event: FormEvent<HTMLFormElement>, id: string) {
+    event.preventDefault();
+    const result = onRename(id, renameName);
+    if (!result.ok) { setLocalActionError(result.error ?? "Renommage impossible."); return; }
+    setEditingId(null); setLocalActionError(null);
+  }
+
+  function confirmRemove(id: string) {
+    const result = onRemove(id);
+    if (!result.ok) { setLocalActionError(result.error ?? "Suppression impossible."); return; }
+    setConfirmRemoveId(null); setEditingId(null); setLocalActionError(null);
   }
 
   return (
@@ -127,6 +146,39 @@ export function ProjectsScreen({ projects, selectedProjectId, createOpen,
             ? `« ${selectedProject.name} » est sélectionné, mais aucun dossier réel n'est accessible.`
             : "Choisissez un brouillon local pour préparer sa session. L'exemple optic-lab n'est pas un projet réel."}
         </p>
+        {selectedProject && (
+          <div className="projects-draft-toolbar">
+            <span>Brouillon enregistré sur cet appareil uniquement.</span>
+            <button type="button" className="projects-text-button" onClick={() => {
+              setEditingId(selectedProject.id); setRenameName(selectedProject.name);
+              setConfirmRemoveId(null); setLocalActionError(null);
+            }}>Renommer</button>
+            <button type="button" className="projects-text-button" onClick={() => {
+              setConfirmRemoveId(selectedProject.id);
+              setEditingId(null); setLocalActionError(null);
+            }}>Retirer du navigateur</button>
+          </div>
+        )}
+        {selectedProject && editingId === selectedProject.id && (
+          <form className="projects-draft-editor" onSubmit={event => submitRename(event, selectedProject.id)}>
+            <label htmlFor="draft-rename">Nouveau nom du brouillon</label>
+            <input id="draft-rename" autoFocus value={renameName} maxLength={64} autoComplete="off"
+              onChange={event => { setRenameName(event.target.value); setLocalActionError(null); }} />
+            <button type="submit" className="projects-primary">Enregistrer</button>
+            <button type="button" className="projects-text-button" onClick={() => { setEditingId(null); setLocalActionError(null); }}>Annuler</button>
+          </form>
+        )}
+        {selectedProject && confirmRemoveId === selectedProject.id && (
+          <div className="projects-draft-confirm" role="group" aria-label="Confirmation du retrait du brouillon">
+            <strong>Retirer « {selectedProject.name} » de cette Preview ?</strong>
+            <p>Seule l'entrée locale sera supprimée. Aucun dossier, fichier ou processus ne sera touché.</p>
+            <button type="button" className="projects-outline" onClick={() => confirmRemove(selectedProject.id)}>
+              Confirmer le retrait local
+            </button>
+            <button type="button" className="projects-text-button" onClick={() => { setConfirmRemoveId(null); setLocalActionError(null); }}>Annuler</button>
+          </div>
+        )}
+        {localActionError && <p className="projects-error" role="alert">{localActionError}</p>}
       </section>
 
       <section className="projects-actions" aria-labelledby="projects-actions-title">
