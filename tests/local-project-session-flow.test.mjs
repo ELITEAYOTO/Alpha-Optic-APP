@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { appendLocalProject, MAX_LOCAL_PROJECTS, normalizeProjectName,
-  parseLocalProjects, serializeLocalProjects } from "../src/features/projects/model/local-drafts.ts";
+  parseLocalProjects, serializeLocalProjects, renameLocalProject, removeLocalProject } from "../src/features/projects/model/local-drafts.ts";
 
 const id = "draft-123e4567-e89b-42d3-a456-426614174000";
 const date = "2026-11-06T09:00:00.000Z";
@@ -84,4 +84,58 @@ test("four reviewable steps keep actual launch disabled without Bridge authority
 
 test("settings theme preview retains React-safe plain object (#45 fix)", () => {
   assert.ok(picker.includes("style={{ ...themeToCssVariables(theme) } as CSSProperties}"));
+});
+
+test("rename and removal operate strictly on browser draft records", () => {
+  const first = appendLocalProject([], "Portfolio", id, date).projects;
+  const renamed = renameLocalProject(first, id, " Portfolio UI ");
+  assert.equal(renamed[0].name, "Portfolio UI");
+  assert.equal(renamed[0].id, id);
+  assert.equal(renamed[0].createdAt, date);
+  assert.equal(first[0].name, "Portfolio");
+  assert.deepEqual(parseLocalProjects(serializeLocalProjects(renamed)), renamed);
+  assert.throws(() => renameLocalProject(first, id, "C:\\Windows"), /nom valide/);
+  assert.throws(() => renameLocalProject(first, "not-an-id", "New"), /introuvable/);
+  const secondId = "draft-123e4567-e89b-42d3-a456-426614174001";
+  const two = appendLocalProject(first, "Other", secondId, date).projects;
+  assert.throws(() => renameLocalProject(two, id, "other"), /existe déjà/);
+  assert.deepEqual(removeLocalProject(two, id), [two[0]]);
+  assert.throws(() => removeLocalProject([], id), /introuvable/);
+});
+
+test("local project controls require explicit confirmation and no filesystem API", () => {
+  assert.match(projects, /Retirer du navigateur/);
+  assert.match(projects, /Confirmer le retrait local/);
+  assert.match(projects, /onRename\(id, renameName\)/);
+  assert.match(projects, /onRemove\(id\)/);
+  assert.match(app, /window.localStorage.setItem\(LOCAL_PROJECTS_KEY, serializeLocalProjects\(updated\)\)/);
+  assert.doesNotMatch(projects, /\binvoke\(|\bfetch\(|fs_delete\(|process_start\(/);
+});
+
+test("session uses real MCP tool names only as visible data and avoids real execution", async () => {
+  const { PREVIEW_TOOL_CATALOG, buildPreparationChecks, buildPreviewTrace } =
+    await import("../src/features/sessions/model/bridge-preview-contract.ts");
+  for (const tool of ["session_info", "fs_list", "fs_read", "fs_write", "fs_delete",
+    "fs_create_directory", "git_status", "process_start"]) {
+    assert.ok(PREVIEW_TOOL_CATALOG.some(item => item.name === tool), tool);
+  }
+  const checks = buildPreparationChecks("Demo", ["read", "delete"]);
+  assert.equal(checks.some(item => item.key === "bridge" && item.result === "preview-ready"), false);
+  assert.equal(checks.some(item => item.key === "draft" && item.result === "preview-ready"), true);
+  const trace = buildPreviewTrace("Demo", ["read"]);
+  assert.ok(trace.some(event => /REFUS SIMULÉ/.test(event.result)));
+  assert.ok(trace.some(event => /aucun appel transmis/.test(event.result)));
+  assert.doesNotMatch(JSON.stringify(trace), /action_id|session_handle|job_id|grant_token/i);
+  assert.match(sessions, /Tester le parcours \(simulation\)/);
+  assert.match(sessions, /Aucun outil n'est appelé et aucun droit n'est accordé/);
+  assert.match(sessions, /Démarrer la session — indisponible/);
+  assert.doesNotMatch(sessions, /\binvoke\(|\bfetch\(|\bspawn\(/);
+});
+
+test("project resource editor ends at its content instead of stretching to stepper height", () => {
+  const css = readFileSync(new URL("../src/features/sessions/ui/SessionPreparationScreen.css", import.meta.url), "utf8");
+  assert.match(css, /\.session-layout \{[^}]*align-items: start/);
+  assert.match(css, /\.session-editor \{[^}]*min-height: 0/);
+  assert.match(css, /\.session-screen\[data-step="1"\] \.session-editor/);
+  assert.doesNotMatch(css, /min-height: 510px/);
 });
