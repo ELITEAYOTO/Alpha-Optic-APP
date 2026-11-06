@@ -6,12 +6,20 @@ import { SupervisionScreen } from "../features/supervision";
 import { DeveloperTerminalScreen } from "../features/terminal";
 import { SettingsScreen } from "../features/settings";
 import { ThemePicker } from "../features/themes";
+import { ProjectsScreen, LOCAL_PROJECTS_KEY, parseLocalProjects,
+  appendLocalProject, serializeLocalProjects, type LocalProjectDraft } from "../features/projects";
+import { SessionPreparationScreen } from "../features/sessions";
 import { UpdatesPanel } from "../features/updates";
 import packageInfo from "../../package.json";
 import { DEFAULT_THEME_ID, findBuiltinTheme } from "../features/themes/model/builtin-themes";
 import { themeToCssVariables } from "../features/themes/model/theme-manifest";
 
 const THEME_PREFERENCE_KEY = "optic.ui.theme-id";
+
+function readProjectPreference(): LocalProjectDraft[] {
+  try { return parseLocalProjects(window.localStorage.getItem(LOCAL_PROJECTS_KEY)); }
+  catch { return []; }
+}
 
 function readThemePreference(): string {
   try {
@@ -35,6 +43,9 @@ const descriptions: Record<Destination, string> = {
 
 export function App() {
   const [section, setSection] = useState<Destination>("home");
+  const [projects, setProjects] = useState<LocalProjectDraft[]>(readProjectPreference);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [projectCreateOpen, setProjectCreateOpen] = useState(false);
   const [selectedThemeId, setSelectedThemeId] = useState(readThemePreference);
   const [previewThemeId, setPreviewThemeId] = useState<string | null>(null);
   const renderedTheme = findBuiltinTheme(previewThemeId) ?? findBuiltinTheme(selectedThemeId)!;
@@ -48,15 +59,63 @@ export function App() {
     catch { /* Theme stays active for this session if storage is unavailable. */ }
   }
   function navigateTo(destination: Destination) {
-    // Preview is only temporary while browsing the appearance settings.
-    // Clear it synchronously even when navigation unmounts a hovered theme card.
+    // Theme previews are transient; navigation must not leave a hover preview active.
     setPreviewThemeId(null);
+    if (destination !== "projects") setProjectCreateOpen(false);
     setSection(destination);
+  }
+
+  function startNewProject() {
+    setProjectCreateOpen(true);
+    navigateTo("projects");
+  }
+
+  function createProject(name: string): { ok: boolean; error?: string } {
+    try {
+      const result = appendLocalProject(projects, name,
+        "draft-" + window.crypto.randomUUID(), new Date().toISOString());
+      // Commit to UI state only if the local draft actually persisted.
+      window.localStorage.setItem(LOCAL_PROJECTS_KEY, serializeLocalProjects(result.projects));
+      setProjects(result.projects);
+      setSelectedProjectId(result.created.id);
+      setProjectCreateOpen(false);
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : "Enregistrement local impossible." };
+    }
+  }
+
+  function selectLocalProject(id: string) {
+    if (!id) { setSelectedProjectId(null); return; }
+    if (projects.some(project => project.id === id)) setSelectedProjectId(id);
+  }
+
+  function prepareLocalProject(id: string) {
+    if (!projects.some(project => project.id === id)) return;
+    setSelectedProjectId(id);
+    navigateTo("sessions");
+  }
+
+  function resumeLocalProject(id: string) {
+    if (!projects.some(project => project.id === id)) return;
+    setSelectedProjectId(id);
+    navigateTo("projects");
   }
 
   const item = destinations.find(({ id }) => id === section);
   const content = section === "home"
-    ? <OverviewScreen onNavigate={navigateTo} />
+    ? <OverviewScreen onNavigate={navigateTo} localProjects={projects}
+        selectedProjectId={selectedProjectId} onNewProject={startNewProject}
+        onResumeLocal={resumeLocalProject} />
+    : section === "projects"
+      ? <ProjectsScreen projects={projects} selectedProjectId={selectedProjectId}
+          createOpen={projectCreateOpen} onStartCreate={() => setProjectCreateOpen(true)}
+          onCancelCreate={() => setProjectCreateOpen(false)} onCreate={createProject}
+          onSelect={selectLocalProject} onPrepare={prepareLocalProject} />
+      : section === "sessions"
+        ? <SessionPreparationScreen projects={projects} selectedProjectId={selectedProjectId}
+            onSelectProject={selectLocalProject} onCreateProject={startNewProject}
+            onCancel={() => navigateTo("home")} />
     : section === "supervision"
       ? <SupervisionScreen onReturnHome={() => navigateTo("home")} />
       : section === "terminal"
@@ -79,7 +138,8 @@ export function App() {
   return (
     <div className="optic-theme-root" data-theme={renderedTheme.id}
       style={{ ...themeToCssVariables(renderedTheme), colorScheme: renderedTheme.appearance } as CSSProperties}>
-      <DesktopShell active={section} onNavigate={navigateTo}>
+      <DesktopShell active={section} onNavigate={navigateTo}
+        selectedProjectName={projects.find(project => project.id === selectedProjectId)?.name ?? null}>
         {content}
       </DesktopShell>
     </div>

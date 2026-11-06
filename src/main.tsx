@@ -5,6 +5,8 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./app/layout/DesktopShell.css";
 import "./features/overview/ui/OverviewScreen.css";
+import "./features/projects/ui/ProjectsScreen.css";
+import "./features/sessions/ui/SessionPreparationScreen.css";
 import "./shared/styles/feedback.css";
 import "./features/supervision/ui/SupervisionScreen.css";
 import "./features/settings/ui/SettingsScreen.css";

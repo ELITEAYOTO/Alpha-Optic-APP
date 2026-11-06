@@ -58,3 +58,9 @@
   .overview .context-grid { padding-block: 12px; }
   .overview .recent-project { min-height: 52px; }
 }
+
+/* Preserve approved layout while centering action labels within their hit targets. */
+.overview .primary-button, .overview .recent-project-resume {
+  display: inline-flex; align-items: center; justify-content: center;
+  text-align: center; line-height: 1.2;
+}

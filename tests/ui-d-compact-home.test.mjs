@@ -19,14 +19,16 @@ test("UI D compact layout retains 60/215 rail and explorer and keeps the status 
   assert.match(shell, /aria-current=\{id === active \? "page" : undefined\}/);
 });
 
-test("overview preserves preparation and context but replaces checks/activity with exactly three demo project rows", () => {
+test("overview preserves UI D, exposes local drafts and keeps three rows with safe fictitious fallback", () => {
   assert.match(home, /Créer une session sécurisée/);
   assert.match(home, /Préparer une session →/);
   assert.match(home, /Votre contexte/);
   assert.match(home, /Projets récents/);
   assert.match(home, /exampleRecentProjects\.map/);
   assert.match(home, /Exemples fictifs/);
-  assert.match(home, /className="recent-project-resume" disabled/);
+  assert.match(home, /className="recent-project-resume" disabled=\{!project\.local\}/);
+  assert.match(home, /onClick=\{\(\) => onNavigate\("sessions"\)\}/);
+  assert.match(home, /onResumeLocal\(project\.id\)/);
   assert.doesNotMatch(home, /À vérifier avant le lancement|Activité récente|Ouvrir le journal/);
   assert.equal((demo.match(/id: "demo-/g) || []).length, 3);
   assert.doesNotMatch(home, /dispatch\(.*BRIDGE_|invoke\(|localStorage\./);
