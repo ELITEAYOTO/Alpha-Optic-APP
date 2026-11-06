@@ -40,6 +40,16 @@ test("appearance exists only in settings with temporary hover and explicit click
   assert.doesNotMatch(settings, /invoke\(|fetch\(|filesystem|\.exec\(/);
 });
 
+test("temporary theme previews are cleared on every page navigation", () => {
+  // A Ctrl+K route change can unmount the hovered settings card without mouseleave.
+  // The preview must not leak to another page or replace the saved theme.
+  assert.match(app, /function navigateTo\(destination: Destination\) \{\s*\/\/[^\n]*\n\s*\/\/[^\n]*\n\s*setPreviewThemeId\(null\);\s*setSection\(destination\);/);
+  assert.match(app, /<DesktopShell active=\{section\} onNavigate=\{navigateTo\}>/);
+  assert.match(app, /<OverviewScreen onNavigate=\{navigateTo\} \/>/);
+  assert.match(app, /<SupervisionScreen onReturnHome=\{\(\) => navigateTo\("home"\)\} \/>/);
+  assert.match(app, /onSelectTheme=\{selectTheme\}/);
+});
+
 test("scrollbar is subtle and command search is in the centered titlebar column", () => {
   assert.match(shellCss, /\.titlebar \{ display: grid; grid-template-columns:/);
   assert.match(shellCss, /scrollbar-width: thin/);

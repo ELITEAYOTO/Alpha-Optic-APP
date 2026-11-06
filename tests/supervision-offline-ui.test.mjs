@@ -21,7 +21,7 @@ test("only app composition owns the navigation; offline user action returns home
   assert.match(screen, /onReturnHome: \(\) => void/);
   assert.match(screen, /onClick=\{onReturnHome\}/);
   assert.match(screen, /type="button"/);
-  assert.match(app, /<SupervisionScreen onReturnHome=\{\(\) => setSection\("home"\)\} \/>/);
+  assert.match(app, /<SupervisionScreen onReturnHome=\{\(\) => navigateTo\("home"\)\} \/>/);
   assert.doesNotMatch(screen, /from ["'][^"']*\/app\//);
   assert.match(screen, /aria-labelledby="supervision-title"/);
   assert.match(screen, /role="status"/);
