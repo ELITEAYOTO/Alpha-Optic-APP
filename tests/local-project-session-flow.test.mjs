@@ -54,7 +54,7 @@ test("home flows into projects/session wizard but never executes a real Bridge a
   assert.match(home, /onNewProject/);
   assert.match(home, /disabled=\{!project.local\}/);
   assert.match(projects, /Enregistrer le brouillon/);
-  assert.match(projects, /onPrepare\(project.id\)/);
+  assert.match(projects, /onPrepare\(selectedProject.id\)/);\n  assert.match(projects, /PROJET SÉLECTIONNÉ/);\n  assert.match(projects, /ACTIONS DU PROJET/);\n  assert.match(projects, /EXEMPLE FICTIF/);\n  assert.match(projects, /aria-pressed=\{selectedProjectId === project.id\}/);
   assert.match(app, /<ProjectsScreen projects=\{projects\}/);
   assert.match(app, /<SessionPreparationScreen projects=\{projects\}/);
   assert.match(app, /window.localStorage.setItem\(LOCAL_PROJECTS_KEY/);
