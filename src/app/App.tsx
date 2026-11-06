@@ -86,6 +86,7 @@ export function App() {
   }
 
   function selectLocalProject(id: string) {
+    if (!id) { setSelectedProjectId(null); return; }
     if (projects.some(project => project.id === id)) setSelectedProjectId(id);
   }
 
@@ -137,7 +138,8 @@ export function App() {
   return (
     <div className="optic-theme-root" data-theme={renderedTheme.id}
       style={{ ...themeToCssVariables(renderedTheme), colorScheme: renderedTheme.appearance } as CSSProperties}>
-      <DesktopShell active={section} onNavigate={navigateTo}>
+      <DesktopShell active={section} onNavigate={navigateTo}
+        selectedProjectName={projects.find(project => project.id === selectedProjectId)?.name ?? null}>
         {content}
       </DesktopShell>
     </div>
