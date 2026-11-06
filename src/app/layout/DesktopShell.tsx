@@ -70,10 +70,7 @@ export function DesktopShell({ active, onNavigate, children, selectedProjectName
         <div className="titlebar-main" data-tauri-drag-region>
           <div className="identity" aria-label="Optic" data-tauri-drag-region>
             <img className="optic-logo" src="/assets/optic-logo-48.png" alt="" width="30" height="30" />
-            <strong>optic</strong><span className="identity-caption">DESKTOP</span>
-          </div>
-          <div className="breadcrumb" data-tauri-drag-region>
-            / Espace de travail / {destinations.find(({ id }) => id === active)?.label}
+            <strong>optic</strong>
           </div>
         </div>
           <button type="button" className="command-trigger" ref={commandTrigger}
