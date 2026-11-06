@@ -40,3 +40,15 @@ test("command palette is keyboard accessible and only navigates registered pages
   assert.match(css, /@media \(max-width: 1120px\)/);
   assert.match(css, /prefers-reduced-motion: reduce/);
 });
+
+test("UI D titlebar shows only Optic identity, centered command search and native controls", () => {
+  assert.match(shell, /<strong>optic<\/strong>/);
+  assert.doesNotMatch(shell, /identity-caption|className="breadcrumb"|<strong>optic<\/strong><span/);
+  assert.match(css, /\.titlebar \{ display: grid; grid-template-columns: minmax\(0, 1fr\) minmax\(250px, 350px\) minmax\(0, 1fr\)/);
+  assert.match(css, /@media \(max-width: 1150px\) \{[\s\S]*?minmax\(160px, 235px\) minmax\(0, 1fr\)/);
+  assert.doesNotMatch(css, /\.identity-caption|\.breadcrumb/);
+  assert.match(shell, /<div className="titlebar-main" data-tauri-drag-region>/);
+  assert.match(shell, /className="command-trigger"/);
+  assert.match(shell, /className="window-controls"/);
+  assert.match(shell, /aria-label="Agrandir ou restaurer la fenêtre"/);
+});
