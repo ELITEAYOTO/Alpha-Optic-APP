@@ -40,8 +40,8 @@ test("all eight settings preview tiles pass own-property-safe style objects to R
     assert.equal(reactStyle.hasOwnProperty("--accent"), true);
     assert.equal(Object.keys(reactStyle).length, 15);
   }
-  assert.match(settings, /style=\\{\\{\\s*\\.\\.\\.themeToCssVariables\\(theme\\)\\s*\\}\\s+as CSSProperties\\}/);
-  assert.doesNotMatch(settings, /style=\\{themeToCssVariables\\(theme\\) as CSSProperties\\}/);
+  assert.ok(settings.includes("style={{ ...themeToCssVariables(theme) } as CSSProperties}"));
+  assert.equal(settings.includes("style={themeToCssVariables(theme) as CSSProperties}"), false);
 });
 
 test("appearance exists only in settings with temporary hover and explicit click apply", () => {
