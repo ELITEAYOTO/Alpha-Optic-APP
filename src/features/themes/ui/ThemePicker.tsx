@@ -28,7 +28,7 @@ export function ThemePicker({ activeThemeId, previewThemeId,
                 onFocus={() => onPreviewTheme(theme.id)}
                 onBlur={() => onPreviewTheme(null)}
                 onClick={() => onSelectTheme(theme.id)}>
-                <div className="theme-mini" style={themeToCssVariables(theme) as CSSProperties}
+                <div className="theme-mini" style={{ ...themeToCssVariables(theme) } as CSSProperties}
                   aria-hidden="true">
                   <span className="theme-mini-rail"/>
                   <span className="theme-mini-body">
