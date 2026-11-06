@@ -139,3 +139,26 @@ test("project resource editor ends at its content instead of stretching to stepp
   assert.match(css, /\.session-screen\[data-step="1"\] \.session-editor/);
   assert.doesNotMatch(css, /min-height: 510px/);
 });
+
+test("virtual MCP examples never imply real Bridge authority or disk access", async () => {
+  const { VIRTUAL_TOOLS, runVirtualExample } =
+    await import("../src/features/sessions/model/bridge-preview-contract.ts");
+  assert.deepEqual(VIRTUAL_TOOLS, ["session_info", "fs_list", "fs_read"]);
+  const sampleList = runVirtualExample("fs_list");
+  assert.equal(sampleList.simulation, true);
+  assert.equal(sampleList.sampleInput.path, ".");
+  assert.deepEqual(sampleList.sampleOutput.entries.map(entry => entry.name), ["README.md", "src"]);
+  assert.match(sampleList.sampleOutput.note, /fictive/);
+  const sampleRead = runVirtualExample("fs_read");
+  assert.equal(sampleRead.simulation, true);
+  assert.equal(sampleRead.sampleInput.path, "README.md");
+  assert.match(sampleRead.sampleOutput.example_text, /Preview/);
+  const info = runVirtualExample("session_info");
+  assert.equal(info.sampleOutput.authority, "not-granted");
+  assert.equal(info.sampleOutput.host, "not-connected");
+  assert.throws(() => runVirtualExample("fs_write"), /non autorisé/);
+  assert.match(sessions, /Tester l'exemple fictif/);
+  assert.match(sessions, /RÉSULTAT SIMULÉ/);
+  assert.match(sessions, /JSON.stringify\(virtualOutput, null, 2\)/);
+  assert.doesNotMatch(sessions, /\binvoke\(|\bfetch\(|\bspawn\(|\bexec\(/);
+});
