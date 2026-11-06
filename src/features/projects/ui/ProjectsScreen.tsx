@@ -35,7 +35,7 @@ export function ProjectsScreen({ projects, selectedProjectId, createOpen,
         <div className="projects-heading-top">
           <span className="projects-kicker">ESPACES DE TRAVAIL / GESTION</span>
           <span className="projects-count">
-            {projects.length === 0 ? "1 EXEMPLE FICTIF" : `${projects.length} BROUILLON${projects.length > 1 ? "S" : ""} LOCAL${projects.length > 1 ? "AUX" : ""}`}
+            {projects.length === 0 ? "1 EXEMPLE FICTIF" : `${projects.length} BROUILLON${projects.length > 1 ? "S" : ""} ${projects.length > 1 ? "LOCAUX" : "LOCAL"}`}
           </span>
         </div>
         <div className="projects-heading-main">
