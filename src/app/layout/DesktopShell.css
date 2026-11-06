@@ -50,7 +50,7 @@
 .explorer-kicker { font-size: 10px; letter-spacing: .065em; font-weight: 700; color: var(--faint); margin: 0 8px 16px; }
 .project-selector { display: flex; align-items: center; gap: 12px; flex: none; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 12px; margin-bottom: 26px; min-height: 60px; }
 .project-selector span:last-child { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-.project-selector strong { font-size: 12px; }
+.project-selector strong { font-size: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .project-selector small { color: var(--muted); font-size: 10px; }
 .project-glyph { display: grid; place-items: center; flex: 0 0 20px; color: var(--muted); }
 .explorer-links { display: flex; flex-direction: column; gap: 3px; }
